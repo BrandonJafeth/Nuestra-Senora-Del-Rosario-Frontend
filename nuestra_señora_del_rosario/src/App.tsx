@@ -1,17 +1,14 @@
-
-import { enqueueSnackbar } from 'notistack'
-import './App.css'
+import './App.css';
+import Button from './components/common/Button';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
- 
-
   return (
     <>
-    <button onClick={() => enqueueSnackbar('That was easy!')}>Show snackbar</button>
+    <Button />
+      <AppRoutes />
     </>
-  )
+  );
 }
 
-export default App
-
-
+export default App;
