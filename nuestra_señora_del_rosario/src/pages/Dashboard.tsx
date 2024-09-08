@@ -1,11 +1,13 @@
-import React from 'react'
+
 
 function Dashboard() {
   return (
-    <div>
-      
+    <div className="dashboard-container">
+      <h1>Dashboard</h1>
+      <p>Welcome to the Dashboard!</p>
+      {/* Aquí podrías agregar gráficos, estadísticas, componentes o un resumen del usuario */}
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
