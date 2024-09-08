@@ -1,10 +1,21 @@
 import ApiService from './GenericService/ApiService';
 import { UserType } from '../types/UserType';
 
-const userService = new ApiService<UserType>();
+class UserService extends ApiService<UserType> {
+  // Solo defines los métodos sin necesidad de pasar la URL base
+  public getAllUsers() {
+    return this.getAll('/users');
+  }
 
-// Llamadas con endpoints específicos
-userService.getAll('/users');  // Usa la URL base: http://localhost:5074/api/users
-userService.getOne('/users', 1);  // Usa la URL base: http://localhost:5074/api/users/1
+  public getUserById(id: number) {
+    return this.getOne('/users', id);
+  }
 
+  public createUser(data: UserType) {
+    return this.create('/users', data);
+  }
+
+}
+
+const userService = new UserService();
 export default userService;
