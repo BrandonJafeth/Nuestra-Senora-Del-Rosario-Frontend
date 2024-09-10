@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthProvider';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { IconProvider } from './context/IconsProvider';
 import ToggleProvider from './context/ToggleProvider';
+import { ThemeProvider } from './context/ThemeProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AuthProvider>
           <IconProvider>
             <ToggleProvider>
+         <ThemeProvider>
           <Router>
             <App />
           </Router>
+          </ThemeProvider>
           </ToggleProvider>
           </IconProvider>
         </AuthProvider>
