@@ -5,7 +5,7 @@ interface HeaderProps {
   toggleSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+const Header = ({ toggleSidebar }: HeaderProps) => {
   const { isDarkMode, toggleDarkMode } = useThemeDark();
 
   return (

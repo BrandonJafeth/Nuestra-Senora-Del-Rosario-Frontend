@@ -9,7 +9,7 @@ interface SidebarProps {
   isSidebarOpen: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen }) => {
+const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
   const { isDropdownOpen, toggleDropdown } = useToggle();
   const { getIcon } = useIcon();
   const { logout } = useAuth();
