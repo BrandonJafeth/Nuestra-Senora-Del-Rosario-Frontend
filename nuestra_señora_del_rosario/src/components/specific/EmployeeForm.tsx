@@ -1,12 +1,18 @@
 import Toast from '../common/Toast'; // Componente Toast para mostrar mensajes
 import { useEmployeeForm } from '../../hooks/useRegisterEmployee';
+import { useTypeSalary } from '../../hooks/useTypeSalary';
+import { useProfession } from '../../hooks/useProfession';
 
 function EmployeeForm() {
+
   const {
     dni, firstName, lastName1, lastName2, phoneNumber, address, email, emergencyPhone,
     handleSubmit, setDni, setFirstName, setLastName1, setLastName2, setPhoneNumber, 
-    setAddress, setEmail, setEmergencyPhone, typeOfSalaryId, professionId, getIcon, 
-    isDarkMode, message, type, } = useEmployeeForm();
+    setAddress, setEmail, setEmergencyPhone, setProfession, getIcon, 
+    isDarkMode, message, type, setTypeOfSalaryId} = useEmployeeForm();
+
+    const {data: typeSalaryData} = useTypeSalary();
+    const {data: professionData} = useProfession();
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl`}>
@@ -64,16 +70,19 @@ function EmployeeForm() {
           {/* Profesión */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Profesión')}
+              {getIcon('Salario')}
               <span className="ml-2">Profesión</span>
             </label>
-            <input
-              type="text"
-              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
-              placeholder="Ingrese su profesión"
-              value={professionId} // Valor quemado para profesión
-              disabled
-            />
+            <select
+              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
+              onChange={(e) => setProfession(parseInt(e.target.value))}
+            >
+              {professionData?.map((type: any) => (
+                <option key={type.id_Profession} value={type.id_Profession}>
+                  {type.name_Profession}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Teléfono */}
@@ -139,19 +148,22 @@ function EmployeeForm() {
             />
           </div>
 
-          {/* Salario */}
-          <div>
+           {/* Tipo de Salario */}
+           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {getIcon('Salario')}
-              <span className="ml-2">Salario</span>
+              <span className="ml-2">Tipo de Salario</span>
             </label>
-            <input
-              type="text"
-              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
-              placeholder="Ingrese su salario"
-              value={typeOfSalaryId} // Valor quemado para salario
-              disabled
-            />
+            <select
+              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
+              onChange={(e) => setTypeOfSalaryId(parseInt(e.target.value))}
+            >
+              {typeSalaryData?.map((type: any) => (
+                <option key={type.id_TypeOfSalary} value={type.id_TypeOfSalary}>
+                  {type.name_TypeOfSalary}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Contacto de Emergencia */}

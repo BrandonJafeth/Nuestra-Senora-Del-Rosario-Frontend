@@ -5,7 +5,7 @@ import { useFilteredRequests } from '../../hooks/useFilteredRequests';
 import { VolunteerRequest } from '../../types/VolunteerType';
 
 function VolunteerRequests() {
-  const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests(); // Asegúrate de acceder a `data`
+  const { data: volunteerRequests = [], error } = useVolunteerRequests(); // Asegúrate de acceder a `data`
   const { isDarkMode } = useThemeDark();
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
@@ -13,10 +13,6 @@ function VolunteerRequests() {
 
   // Usar el hook de filtrado
   const filteredRequests = useFilteredRequests(volunteerRequests, filterStatus, filterType);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>Error loading volunteer requests</div>;
