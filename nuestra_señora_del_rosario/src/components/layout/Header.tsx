@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useAuth } from '../../hooks/useAuth';
+import { Icon } from '@iconify/react'; // Import Icon component from iconify
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -56,29 +57,9 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
               className="flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 transition-colors duration-300"
             >
               {isDarkMode ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Icono de luna */}
-                  <path
-                    d="M17.293 13.293a8 8 0 01-11.32-11.32 8 8 0 1011.32 11.32z"
-                  />
-                </svg>
+                <Icon icon="line-md:sunny-filled-loop" />
               ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Icono de sol */}
-                  <path
-                    d="M10 2a8 8 0 010 16 8 8 0 010-16zm0 12a1 1 0 102 0V8a1 1 0 10-2 0v6zm0-8a1 1 0 102 0 1 1 0 00-2 0z"
-                  />
-                </svg>
+                <Icon icon="line-md:moon-filled-alt-loop" />
               )}
             </button>
 
