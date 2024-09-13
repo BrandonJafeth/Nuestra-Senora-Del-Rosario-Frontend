@@ -13,7 +13,7 @@ const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
   const { isDropdownOpen, toggleDropdown } = useToggle();
   const { getIcon } = useIcon();
   const { logout } = useAuth();
-  const { isDarkMode } = useThemeDark(); // Obtener el estado del modo oscuro
+  const { isDarkMode } = useThemeDark(); 
 
   const menuItems = [
     { name: 'Residentes', link: '/dashboard/residentes' },
@@ -84,7 +84,7 @@ const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
               <ul className="pl-8 mt-2 space-y-1 py-2">
                 <li>
                   <Link
-                    to="/solicitudes/ingreso"
+                    to="solicitudes/ingreso"
                     className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
                       isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
                     }`}
@@ -97,7 +97,7 @@ const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
                 </li>
                 <li>
                   <Link
-                    to="/solicitudes/voluntariado"
+                    to="solicitudes/voluntariado"
                     className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
                       isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
                     }`}
@@ -110,7 +110,7 @@ const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
                 </li>
                 <li>
                   <Link
-                    to="/solicitudes/donaciones"
+                    to="solicitudes/donaciones"
                     className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
                       isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
                     }`}

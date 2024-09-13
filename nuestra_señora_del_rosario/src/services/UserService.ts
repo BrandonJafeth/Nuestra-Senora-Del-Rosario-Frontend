@@ -1,7 +1,8 @@
+import { UserData } from '../types/UserType';
 import ApiService from './GenericService/ApiService';
-import { UserType } from '../types/UserType';
 
-class UserService extends ApiService<UserType> {
+
+class UserService extends ApiService<UserData> {
   // Solo defines los métodos sin necesidad de pasar la URL base
   public getAllUsers() {
     return this.getAll('/users');
@@ -11,8 +12,8 @@ class UserService extends ApiService<UserType> {
     return this.getOne('/users', id);
   }
 
-  public createUser(data: UserType) {
-    return this.create('/users', data);
+  public createUser(data: UserData) {
+    return this.create('/User/login', data);
   }
 
 }

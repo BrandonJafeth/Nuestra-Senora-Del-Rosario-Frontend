@@ -24,7 +24,7 @@ function Dashboard() {
           <div className="p-4 rounded-lg">
             {/* Aquí van las rutas dinámicas */}
             <Routes>
-              <Route path="personal" element={<EmployeeForm />} />
+              <Route path="/personal" element={<EmployeeForm />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
             </Routes>
           </div>

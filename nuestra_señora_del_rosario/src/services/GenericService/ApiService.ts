@@ -16,7 +16,7 @@ interface IReadService<T> {
     private api: AxiosInstance;
   
     constructor() {
-      this.api = axios.create({ baseURL: 'http://localhost:5074/api' });
+      this.api = axios.create({ baseURL: 'https://localhost:7066/api' });
     }
   
     // Methods from IReadService

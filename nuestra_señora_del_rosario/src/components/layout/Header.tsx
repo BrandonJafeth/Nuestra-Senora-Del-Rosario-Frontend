@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
+import { useAuth } from '../../hooks/useAuth';
+import { Icon } from '@iconify/react'; // Import Icon component from iconify
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -7,6 +9,12 @@ interface HeaderProps {
 
 const Header = ({ toggleSidebar }: HeaderProps) => {
   const { isDarkMode, toggleDarkMode } = useThemeDark();
+  const { payload } = useAuth(); // Obtener los datos del usuario del contexto de autenticación
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
     <nav className={`fixed top-0 z-50 w-full bg-white dark:bg-[#0D313F] border-b border-gray-200 dark:border-gray-700`}>
@@ -36,7 +44,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
               <img
                 src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png"
                 className="h-10 me-3"
-                alt="FlowBite Logo"
+                alt="Logo"
               />
               <span className="self-center text-xl font-normal font-'Poppins' sm:text-2xl whitespace-nowrap dark:text-white">
                 Nuestra Señora del Rosario
@@ -49,36 +57,17 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
               className="flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 transition-colors duration-300"
             >
               {isDarkMode ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Icono de luna */}
-                  <path
-                    d="M17.293 13.293a8 8 0 01-11.32-11.32 8 8 0 1011.32 11.32z"
-                  />
-                </svg>
+                <Icon icon="line-md:sunny-filled-loop" />
               ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Icono de sol */}
-                  <path
-                    d="M10 2a8 8 0 010 16 8 8 0 010-16zm0 12a1 1 0 102 0V8a1 1 0 10-2 0v6zm0-8a1 1 0 102 0 1 1 0 00-2 0z"
-                  />
-                </svg>
+                <Icon icon="line-md:moon-filled-alt-loop" />
               )}
             </button>
 
             {/* Imagen de usuario */}
-            <div className="flex items-center ms-3">
+            <div className="relative flex items-center ms-3">
               <div>
                 <button
+                  onClick={toggleDropdown}
                   type="button"
                   className="flex text-sm bg-gray-800 dark:bg-gray-700 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                   aria-expanded="false"
@@ -91,6 +80,20 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                   />
                 </button>
               </div>
+
+              {/* Dropdown para mostrar la información del usuario */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 top-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                  <div className="py-2 px-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {payload?.id || 'Cedula'}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Rol'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

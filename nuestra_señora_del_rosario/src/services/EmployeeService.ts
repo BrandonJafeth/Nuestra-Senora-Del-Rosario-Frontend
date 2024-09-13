@@ -11,7 +11,7 @@ class EmployeeService extends ApiService<EmployeeType> {
   }
 
   public createEmployee(data: EmployeeType) {
-    return this.create('/employees', data);
+    return this.create('/Employee', data);
   }
 
   public updateEmployee(id: number, data: Partial<EmployeeType>) {
