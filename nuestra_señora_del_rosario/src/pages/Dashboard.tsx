@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import EmployeeForm from '../components/specific/EmployeeForm';
+import VolunteerRequests from '../components/specific/VolunteerRequests'; // Importar el componente
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,6 +25,7 @@ function Dashboard() {
             {/* Aquí van las rutas dinámicas */}
             <Routes>
               <Route path="/personal" element={<EmployeeForm />} />
+              <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
             </Routes>
           </div>
         </main>
