@@ -2,6 +2,9 @@ import ApiService from './GenericService/ApiService'; // Asegúrate de que la ru
 import { VolunteerRequest } from '../types/VolunteerType'; // Asegúrate de que la ruta sea correcta
 
 class VolunteeringService extends ApiService<VolunteerRequest> {
+  getAllVolunteeringService() {
+      throw new Error('Method not implemented.');
+  }
   constructor() {
     super(); // Usa la URL base desde el genérico
   }
