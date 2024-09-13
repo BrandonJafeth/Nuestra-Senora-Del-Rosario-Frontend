@@ -1,8 +1,10 @@
 import { createContext } from 'react';
 
-export interface AuthContextProps {  // Ahora está exportado
+export interface AuthContextProps {
   isAuthenticated: boolean;
-  login: () => void;
+  token: string | null;  
+  payload: any | null;  
+  login: (token: string) => void;  
   logout: () => void;
 }
 

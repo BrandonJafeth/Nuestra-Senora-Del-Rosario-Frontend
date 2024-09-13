@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
+import { useAuth } from '../../hooks/useAuth';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -7,6 +8,12 @@ interface HeaderProps {
 
 const Header = ({ toggleSidebar }: HeaderProps) => {
   const { isDarkMode, toggleDarkMode } = useThemeDark();
+  const { payload } = useAuth(); // Obtener los datos del usuario del contexto de autenticación
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
     <nav className={`fixed top-0 z-50 w-full bg-white dark:bg-[#0D313F] border-b border-gray-200 dark:border-gray-700`}>
@@ -36,7 +43,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
               <img
                 src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png"
                 className="h-10 me-3"
-                alt="FlowBite Logo"
+                alt="Logo"
               />
               <span className="self-center text-xl font-normal font-'Poppins' sm:text-2xl whitespace-nowrap dark:text-white">
                 Nuestra Señora del Rosario
@@ -76,9 +83,10 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             </button>
 
             {/* Imagen de usuario */}
-            <div className="flex items-center ms-3">
+            <div className="relative flex items-center ms-3">
               <div>
                 <button
+                  onClick={toggleDropdown}
                   type="button"
                   className="flex text-sm bg-gray-800 dark:bg-gray-700 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                   aria-expanded="false"
@@ -91,6 +99,20 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                   />
                 </button>
               </div>
+
+              {/* Dropdown para mostrar la información del usuario */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 top-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                  <div className="py-2 px-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {payload?.id || 'Cedula'}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Rol'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

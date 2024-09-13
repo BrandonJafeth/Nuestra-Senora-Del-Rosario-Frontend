@@ -23,7 +23,7 @@ function Dashboard() {
           <div className="p-4 rounded-lg">
             {/* Aquí van las rutas dinámicas */}
             <Routes>
-              <Route path="/dashboard/personal" element={<EmployeeForm />} />
+              <Route path="/personal" element={<EmployeeForm />} />
             </Routes>
           </div>
         </main>

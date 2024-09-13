@@ -13,7 +13,7 @@ const Sidebar = ({ isSidebarOpen }:SidebarProps) => {
   const { isDropdownOpen, toggleDropdown } = useToggle();
   const { getIcon } = useIcon();
   const { logout } = useAuth();
-  const { isDarkMode } = useThemeDark(); // Obtener el estado del modo oscuro
+  const { isDarkMode } = useThemeDark(); 
 
   const menuItems = [
     { name: 'Residentes', link: '/dashboard/residentes' },

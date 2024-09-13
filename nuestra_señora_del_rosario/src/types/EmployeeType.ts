@@ -1,15 +1,12 @@
  
- export type EmployeeType = {
-
-    id: number
-    name: string
-    email: string
-    department: string
-    position: string
-    salary: number
-    status: string
-    created_at: string
-    updated_at: string
-    deleted_at: string
-
-}
+ export interface EmployeeType {
+    dni: number;
+    firstName: string;
+    lastName1: string;
+    lastName2: string;
+    phoneNumber: string;
+    address: string;
+    email: string;
+    emergencyPhone: string;
+  }
+  

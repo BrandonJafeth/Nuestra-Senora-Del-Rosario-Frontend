@@ -1,11 +1,11 @@
 import './App.css';
-import Dashboard from './pages/Dashboard';
+import AppRoutes from './routes/AppRoutes';
 
 
 function App() {
   return (
     <>
-      <Dashboard />
+     <AppRoutes />
     </>
   );
 }
