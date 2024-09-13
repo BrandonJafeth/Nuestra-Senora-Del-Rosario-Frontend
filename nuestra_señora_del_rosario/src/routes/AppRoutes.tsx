@@ -3,11 +3,12 @@ import PrivateRoute from './PrivateRoute';
 import Dashboard from '../pages/Dashboard';
 
 const AppRoutes = () => (
-  <Router>
-    <Routes>
-      <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-    </Routes>
-  </Router>
+<Router>
+  <Routes>
+    <Route path="/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+  </Routes>
+</Router>
+
 );
 
 export default AppRoutes;
