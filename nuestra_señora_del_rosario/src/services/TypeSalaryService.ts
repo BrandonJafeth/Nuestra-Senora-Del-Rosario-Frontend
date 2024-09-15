@@ -8,4 +8,6 @@ class TypeSalaryService extends ApiService<TypeSalaryData> {
 }
 
 const typeSalaryService = new TypeSalaryService();
+
 export default typeSalaryService;
+

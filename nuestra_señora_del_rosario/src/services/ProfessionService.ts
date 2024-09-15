@@ -1,4 +1,3 @@
-
 import { ProfessionData } from "../types/ProfessionType";
 import ApiService from "./GenericService/ApiService";
 
@@ -10,3 +9,4 @@ class ProfessionService extends ApiService<ProfessionData> {
 
 const professionService = new ProfessionService();
 export default professionService;
+
