@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useVolunteerRequests } from '../../hooks/useVolunteerRequests';
-import { useVolunteerTypes } from '../../hooks/useVolunteerTypes'; // Hook para obtener los tipos de voluntariado
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useFilteredRequests } from '../../hooks/useFilteredRequests';
 import { VolunteerRequest } from '../../types/VolunteerType';
@@ -8,13 +7,15 @@ import { useEditVolunteerStatus } from '../../hooks/useEditVolunteerStatus';
 
 function VolunteerRequests() {
   const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests();
-  const { data: volunteerTypes = [] } = useVolunteerTypes(); // Usando el hook para obtener los tipos de voluntariado
   const { isDarkMode } = useThemeDark();
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
 
+  // Usamos el hook para manejar el estatus de voluntarios
   const { requests, updateStatus } = useEditVolunteerStatus(volunteerRequests);
+
+  // Usar el hook de filtrado
   const filteredRequests = useFilteredRequests(requests, filterStatus, filterType);
 
   if (isLoading) {
@@ -62,11 +63,9 @@ function VolunteerRequests() {
           onChange={(e) => setFilterType(e.target.value)}
         >
           <option value="Todas">Tipos de Voluntariado</option>
-          {volunteerTypes.map((type) => (
-            <option key={type.id_VoluntarieType} value={type.name_voluntarieType}>
-              {type.name_voluntarieType}
-            </option>
-          ))}
+          <option value="Voluntariado Eventual">Voluntariado Eventual</option>
+          <option value="Voluntariado Profesional">Voluntariado Profesional</option>
+          <option value="Apoyo Directo">Apoyo Directo</option>
         </select>
       </div>
 
@@ -105,7 +104,7 @@ function VolunteerRequests() {
                     onChange={(e) => updateStatus(request.id_FormVoluntarie, e.target.value as 'Aceptada' | 'Rechazada' | 'Pendiente')}
                     className={`px-3 py-2 rounded-xl ${
                       request.status === 'Pendiente'
-                        ? 'bg-gray-400 text-black'
+                        ? 'bg-gray-400 text-black' // Color gris claro predeterminado para "Pendiente"
                         : request.status === 'Aceptada'
                         ? 'bg-green-500 text-white'
                         : request.status === 'Rechazada'
