@@ -17,8 +17,8 @@ export const useEmployeeForm = () => {
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
-  const [typeOfSalaryId] = useState(1); 
-  const [professionId] = useState(1); 
+  const [typeOfSalaryId, setTypeOfSalaryId] = useState(0); 
+  const [professionId, setProfession] = useState(0); 
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ export const useEmployeeForm = () => {
 
   return {
     dni, setDni, firstName, setFirstName, lastName1, setLastName1, lastName2, setLastName2, phoneNumber, setPhoneNumber,
-    address, setAddress, email, setEmail, emergencyPhone, setEmergencyPhone, typeOfSalaryId, professionId,
-    handleSubmit, getIcon, isDarkMode, showToast, message, type
+    address, setAddress, email, setEmail, emergencyPhone, setEmergencyPhone, typeOfSalaryId, setTypeOfSalaryId, professionId,
+    handleSubmit, getIcon, isDarkMode, showToast, message, type, setProfession
   };
 };
