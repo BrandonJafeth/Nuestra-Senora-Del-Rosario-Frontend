@@ -3,6 +3,7 @@ import TextInput from '../common/TextInput';
 import Toast from '../common/Toast';
 import useLogin from '../../hooks/useLogin';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const { cedula, handleLogin, message, password, setCedula, setPassword, type, isLoading } = useLogin();
@@ -40,9 +41,9 @@ const LoginForm = () => {
 
       {/* Enlace de recuperación de contraseña */}
       <div className="text-center mt-4">
-        <a href="#" className="text-blue-600 hover:underline font-medium">
+        <Link to='/solicitar-restablecimiento' className="text-blue-600 hover:underline font-medium">
           ¿Olvidó su contraseña?
-        </a>
+        </Link>
       </div>
 
       {/* Componente Toast */}

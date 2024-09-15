@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useThemeDark } from '../hooks/useThemeDark';
 import RequestPasswordForm from '../components/specific/RequestPasswordForm';
+import { Icon } from '@iconify/react/dist/iconify.js';
 
 function RequestPassword() {
   const { isDarkMode, toggleDarkMode } = useThemeDark();
@@ -13,7 +14,11 @@ function RequestPassword() {
         onClick={toggleDarkMode}
         className="absolute top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600 transition"
       >
-        {isDarkMode ? '🌙 Modo Oscuro' : '☀️ Modo Claro'}
+        {isDarkMode ? (
+                <Icon icon="line-md:sunny-filled-loop" />
+              ) : (
+                <Icon icon="line-md:moon-filled-alt-loop" />
+              )}
       </button>
       
       {/* Contenedor del formulario con sombra */}
