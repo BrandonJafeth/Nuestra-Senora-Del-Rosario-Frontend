@@ -9,3 +9,4 @@ class ProfessionService extends ApiService<ProfessionData> {
 
 const professionService = new ProfessionService();
 export default professionService;
+

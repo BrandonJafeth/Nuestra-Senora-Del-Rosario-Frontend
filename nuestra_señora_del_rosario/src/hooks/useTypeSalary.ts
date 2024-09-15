@@ -4,4 +4,8 @@ import typeSalaryService from '../services/TypeSalaryService';
 
 export const useTypeSalary = () => {
   return useQuery('typeSalary', () => typeSalaryService.getAllTypeSalary().then(res => res.data));
+
 };
+
+};
+
