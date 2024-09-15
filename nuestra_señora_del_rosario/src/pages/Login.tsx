@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react/dist/iconify.js';
 import LoginForm from '../components/specific/LoginForm';
 import { useThemeDark } from '../hooks/useThemeDark'; // Hook para usar el ThemeContext
 
@@ -25,7 +26,11 @@ const Login = () => {
         onClick={toggleDarkMode}
         className="absolute top-4 right-4 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600 transition"
       >
-        {isDarkMode ? '☀️ Modo Claro' : '🌙 Modo Oscuro'}
+        {isDarkMode ? (
+                <Icon icon="line-md:sunny-filled-loop" />
+              ) : (
+                <Icon icon="line-md:moon-filled-alt-loop" />
+              )}
       </button>
     </div>
   );
