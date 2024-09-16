@@ -1,11 +1,11 @@
-import { ResetPasswordType } from '../types/ResetPasswordType';
-import ApiService from './GenericService/ApiService';
+import { ResetPasswordData } from '../types/ResetPasswordType';
+import ApiService from './GenericService/ApiService'; 
 
-class PasswordResetService extends ApiService<ResetPasswordType> {
-  public requestPasswordReset(email: string) {
-    return this.create('/PasswordReset/request', { email });
+class ResetPasswordService extends ApiService<ResetPasswordData> {
+  public updatePassword(data: ResetPasswordData) {
+    return this.create('/PasswordReset/update-password', data); 
   }
 }
 
-const passwordResetService = new PasswordResetService();
-export default passwordResetService;
+const resetPasswordService = new ResetPasswordService();
+export default resetPasswordService;
