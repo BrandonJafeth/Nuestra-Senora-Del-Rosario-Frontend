@@ -41,7 +41,7 @@ const useLogin = () => {
         }
       } catch (error) {
         console.error('Error iniciando sesión:', error);
-        showToast('Error al iniciar sesión. Por favor, intente nuevamente.', 'error');
+        showToast('Credenciales Incorrectas. Por favor, intente nuevamente.', 'error');
       } finally {
         setIsLoading(false); // Ocultar loading
       }

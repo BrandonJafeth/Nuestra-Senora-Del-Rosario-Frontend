@@ -1,52 +1,81 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useResetPassword } from '../../hooks/useResetPassword';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 function RequestPasswordForm() {
   const [email, setEmail] = useState('');
   const [cedula, setCedula] = useState('');
   const navigate = useNavigate();
 
+  const { mutate: resetPassword, isLoading, isError, isSuccess } = useResetPassword();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí harías la llamada a la API para enviar el correo de restablecimiento
-    console.log('Enviar datos:', { email, cedula });
-   navigate('/restablecer-contraseña'); // Redirigir al usuario a la página de restablecimiento
+    // Ejecuta la función de restablecimiento de contraseña con el email ingresado
+    resetPassword(email, {
+      onSuccess: () => {
+        // Redirigir al usuario a la página de confirmación si la solicitud fue exitosa
+        navigate('/restablecer-contraseña');
+      },
+      onError: (error: any) => {
+        // Manejar el error si ocurre
+        console.error('Error al enviar enlace de restablecimiento:', error);
+      },
+    });
+  };
+
+  const handleCancel = () => {
+    // Función para manejar la cancelación, puede ser redirigir o limpiar los campos
+    setEmail('');
+    setCedula('');
+    navigate('/'); // Redirigir a la página de inicio u otra página deseada
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
-      <div className="w-full">
-        <label htmlFor="email" className="block text-white">Correo Electrónico</label>
-        <input 
-          id="email"
-          type="email"
-          placeholder="Ingrese su correo electrónico"
-          className="w-full p-3 bg-gray-700 text-white rounded-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+    <div className="flex flex-col space-y-6">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+        <div className="w-full">
+          <label htmlFor="email" className="block text-white">Correo Electrónico</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Ingrese su correo electrónico"
+            className="w-full p-3 bg-gray-700 text-white rounded-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+      </form>
+
+      {/* Botones fuera del form */}
+      <div className="flex space-x-4">
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="flex-1 px-4 py-2 bg-[#c62b2b] text-white text-lg font-inter rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-[#a52222]"
+        tabIndex={1}
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          tabIndex={0}
+          className={`flex-1 px-4 py-2 bg-[#233d63] text-white text-lg font-inter rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-[#1b2f52] ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={isLoading}
+        >
+          {isLoading ? <LoadingSpinner /> : 'Enviar enlace de restablecimiento'}
+        </button>
       </div>
-      <div className="w-full">
-        <label htmlFor="cedula" className="block text-white">Cédula</label>
-        <input 
-          id="cedula"
-          type="text"
-          placeholder="Ingrese su cédula"
-          className="w-full p-3 bg-gray-700 text-white rounded-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={cedula}
-          onChange={(e) => setCedula(e.target.value)}
-          required
-        />
-      </div>
-      <button 
-      onClick={handleSubmit}
-        type="submit" 
-        className="w-full bg-blue-600 text-white py-3 rounded-full shadow-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Enviar enlace de restablecimiento
-      </button>
-    </form>
+
+      {isError && <p className="text-red-500">Error al enviar el enlace de restablecimiento. Por favor, inténtelo de nuevo.</p>}
+      {isSuccess && <p className="text-green-500">Enlace de restablecimiento enviado exitosamente.</p>}
+    </div>
   );
 }
 

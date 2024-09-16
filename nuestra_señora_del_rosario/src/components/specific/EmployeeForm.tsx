@@ -28,7 +28,6 @@ function EmployeeForm() {
           {/* Nombre */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Nombre')}
               <span className="ml-2">Nombre</span>
             </label>
             <input
@@ -43,7 +42,6 @@ function EmployeeForm() {
           {/* Primer Apellido */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Primer Apellido')}
               <span className="ml-2">Primer Apellido</span>
             </label>
             <input
@@ -58,7 +56,7 @@ function EmployeeForm() {
           {/* Segundo Apellido */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Segundo Apellido')}
+   
               <span className="ml-2">Segundo Apellido</span>
             </label>
             <input
@@ -73,7 +71,7 @@ function EmployeeForm() {
           {/* Cedula */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Cedula')}
+
               <span className="ml-2">Cédula</span>
             </label>
             <input
@@ -88,7 +86,7 @@ function EmployeeForm() {
           {/* Correo Electrónico */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Correo Electrónico')}
+
               <span className="ml-2">Correo Electrónico</span>
             </label>
             <input
@@ -107,7 +105,7 @@ function EmployeeForm() {
           {/* Teléfono */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Teléfono')}
+
               <span className="ml-2">Teléfono</span>
             </label>
             <input
@@ -122,7 +120,7 @@ function EmployeeForm() {
           {/* Dirección */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Dirección')}
+
               <span className="ml-2">Dirección</span>
             </label>
             <input
@@ -137,7 +135,7 @@ function EmployeeForm() {
           {/* Profesión */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Salario')}
+    
               <span className="ml-2">Profesión</span>
             </label>
             <select
@@ -153,7 +151,7 @@ function EmployeeForm() {
           </div>
            <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Salario')}
+             
               <span className="ml-2">Tipo de Salario</span>
             </label>
             <select
@@ -171,7 +169,7 @@ function EmployeeForm() {
           {/* Contacto de Emergencia */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {getIcon('Contacto de Emergencia')}
+           
               <span className="ml-2">Contacto de Emergencia</span>
             </label>
             <input
@@ -196,6 +194,7 @@ function EmployeeForm() {
     Cancelar
   </button>
   <button
+  onClick={handleSubmit}
     type="submit"
     className="px-7 py-4 bg-[#233d63] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#1b2f52]"
     tabIndex={0}  // Sin tabIndex o con tabIndex=0 sigue el flujo natural

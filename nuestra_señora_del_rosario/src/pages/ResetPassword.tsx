@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react/dist/iconify.js';
 import ResetPasswordForm from '../components/specific/ResetPasswordForm';
 import { useThemeDark } from '../hooks/useThemeDark';
 
@@ -12,7 +13,11 @@ function ResetPassword() {
         onClick={toggleDarkMode}
         className="absolute top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600 transition"
       >
-        {isDarkMode ? '☀️ Modo Claro' : '🌙 Modo Oscuro'}
+       {isDarkMode ? (
+                <Icon icon="line-md:sunny-filled-loop" />
+              ) : (
+                <Icon icon="line-md:moon-filled-alt-loop" />
+              )}
       </button>
 
       {/* Contenedor principal cubriendo todo el ancho y alto */}

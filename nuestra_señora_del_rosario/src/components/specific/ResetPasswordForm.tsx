@@ -60,7 +60,7 @@ function ResetPasswordForm() {
         {/* Texto de "¿Recordó su contraseña?" en una columna */}
         <div className="flex flex-col items-end space-y-2 text-white text-sm">
           <p className="font-normal">¿Recordó su contraseña?</p>
-          <Link to="/inicio-de-sesion" className="font-bold underline">
+          <Link to="/" className="font-bold underline">
             Regrese al inicio de sesión
           </Link>
         </div>
