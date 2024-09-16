@@ -194,6 +194,7 @@ function EmployeeForm() {
     Cancelar
   </button>
   <button
+  onClick={handleSubmit}
     type="submit"
     className="px-7 py-4 bg-[#233d63] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#1b2f52]"
     tabIndex={0}  // Sin tabIndex o con tabIndex=0 sigue el flujo natural
