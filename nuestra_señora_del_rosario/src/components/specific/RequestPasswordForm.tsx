@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useResetPassword } from '../../hooks/useResetPassword';
+import { useRequestsPassword } from '../../hooks/useRequestsPassword';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 function RequestPasswordForm() {
@@ -8,15 +8,13 @@ function RequestPasswordForm() {
   const [cedula, setCedula] = useState('');
   const navigate = useNavigate();
 
-  const { mutate: resetPassword, isLoading, isError, isSuccess } = useResetPassword();
+  const { mutate: resetPassword, isLoading, isError, isSuccess } = useRequestsPassword();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Ejecuta la función de restablecimiento de contraseña con el email ingresado
     resetPassword(email, {
       onSuccess: () => {
-        // Redirigir al usuario a la página de confirmación si la solicitud fue exitosa
-        navigate('/restablecer-contraseña');
       },
       onError: (error: any) => {
         // Manejar el error si ocurre

@@ -1,3 +1,5 @@
-export interface ResetPasswordType {
-    email: string;
-}
+export interface ResetPasswordData {
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }
