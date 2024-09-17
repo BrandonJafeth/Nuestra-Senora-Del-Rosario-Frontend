@@ -22,11 +22,10 @@ function RequestPassword() {
       </button>
       
       {/* Contenedor del formulario con sombra */}
-      <div className="relative w-full max-w-md p-8 bg-[#0f1728] text-white rounded-lg shadow-2xl">
-        <h2 className="text-2xl font-bold mb-4">Solicitar Restablecimiento</h2>
-        <p className="mb-6">Por favor, ingrese su correo y cédula para recibir un enlace de restablecimiento de contraseña.</p>
-        <RequestPasswordForm />
-      </div>
+      {/* Contenedor del formulario con sombra */ }
+<div className="relative w-full max-w-md p-8 bg-white text-gray-900 rounded-lg shadow-2xl dark:bg-gray-800 dark:text-white">
+  <RequestPasswordForm />
+</div>
     </div>
   );
 }
