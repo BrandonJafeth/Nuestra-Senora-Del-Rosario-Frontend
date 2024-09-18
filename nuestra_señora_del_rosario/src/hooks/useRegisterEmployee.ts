@@ -20,7 +20,7 @@ export const useEmployeeForm = () => {
   const [typeOfSalaryId, setTypeOfSalaryId] = useState(0); 
   const [professionId, setProfession] = useState(0); 
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }): Promise<boolean> => {
     e.preventDefault();
 
     const empleadoData = {
@@ -39,7 +39,7 @@ export const useEmployeeForm = () => {
     try {
       await employeeService.createEmployee(empleadoData);
       showToast('Empleado creado exitosamente', 'success');
-
+      
       // Limpiar formulario
       setDni('');
       setFirstName('');
@@ -49,8 +49,11 @@ export const useEmployeeForm = () => {
       setAddress('');
       setEmail('');
       setEmergencyPhone('');
+      
+      return true; // Devolvemos true si todo sale bien
     } catch (error) {
       showToast('Error al crear el empleado. Por favor, intente de nuevo.', 'error');
+      return false; // Devolvemos false si hay un error
     }
   };
 
