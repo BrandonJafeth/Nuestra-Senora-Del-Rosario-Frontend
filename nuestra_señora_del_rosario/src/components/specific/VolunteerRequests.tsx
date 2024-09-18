@@ -1,28 +1,30 @@
 import { useState } from 'react';
 import { useVolunteerRequests } from '../../hooks/useVolunteerRequests';
 import { useThemeDark } from '../../hooks/useThemeDark';
+import { useFilteredRequests } from '../../hooks/useFilteredRequests';
 import { VolunteerRequest } from '../../types/VolunteerType';
-import { useEditVolunteerStatus } from '../../hooks/useEditVolunteerStatus';
+import { useStatuses } from '../../hooks/useStatuses';
+import { useVolunteerTypes } from '../../hooks/useVolunteerTypes';
 
 function VolunteerRequests() {
   const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests();
   const { isDarkMode } = useThemeDark();
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
-  const { updateStatus } = useEditVolunteerStatus(volunteerRequests);
+  const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
+  const [filterType, setFilterType] = useState<string>('Todas');
+  
+  const filteredRequests = useFilteredRequests(volunteerRequests, filterStatus, filterType);
+  const { data: statuses } = useStatuses();
+  const { data: volunteerTypes } = useVolunteerTypes();
 
-  console.log('volunteerRequests:', volunteerRequests);
-
-  // Verificar si los datos están cargando
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // Verificar si hay un error
   if (error) {
     return <div>Error loading volunteer requests</div>;
   }
 
-  // Verificar si no hay datos disponibles
   if (!volunteerRequests.length) {
     return <div>No volunteer requests available</div>;
   }
@@ -32,7 +34,36 @@ function VolunteerRequests() {
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
         Solicitudes de Voluntarios
       </h2>
-      
+
+      {/* Filtros */}
+      <div className="flex justify-between mb-4">
+        <div className="flex space-x-4">
+          {statuses?.map((status) => (
+            <button
+              key={status.id_Status}
+              className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-green-500 text-white' : 'bg-gray-300'}`}
+              onClick={() => setFilterStatus(status.status_Name as 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas')}
+            >
+              {status.status_Name}
+            </button>
+          ))}
+          <button className="px-4 py-2 rounded-full bg-gray-500 text-white" onClick={() => setFilterStatus('Todas')}>
+            Todas
+          </button>
+        </div>
+        <select
+          className="px-4 py-2 border rounded-full bg-gray-200"
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="Todas">Tipos de Voluntariado</option>
+          {volunteerTypes?.map((type) => (
+            <option key={type.id_VoluntarieType} value={type.name_voluntarieType}>
+              {type.name_voluntarieType}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Tabla */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
@@ -47,7 +78,7 @@ function VolunteerRequests() {
             </tr>
           </thead>
           <tbody>
-            {volunteerRequests.map((request, index) => (
+            {filteredRequests.map((request, index) => (
               <tr
                 key={request.id_FormVoluntarie}
                 className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
@@ -63,10 +94,7 @@ function VolunteerRequests() {
                 <td className="p-4">{new Date(request.delivery_Date).toLocaleDateString()}</td>
                 <td className="p-4">{new Date(request.end_Date).toLocaleDateString()}</td>
                 <td className="p-4">
-                  <select
-                    value={request.status_Name}
-                    onChange={(e) => updateStatus(request.id_FormVoluntarie, e.target.value as 'Aceptada' | 'Rechazada' | 'Pendiente')}
-                    className={`px-3 py-2 rounded-xl ${
+                  <span className={`px-3 py-2 rounded-xl ${
                       request.status_Name === 'Pendiente'
                         ? 'bg-gray-400 text-black'
                         : request.status_Name === 'Aceptada'
@@ -74,12 +102,9 @@ function VolunteerRequests() {
                         : request.status_Name === 'Rechazada'
                         ? 'bg-red-500 text-white'
                         : 'bg-yellow-500 text-white'
-                    }`}
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Aceptada">Aceptada</option>
-                    <option value="Rechazada">Rechazada</option>
-                  </select>
+                    }`}>
+                    {request.status_Name}
+                  </span>
                 </td>
               </tr>
             ))}
