@@ -1,13 +1,17 @@
 import { VolunteerRequest } from '../types/VolunteerType';
 
 export const useFilteredRequests = (
-  volunteerRequests: VolunteerRequest[],
-  filterStatus: string,
+  volunteerRequests: VolunteerRequest[] = [], // Inicializar como array vacío
+  filterStatus: 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas',
   filterType: string
 ) => {
+  if (volunteerRequests.length === 0) {
+    return [];
+  }
+
   return volunteerRequests.filter((request) => {
-    if (filterStatus !== 'Todas' && request.status !== filterStatus) return false;
-    if (filterType !== 'Todas' && request.name_voluntarieType !== filterType) return false;
-    return true;
+    const matchesStatus = filterStatus === 'Todas' || request.status_Name === filterStatus;
+    const matchesType = filterType === 'Todas' || request.name_voluntarieType === filterType;
+    return matchesStatus && matchesType;
   });
 };

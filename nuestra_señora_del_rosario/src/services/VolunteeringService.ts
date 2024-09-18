@@ -11,23 +11,23 @@ class VolunteeringService extends ApiService<VolunteerRequest> {
 
   // Métodos específicos del voluntariado
   public getAllVolunteerRequests() {
-    return this.getAll('/AdministrativeFormVoluntarie');
+    return this.getAll('/FormVoluntarie');
   }
 
   public getVolunteerRequestById(id: number) {
-    return this.getOne('/AdministrativeFormVoluntarie', id);
+    return this.getOne('/FormVoluntarie', id);
   }
 
   public createVolunteerRequest(data: VolunteerRequest) {
-    return this.create('/AdministrativeFormVoluntarie', data);
+    return this.create('/FormVoluntarie', data);
   }
 
   public updateVolunteerRequest(id: number, data: Partial<VolunteerRequest>) {
-    return this.update('/AdministrativeFormVoluntarie', id, data);
+    return this.update('/FormVoluntarie', id, data);
   }
 
   public deleteVolunteerRequest(id: number) {
-    return this.delete('/AdministrativeFormVoluntarie', id);
+    return this.delete('/FormVoluntarie', id);
   }
 }
 
