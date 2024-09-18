@@ -1,19 +1,50 @@
-import Toast from '../common/Toast'; // Componente Toast para mostrar mensajes
+import { useState } from 'react';
+import Toast from '../common/Toast';
 import { useEmployeeForm } from '../../hooks/useRegisterEmployee';
 import { useTypeSalary } from '../../hooks/useTypeSalary';
 import { useProfession } from '../../hooks/useProfession';
+import RoleAssignment from './RoleAssignment'; // Componente de asignación de roles
+import { useToast } from '../../hooks/useToast';
 
 function EmployeeForm() {
+  const [isEmployeeRegistered, setIsEmployeeRegistered] = useState(false); // Estado para alternar entre formulario y asignación de rol
+  const [employeeDni, setEmployeeDni] = useState<number | null>(null); // Almacenar el DNI del empleado registrado
 
+  // Obtener valores y funciones del hook personalizado `useEmployeeForm`
   const {
     dni, firstName, lastName1, lastName2, phoneNumber, address, email, emergencyPhone,
     handleSubmit, setDni, setFirstName, setLastName1, setLastName2, setPhoneNumber, 
-    setAddress, setEmail, setEmergencyPhone, setProfession, getIcon, 
-    isDarkMode, message, type, setTypeOfSalaryId} = useEmployeeForm();
+    setAddress, setEmail, setEmergencyPhone, setProfession, 
+    isDarkMode, message, type, setTypeOfSalaryId
+  } = useEmployeeForm();
 
-    const {data: typeSalaryData} = useTypeSalary();
-    const {data: professionData} = useProfession();
+  const { data: typeSalaryData } = useTypeSalary(); // Hook para obtener tipos de salario
+  const { data: professionData } = useProfession(); // Hook para obtener profesiones
 
+  const { showToast } = useToast(); // Hook de Toast para mostrar mensajes
+
+  // Manejador del envío del formulario
+  const handleFormSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    const success = await handleSubmit(e); // Verificar si el registro fue exitoso
+    
+    if (success) {
+      setEmployeeDni(parseInt(dni)); // Almacenar el DNI si el registro fue exitoso
+      setIsEmployeeRegistered(true); // Mostrar el componente de asignación de roles
+      showToast('Empleado registrado exitosamente. Asigna un rol.', 'success');
+    }
+  };
+
+  // Callback cuando se completa o cancela la asignación de rol
+  const handleRoleAssignmentComplete = () => {
+    // Volver a mostrar el formulario de empleados
+    setIsEmployeeRegistered(false);
+  };
+
+  if (isEmployeeRegistered && employeeDni !== null) {
+    // Si el empleado está registrado y tenemos un DNI, mostrar el componente de asignación de roles
+    return <RoleAssignment employeeDni={employeeDni} onCancel={handleRoleAssignmentComplete} />
+  }
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -21,10 +52,9 @@ function EmployeeForm() {
       </h2>
 
       {/* Formulario con sus inputs */}
-      <form className="grid grid-cols-2 gap-6" onSubmit={handleSubmit}>
+      <form className="grid grid-cols-2 gap-6" onSubmit={handleFormSubmit}>
         {/* Columna izquierda */}
         <div className="space-y-6">
-
           {/* Nombre */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -56,7 +86,6 @@ function EmployeeForm() {
           {/* Segundo Apellido */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-   
               <span className="ml-2">Segundo Apellido</span>
             </label>
             <input
@@ -71,7 +100,6 @@ function EmployeeForm() {
           {/* Cedula */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-
               <span className="ml-2">Cédula</span>
             </label>
             <input
@@ -86,7 +114,6 @@ function EmployeeForm() {
           {/* Correo Electrónico */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-
               <span className="ml-2">Correo Electrónico</span>
             </label>
             <input
@@ -101,11 +128,9 @@ function EmployeeForm() {
 
         {/* Columna derecha */}
         <div className="space-y-6">
-
           {/* Teléfono */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-
               <span className="ml-2">Teléfono</span>
             </label>
             <input
@@ -120,7 +145,6 @@ function EmployeeForm() {
           {/* Dirección */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-
               <span className="ml-2">Dirección</span>
             </label>
             <input
@@ -135,7 +159,6 @@ function EmployeeForm() {
           {/* Profesión */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-    
               <span className="ml-2">Profesión</span>
             </label>
             <select
@@ -149,9 +172,10 @@ function EmployeeForm() {
               ))}
             </select>
           </div>
-           <div>
+
+          {/* Tipo de Salario */}
+          <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-             
               <span className="ml-2">Tipo de Salario</span>
             </label>
             <select
@@ -169,7 +193,6 @@ function EmployeeForm() {
           {/* Contacto de Emergencia */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-           
               <span className="ml-2">Contacto de Emergencia</span>
             </label>
             <input
@@ -185,27 +208,22 @@ function EmployeeForm() {
 
       {/* Botones de Acción */}
       <div className="flex justify-center space-x-4 mt-8">
-  {/* Botón Agregar primero en el DOM para que se tabule primero */}
-  <button
-    type="button"
-    className="px-7 py-4 bg-[#c62b2b] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#a52222]"
-    tabIndex={1}  // Sin tabIndex o con tabIndex=0 sigue el flujo natural
-  >
-    Cancelar
-  </button>
-  <button
-  onClick={handleSubmit}
-    type="submit"
-    className="px-7 py-4 bg-[#233d63] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#1b2f52]"
-    tabIndex={0}  // Sin tabIndex o con tabIndex=0 sigue el flujo natural
-  >
-    Agregar
-  </button>
-
-  {/* Botón Cancelar después en el DOM pero visualmente a la izquierda */}
-</div>
-
-
+        <button
+          type="button"
+          className="px-7 py-4 bg-[#c62b2b] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#a52222]"
+          tabIndex={1}
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleFormSubmit} // Llama al manejador de envío
+          type="submit"
+          className="px-7 py-4 bg-[#233d63] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#1b2f52]"
+          tabIndex={0}
+        >
+          Agregar
+        </button>
+      </div>
 
       <Toast message={message} type={type} />
     </div>
