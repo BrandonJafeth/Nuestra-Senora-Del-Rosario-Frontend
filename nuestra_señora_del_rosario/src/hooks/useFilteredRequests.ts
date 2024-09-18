@@ -6,7 +6,7 @@ export const useFilteredRequests = (
   filterType: string
 ) => {
   return volunteerRequests.filter((request) => {
-    if (filterStatus !== 'Todas' && request.status !== filterStatus) return false;
+    if (filterStatus !== 'Todas' && request.status_Name !== filterStatus) return false;
     if (filterType !== 'Todas' && request.name_voluntarieType !== filterType) return false;
     return true;
   });

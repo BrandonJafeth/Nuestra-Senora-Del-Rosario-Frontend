@@ -9,7 +9,7 @@ export type VolunteerRequest = {
     delivery_Date: Date;
     end_Date: Date;
     name_voluntarieType: string;
-    status:  'Aceptada' | 'Rechazada' | 'Pendiente';
+    status_Name:  'Aceptada' | 'Rechazada' | 'Pendiente';
   };
   
 
