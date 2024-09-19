@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { decodeTokenRole } from '../utils/decodedToken';
 import userService from '../services/UserService';
 import { useToast } from './useToast';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const useLogin = () => {
   const [cedula, setCedula] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Estado para controlar la carga
   const { showToast, message, type } = useToast();
-  const navigate = useNavigate();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (cedula && password) {
@@ -28,14 +27,8 @@ const useLogin = () => {
           console.log('Token recibido:', token);
           login(token);
 
-          const userRole = decodeTokenRole(token);
           showToast('Inicio de sesión exitoso', 'success');
-
-          if (userRole === 'Admin') {
-            navigate('/dashboard');
-          } else {
-            navigate('/');
-          }
+          navigate('/dashboard')
         } else {
           showToast('Error: No se recibió el token.', 'error');
         }

@@ -17,7 +17,7 @@ const Login = () => {
       </div>
 
       {/* Sección del formulario de inicio de sesión */}
-      <div className={`flex-1 flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-l-[100px]`}>
+      <div className={`flex-1 flex items-center justify-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-l-[100px]`}>
         <LoginForm />
       </div>
 
