@@ -6,6 +6,8 @@ import { VolunteerRequest } from '../../types/VolunteerType';
 import { useStatuses } from '../../hooks/useStatuses';
 import { useVolunteerTypes } from '../../hooks/useVolunteerTypes';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
+import { useUpdateVolunteerStatus } from '../../hooks/useVolunteerStatusUpdate ';
+
 
 function VolunteerRequests() {
   const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests();
@@ -13,12 +15,15 @@ function VolunteerRequests() {
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
-  
-  const filteredRequests = useFilteredRequests(volunteerRequests, filterStatus, filterType);
-  const { data: statuses } = useStatuses();
-  const { data: volunteerTypes } = useVolunteerTypes();
 
-  if (isLoading) {
+  // Hook para actualizar el estado de una solicitud
+  const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
+
+  const filteredRequests = useFilteredRequests(volunteerRequests, filterStatus, filterType);
+  const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
+  const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
+
+  if (isLoading || isStatusesLoading || isVolunteerTypesLoading) {
     return <LoadingSpinner />;
   }
 
@@ -29,6 +34,19 @@ function VolunteerRequests() {
   if (!volunteerRequests.length) {
     return <div>No volunteer requests available</div>;
   }
+  const handleAccept = (volunteer: VolunteerRequest) => {
+    console.log('Accepting volunteer:', volunteer);
+    updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 });
+    setSelectedVolunteer(null);
+  };
+  
+  const handleReject = (volunteer: VolunteerRequest) => {
+    console.log('Rejecting volunteer:', volunteer);
+    updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
+    setSelectedVolunteer(null);
+  };
+  
+  
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
@@ -70,8 +88,6 @@ function VolunteerRequests() {
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead>
             <tr className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} text-left`}>
-              {/* Eliminar la columna del ID */}
-              {/* <th className="p-4">#</th> */}
               <th className="p-4">Nombre</th>
               <th className="p-4">Tipo</th>
               <th className="p-4">Fecha Inicio</th>
@@ -80,47 +96,48 @@ function VolunteerRequests() {
             </tr>
           </thead>
           <tbody>
-            {filteredRequests.map((request) => (
-              <tr
-                key={request.id_FormVoluntarie}
-                className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
-              >
-                {/* Eliminar la celda del ID */}
-                {/* <td className="p-4">{index + 1}</td> */}
-                <td
-                  className={`p-4 cursor-pointer ${
-                    request.status_Name === 'Rechazada'
-                      ? 'text-red-500'
-                      : isDarkMode
-                      ? 'text-white' // Texto blanco en modo oscuro
-                      : 'text-gray-900' // Texto gris oscuro en modo claro
-                  }`}
-                  onClick={() => setSelectedVolunteer(request)}
-                >
-                  {`${request.vn_Name} ${request.vn_Lastname1} ${request.vn_Lastname2}`}
-                </td>
-                <td className="p-4">{request.name_voluntarieType}</td>
-                <td className="p-4">{new Date(request.delivery_Date).toLocaleDateString()}</td>
-                <td className="p-4">{new Date(request.end_Date).toLocaleDateString()}</td>
-                <td className="p-4">
-                  <span className={`px-3 py-2 rounded-xl ${
-                      request.status_Name === 'Pendiente'
-                        ? 'bg-gray-400 text-black'
-                        : request.status_Name === 'Aceptada'
-                        ? 'bg-green-500 text-white'
-                        : request.status_Name === 'Rechazada'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-yellow-500 text-white'
-                    }`}>
-                    {request.status_Name}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {filteredRequests.map((request) => (
+    <tr
+      key={request.id_FormVoluntarie}
+      className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
+    >
+      <td
+        className={`p-4 cursor-pointer ${
+          request.status_Name === 'Rechazada'
+            ? 'text-red-500'
+            : isDarkMode
+            ? 'text-white'
+            : 'text-gray-900'
+        }`}
+        onClick={() => setSelectedVolunteer(request)}
+      >
+        {`${request.vn_Name} ${request.vn_Lastname1} ${request.vn_Lastname2}`}
+      </td>
+      <td className="p-4">{request.name_voluntarieType}</td>
+      <td className="p-4">{new Date(request.delivery_Date).toLocaleDateString()}</td>
+      <td className="p-4">{new Date(request.end_Date).toLocaleDateString()}</td>
+      <td className="p-4">
+        <span className={`px-3 py-2 rounded-xl ${
+            request.status_Name === 'Pendiente'
+              ? 'bg-yellow-500 text-black'
+              : request.status_Name === 'Aceptada'
+              ? 'bg-green-500 text-white'
+              : request.status_Name === 'Rechazada'
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-500 text-white'
+          }`}
+        >
+          {request.status_Name}
+        </span>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
 
+      {/* Modal de detalles */}
       {selectedVolunteer && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-12 rounded-lg shadow-lg relative w-[600px]">
@@ -141,7 +158,19 @@ function VolunteerRequests() {
               <p><strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}</p>
               <p><strong>Estatus:</strong> {selectedVolunteer.status_Name}</p>
             </div>
-            <div className="text-center mt-4">
+            <div className="text-center mt-4 flex justify-center gap-4">
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                onClick={() => handleAccept(selectedVolunteer)}
+              >
+                Aceptar
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={() => handleReject(selectedVolunteer)}
+              >
+                Rechazar
+              </button>
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 onClick={() => setSelectedVolunteer(null)}
