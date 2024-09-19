@@ -19,7 +19,7 @@ function VolunteerRequests() {
   const { data: volunteerTypes } = useVolunteerTypes();
 
   if (isLoading) {
-    return <LoadingSpinner/>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -70,7 +70,8 @@ function VolunteerRequests() {
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead>
             <tr className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} text-left`}>
-              <th className="p-4">#</th>
+              {/* Eliminar la columna del ID */}
+              {/* <th className="p-4">#</th> */}
               <th className="p-4">Nombre</th>
               <th className="p-4">Tipo</th>
               <th className="p-4">Fecha Inicio</th>
@@ -79,14 +80,21 @@ function VolunteerRequests() {
             </tr>
           </thead>
           <tbody>
-            {filteredRequests.map((request, index) => (
+            {filteredRequests.map((request) => (
               <tr
                 key={request.id_FormVoluntarie}
                 className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
               >
-                <td className="p-4">{index + 1}</td>
+                {/* Eliminar la celda del ID */}
+                {/* <td className="p-4">{index + 1}</td> */}
                 <td
-                  className={`p-4 cursor-pointer ${request.status_Name === 'Rechazada' ? 'text-red-500' : 'text-gray-900'}`}
+                  className={`p-4 cursor-pointer ${
+                    request.status_Name === 'Rechazada'
+                      ? 'text-red-500'
+                      : isDarkMode
+                      ? 'text-white' // Texto blanco en modo oscuro
+                      : 'text-gray-900' // Texto gris oscuro en modo claro
+                  }`}
                   onClick={() => setSelectedVolunteer(request)}
                 >
                   {`${request.vn_Name} ${request.vn_Lastname1} ${request.vn_Lastname2}`}
