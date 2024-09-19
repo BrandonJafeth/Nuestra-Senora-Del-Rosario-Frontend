@@ -5,6 +5,7 @@ import { useFilteredRequests } from '../../hooks/useFilteredRequests';
 import { VolunteerRequest } from '../../types/VolunteerType';
 import { useStatuses } from '../../hooks/useStatuses';
 import { useVolunteerTypes } from '../../hooks/useVolunteerTypes';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 function VolunteerRequests() {
   const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests();
@@ -18,7 +19,7 @@ function VolunteerRequests() {
   const { data: volunteerTypes } = useVolunteerTypes();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner/>;
   }
 
   if (error) {
