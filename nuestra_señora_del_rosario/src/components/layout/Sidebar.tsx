@@ -16,7 +16,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
 
   // Definimos los ítems de menú con condiciones basadas en el rol
   const menuItems = [
-    { name: 'Residentes', link: '/dashboard/residentes', roles: ['Admin'] },
+    { name: 'Residentes', link: '/dashboard/residentes'},
     { name: 'Personal', link: '/dashboard/personal', roles: ['Admin'] }, // Solo visible para Admin
     { name: 'Inventario', link: '/dashboard/inventario' }, // Visible para Admin
     { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Manager', 'Admin', 'HR'] }, // Visible para Manager
