@@ -3,7 +3,7 @@ import { VolunteerRequest } from '../types/VolunteerType'; // Asegúrate de que 
 
 class VolunteeringService extends ApiService<VolunteerRequest> {
   getAllVolunteeringService() {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   constructor() {
     super(); // Usa la URL base desde el genérico
@@ -23,7 +23,7 @@ class VolunteeringService extends ApiService<VolunteerRequest> {
   }
 
   public updateVolunteerRequest(id: number, data: Partial<VolunteerRequest>) {
-    return this.update('/FormVoluntarie', id, data);
+    return this.patch(`/FormVoluntarie/${id}/status`, id, data); 
   }
 
   public deleteVolunteerRequest(id: number) {
