@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard';
 import RequestPassword from '../pages/RequestPassword';
 import ResetPassword from '../pages/ResetPassword';
 import Login from '../pages/Login';
+import ChangePassword from '../pages/ChangePassword';
 
 const AppRoutes = () => (
     <Routes>
@@ -11,6 +12,7 @@ const AppRoutes = () => (
       <Route path="/" element={<Login />} />
       <Route path="/solicitar-restablecimiento" element={<RequestPassword />} />
       <Route path="/restablecer-contraseña" element={<ResetPassword />} />
+      <Route path="/cambio-contraseña" element={<ChangePassword/>}/>
     </Routes>
 );
 
