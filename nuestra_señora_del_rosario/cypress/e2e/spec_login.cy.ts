@@ -10,17 +10,16 @@ describe('Pruebas de inicio de sesión', () => {
       cy.get('input[placeholder="Contraseña"]').type('contraseña_incorrecta');
       cy.get('button').contains('Iniciar sesión').click();
   
-      // Verificar que se muestra el mensaje de error
-      cy.contains('Credenciales Incorrectas. Por favor, intente nuevamente.', { timeout: 20000 }).should('be.visible');
+      // Verificar que se muestra el mensaje de error en el toast
+      cy.contains('Credenciales Incorrectas. Por favor, intente nuevamente.', { timeout: 10000 }).should('be.visible');
     });
   
     it('Debería mostrar un mensaje de error si los campos están vacíos', () => {
       // Intentar enviar el formulario sin rellenar los campos
       cy.get('button').contains('Iniciar sesión').click();
   
-      // Verificar que se muestran los mensajes de error para los campos vacíos
-      cy.contains('El campo de cédula es obligatorio', { timeout: 20000 }).should('be.visible');
-      cy.contains('El campo de contraseña es obligatorio', { timeout: 20000 }).should('be.visible');
+      // Verificar que se muestra el mensaje de error en el toast para los campos vacíos
+      cy.contains('Por favor ingrese su cédula y contraseña', { timeout: 5000 }).should('be.visible');
     });
   
     it('Debería iniciar sesión correctamente con credenciales válidas', () => {
@@ -29,10 +28,10 @@ describe('Pruebas de inicio de sesión', () => {
       cy.get('input[placeholder="Contraseña"]').type('ABCD1234');
       cy.get('button').contains('Iniciar sesión').click();
   
+      // Verificar que se muestra un mensaje de éxito en el toast
+      cy.contains('Inicio de sesión exitoso', { timeout: 5000 }).should('be.visible');
+  
       // Verificar que se redirige al dashboard
       cy.url().should('include', '/dashboard');
-  
-      // Verificar que se muestra un mensaje de éxito
-      cy.contains('Inicio de sesión exitoso', { timeout: 20000 }).should('be.visible');
     });
   });
