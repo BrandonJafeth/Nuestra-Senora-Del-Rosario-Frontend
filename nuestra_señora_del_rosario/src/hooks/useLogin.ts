@@ -8,8 +8,8 @@ const useLogin = () => {
   const [cedula, setCedula] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Estado para controlar la carga
-  const { showToast, message, type } = useToast();
-  const { login } = useAuth();
+  const { showToast, message, type } = useToast(); // Hook de Toast para mostrar mensajes
+  const { login } = useAuth(); // Hook para manejar la autenticación
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -28,7 +28,11 @@ const useLogin = () => {
           login(token);
 
           showToast('Inicio de sesión exitoso', 'success');
-          navigate('/dashboard')
+
+          // Esperar 2 segundos antes de redirigir al dashboard
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 2000);
         } else {
           showToast('Error: No se recibió el token.', 'error');
         }
