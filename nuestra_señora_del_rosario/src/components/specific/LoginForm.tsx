@@ -1,15 +1,15 @@
 import React from 'react';
-import ButtonLogin from '../common/ButtonLogin';
-import TextInput from '../common/TextInput';
-import Toast from '../common/Toast';
-import useLogin from '../../hooks/useLogin';
-import LoadingSpinner from '../microcomponents/LoadingSpinner';
-import { Link } from 'react-router-dom';
-import { useThemeDark } from '../../hooks/useThemeDark';
+import ButtonLogin from '../common/ButtonLogin'; // Componente de botón de inicio de sesión
+import TextInput from '../common/TextInput'; // Componente de campo de entrada de texto
+import Toast from '../common/Toast'; // Componente de Toast para mostrar mensajes
+import useLogin from '../../hooks/useLogin'; // Hook personalizado para manejar el inicio de sesión
+import LoadingSpinner from '../microcomponents/LoadingSpinner'; // Componente de spinner de carga
+import { Link } from 'react-router-dom'; // Componente Link para la navegación
+import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para manejar el modo oscuro
 
 const LoginForm: React.FC = () => {
-  const { cedula, handleLogin, message, password, setCedula, setPassword, type, isLoading } = useLogin();
-  const { isDarkMode } = useThemeDark();
+  const { cedula, handleLogin, message, password, setCedula, setPassword, type, isLoading } = useLogin(); // Hook de login
+  const { isDarkMode } = useThemeDark(); // Hook para el modo oscuro
 
   return (
     <div

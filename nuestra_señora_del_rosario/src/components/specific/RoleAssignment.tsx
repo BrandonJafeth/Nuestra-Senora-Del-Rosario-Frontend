@@ -1,7 +1,10 @@
+
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useThemeDark } from '../../hooks/useThemeDark'; // Para modo oscuro
 import { useNavigate } from 'react-router-dom';
 import { useRoles } from '../../hooks/useRoles';
+import { useToast } from '../../hooks/useToast'; // Importa el hook de Toast
+import Toast from '../common/Toast'; // Asegúrate de importar correctamente el componente de Toast
 
 interface RoleAssignmentProps {
   employeeDni: number; // Recibe la cédula del empleado
@@ -11,6 +14,7 @@ interface RoleAssignmentProps {
 const RoleAssignment = ({ employeeDni, onCancel }: RoleAssignmentProps) => {
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark(); // Modo oscuro
+  const { showToast, message, type } = useToast(); // Hook de Toast para mostrar mensajes
 
   // Usar el hook personalizado para manejar la lógica de asignación de roles
   const { roles, isLoadingRoles, isErrorRoles, selectedRole, handleRoleChange, handleSubmit, assignRoleMutation } = useRoles(employeeDni);
@@ -19,6 +23,16 @@ const RoleAssignment = ({ employeeDni, onCancel }: RoleAssignmentProps) => {
   if (isLoadingRoles) return <LoadingSpinner />;
   // Mostrar mensaje de error si falla la carga de datos
   if (isErrorRoles) return <div>Error al cargar los roles.</div>;
+
+  // Función para manejar la asignación de rol con Toast y redirección
+  const handleRoleAssignment = () => {
+    handleSubmit(() => {
+      showToast('Rol asignado correctamente.', 'success'); // Mostrar mensaje de éxito
+      setTimeout(() => {
+        navigate('/dashboard'); // Redirigir al dashboard después de 2 segundos
+      }, 2000);
+    });
+  };
 
   return (
     <div className="flex items-center justify-center h-[calc(100vh-64px)]"> {/* Contenedor centrado vertical y horizontalmente */}
@@ -69,14 +83,18 @@ const RoleAssignment = ({ employeeDni, onCancel }: RoleAssignmentProps) => {
 
           {/* Botón para asignar el rol */}
           <button
-            onClick={() => handleSubmit(() => navigate('/dashboard'))}
+            onClick={handleRoleAssignment} // Llamar a la función de asignación
             disabled={!selectedRole || assignRoleMutation.isLoading}
-            className={`px-8 py-3 text-lg font-medium rounded-full shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50
-              ${assignRoleMutation.isLoading ? 'bg-gray-500 cursor-not-allowed' : isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+            className={`px-8 py-3 text-lg font-medium rounded-full shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 ${
+              assignRoleMutation.isLoading ? 'bg-gray-500 cursor-not-allowed' : isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
           >
             {assignRoleMutation.isLoading ? 'Asignando...' : 'Asignar Rol'}
           </button>
         </div>
+        
+        {/* Componente de Toast */}
+        <Toast message={message} type={type} />
       </div>
     </div>
   );
