@@ -66,7 +66,7 @@ function VolunteerRequests() {
           {statuses?.map((status) => (
             <button
               key={status.id_Status}
-              className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-green-500 text-white' : 'bg-gray-300'}`}
+              className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}
               onClick={() => setFilterStatus(status.status_Name as 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas')}
             >
               {status.status_Name}

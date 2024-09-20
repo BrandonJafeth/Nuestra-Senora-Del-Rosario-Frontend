@@ -33,7 +33,6 @@ function ResetPassword() {
             <p className="font-bold mb-2">Información importante</p>
             <ul className="mt-4 list-disc pl-6">
               <li>Debe tener al menos 8 caracteres.</li>
-              <li>Debe incluir una letra mayúscula y un número.</li>
               <li>No puede contener espacios en blanco.</li>
             </ul>
           </div>
