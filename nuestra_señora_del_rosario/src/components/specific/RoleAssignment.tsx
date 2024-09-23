@@ -76,7 +76,7 @@ const RoleAssignment = ({ employeeDni, onCancel }: RoleAssignmentProps) => {
           {/* Botón Cancelar */}
           <button
             onClick={onCancel}
-            className={`px-8 py-3 bg-red-500 text-white text-lg font-medium rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50`}
+            className={`px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200`}
           >
             Cancelar
           </button>
@@ -85,8 +85,8 @@ const RoleAssignment = ({ employeeDni, onCancel }: RoleAssignmentProps) => {
           <button
             onClick={handleRoleAssignment} // Llamar a la función de asignación
             disabled={!selectedRole || assignRoleMutation.isLoading}
-            className={`px-8 py-3 text-lg font-medium rounded-full shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 ${
-              assignRoleMutation.isLoading ? 'bg-gray-500 cursor-not-allowed' : isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+            className={`type-button px-7 py-4 text-white text-lg font-inter rounded-lg shadow-lg transition duration-200 ${
+              assignRoleMutation.isLoading ? 'bg-blue-500' : isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
             {assignRoleMutation.isLoading ? 'Asignando...' : 'Asignar Rol'}

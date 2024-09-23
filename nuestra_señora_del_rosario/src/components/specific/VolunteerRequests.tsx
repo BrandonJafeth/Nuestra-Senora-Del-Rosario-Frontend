@@ -179,14 +179,14 @@ function VolunteerRequests() {
             {/* Botones de acción */}
             <div className="flex justify-center space-x-4 mt-8">
               <button
-                className="px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-200"
+                className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
                 onClick={() => handleReject(selectedVolunteer)}
                 tabIndex={-1}
               >
                 Rechazar
               </button>
               <button
-                className="px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition duration-200"
+                className="px-7 py-4 bg-blue-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
                 onClick={() => handleAccept(selectedVolunteer)}
                 tabIndex={0}
               >

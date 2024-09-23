@@ -210,7 +210,7 @@ function EmployeeForm() {
       <div className="flex justify-center space-x-4 mt-8">
         <button
           type="button"
-          className="px-7 py-4 bg-[#c62b2b] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#a52222]"
+          className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
           tabIndex={1}
         >
           Cancelar
@@ -218,7 +218,7 @@ function EmployeeForm() {
         <button
           onClick={handleFormSubmit} // Llama al manejador de envío
           type="submit"
-          className="px-7 py-4 bg-[#233d63] text-white text-lg font-inter rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:bg-[#1b2f52]"
+          className="px-7 py-4 bg-blue-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
           tabIndex={0}
         >
           Agregar
