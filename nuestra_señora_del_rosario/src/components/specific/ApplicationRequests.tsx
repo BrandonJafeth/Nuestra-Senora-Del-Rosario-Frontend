@@ -5,20 +5,24 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import Skeleton from 'react-loading-skeleton';
 import { ApplicationRequest } from '../../types/ApplicationType';
 import { useApplicationRequests } from '../../hooks/useApplication';
-import '../../styles/Style.css'
+import '../../styles/Style.css';
+import { useUpdateApplicationStatus } from '../../hooks/useUpdateApplicationStatus';
 
 function ApplicationRequests() {
   const { data: applicationRequests = [], isLoading, error } = useApplicationRequests();
   const { isDarkMode } = useThemeDark();
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
-  const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
+  const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
 
   const statusMapping = {
     Pendiente: 'Pending',
-    Aceptada: 'Approved',
-    Rechazada: 'Rejected',
+    Aprobado: 'Approved',
+    Rechazado: 'Rejected',
     Todas: 'Todas'
   };
+
+  // Hook para actualizar el estado de una solicitud de ingreso
+  const { mutate: updateApplicationStatus } = useUpdateApplicationStatus();
   
   // Convertir el filtro al inglés para la comparación
   const filteredRequests = applicationRequests.filter((request) => {
@@ -34,6 +38,18 @@ function ApplicationRequests() {
   if (error) {
     return <div>Error loading application requests</div>;
   }
+
+  // Función para aceptar una solicitud
+  const handleAccept = (application: ApplicationRequest) => {
+    updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 }); // Id del estado "Aprobado"
+    setSelectedApplication(null);
+  };
+
+  // Función para rechazar una solicitud
+  const handleReject = (application: ApplicationRequest) => {
+    updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 }); // Id del estado "Rechazado"
+    setSelectedApplication(null);
+  };
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
@@ -59,7 +75,7 @@ function ApplicationRequests() {
               <button
                 key={status.id_Status}
                 className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}
-                onClick={() => setFilterStatus(status.status_Name as 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas')}
+                onClick={() => setFilterStatus(status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas')}
               >
                 {status.status_Name}
               </button>
@@ -90,7 +106,7 @@ function ApplicationRequests() {
               <th className="p-4">Nombre</th>
               <th className="p-4">Apellido</th>
               <th className="p-4">Edad</th>
-              <th className="p-4">Ubicación</th>
+              <th className="p-4">Domicilio</th>
               <th className="p-4">Fecha Solicitud</th>
               <th className="p-4">Estatus</th>
               <th className="p-4">Acciones</th>
@@ -181,10 +197,7 @@ function ApplicationRequests() {
                 <p><strong>Edad:</strong> {selectedApplication.age_AP}</p>
               </div>
               <div>
-                <p><strong>Ubicación:</strong> {selectedApplication.location}</p>
-              </div>
-              <div className="truncate">
-                <p><strong>Teléfono:</strong> {selectedApplication.phone_GD}</p>
+                <p><strong>Domicilio:</strong> {selectedApplication.location}</p>
               </div>
               <div>
                 <p><strong>Fecha de Solicitud:</strong> {new Date(selectedApplication.applicationDate).toLocaleDateString()}</p>
@@ -192,20 +205,29 @@ function ApplicationRequests() {
               <div>
                 <p><strong>Estatus:</strong> {selectedApplication.status_Name}</p>
               </div>
-              {/* Agregar el nombre del encargado */}
               <div>
                 <p><strong>Encargado:</strong> {selectedApplication.name_GD}</p>
+              </div>
+              <div>
+                <p><strong>Teléfono Encargado:</strong> {selectedApplication.phone_GD}</p>
               </div>
             </div>
 
             {/* Botones de acción */}
             <div className="flex justify-center space-x-4 mt-8">
               <button
-                className="px-7 py-4 bg-gray-500 text-white rounded-lg shadow-lg hover:bg-gray-600 transition duration-200"
-                onClick={() => setSelectedApplication(null)}
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => handleReject(selectedApplication)}
+                tabIndex={-1}
+              >
+                Rechazar
+              </button>
+              <button
+                className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+                onClick={() => handleAccept(selectedApplication)}
                 tabIndex={0}
               >
-                Volver
+                Aceptar
               </button>
             </div>
           </div>
