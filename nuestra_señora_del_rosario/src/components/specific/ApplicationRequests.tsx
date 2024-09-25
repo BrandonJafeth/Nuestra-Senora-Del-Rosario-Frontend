@@ -5,6 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import Skeleton from 'react-loading-skeleton';
 import { ApplicationRequest } from '../../types/ApplicationType';
 import { useApplicationRequests } from '../../hooks/useApplication';
+import '../../styles/Style.css'
 
 function ApplicationRequests() {
   const { data: applicationRequests = [], isLoading, error } = useApplicationRequests();
@@ -180,12 +181,9 @@ function ApplicationRequests() {
                 <p><strong>Edad:</strong> {selectedApplication.age_AP}</p>
               </div>
               <div>
-                <p><strong>Dirección:</strong> {selectedApplication.location}</p>
+                <p><strong>Ubicación:</strong> {selectedApplication.location}</p>
               </div>
-              <div>
-                <p><strong>Email:</strong> {selectedApplication.email_GD}</p>
-              </div>
-              <div>
+              <div className="truncate">
                 <p><strong>Teléfono:</strong> {selectedApplication.phone_GD}</p>
               </div>
               <div>

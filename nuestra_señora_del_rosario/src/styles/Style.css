@@ -62,3 +62,9 @@
     @apply bg-red-500 text-white;
   }
   
+  .truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  
