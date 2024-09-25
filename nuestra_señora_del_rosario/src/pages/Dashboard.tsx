@@ -3,8 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import EmployeeForm from '../components/specific/EmployeeForm';
-import VolunteerRequests from '../components/specific/VolunteerRequests'; // Importar el componente
+import VolunteerRequests from '../components/specific/VolunteerRequests';
 import HomeDashboard from '../components/specific/HomeDashboard';
+import ApplicationRequests from '../components/specific/ApplicationRequests';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,6 +29,7 @@ function Dashboard() {
               <Route path='/' element={<HomeDashboard/>} />
               <Route path="/personal" element={<EmployeeForm />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
+              <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
             </Routes>
           </div>
         </main>
