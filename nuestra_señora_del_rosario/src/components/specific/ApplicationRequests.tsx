@@ -180,7 +180,7 @@ function ApplicationRequests() {
                 <p><strong>Edad:</strong> {selectedApplication.age_AP}</p>
               </div>
               <div>
-                <p><strong>Ubicación:</strong> {selectedApplication.location}</p>
+                <p><strong>Dirección:</strong> {selectedApplication.location}</p>
               </div>
               <div>
                 <p><strong>Email:</strong> {selectedApplication.email_GD}</p>
@@ -193,6 +193,10 @@ function ApplicationRequests() {
               </div>
               <div>
                 <p><strong>Estatus:</strong> {selectedApplication.status_Name}</p>
+              </div>
+              {/* Agregar el nombre del encargado */}
+              <div>
+                <p><strong>Encargado:</strong> {selectedApplication.name_GD}</p>
               </div>
             </div>
 
