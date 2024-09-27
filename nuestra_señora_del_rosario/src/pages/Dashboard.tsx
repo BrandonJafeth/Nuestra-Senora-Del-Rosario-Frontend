@@ -6,6 +6,7 @@ import EmployeeForm from '../components/specific/EmployeeForm';
 import VolunteerRequests from '../components/specific/VolunteerRequests';
 import HomeDashboard from '../components/specific/HomeDashboard';
 import ApplicationRequests from '../components/specific/ApplicationRequests';
+import DonationRequests from '../components/specific/DonationRequests';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,6 +31,7 @@ function Dashboard() {
               <Route path="/personal" element={<EmployeeForm />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
+              <Route path="solicitudes/donaciones" element={<DonationRequests/>} />
             </Routes>
           </div>
         </main>
