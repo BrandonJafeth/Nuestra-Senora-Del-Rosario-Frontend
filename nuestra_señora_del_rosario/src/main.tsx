@@ -19,17 +19,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <SnackbarProvider maxSnack={3}>
         <ToastProvider>
+                <ThemeProvider>
           <AuthProvider>
             <IconProvider>
               <ToggleProvider>
-                <ThemeProvider>
                   <Router>
                     <App />
                   </Router>
-                </ThemeProvider>
               </ToggleProvider>
             </IconProvider>
           </AuthProvider>
+                </ThemeProvider>
         </ToastProvider>
       </SnackbarProvider>
     </QueryClientProvider>

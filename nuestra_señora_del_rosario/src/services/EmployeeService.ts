@@ -3,11 +3,11 @@ import { EmployeeType } from '../types/EmployeeType';
 
 class EmployeeService extends ApiService<EmployeeType> {
   public getAllEmployees() {
-    return this.getAll('/employees');
+    return this.getAll('/Employee');
   }
 
   public getEmployeeById(id: number) {
-    return this.getOne('/employees', id);
+    return this.getOne('/Employee', id);
   }
 
   public createEmployee(data: EmployeeType) {
@@ -15,11 +15,11 @@ class EmployeeService extends ApiService<EmployeeType> {
   }
 
   public updateEmployee(id: number, data: Partial<EmployeeType>) {
-    return this.update('/employees', id, data);
+    return this.update('/Employee', id, data);
   }
 
   public deleteEmployee(id: number) {
-    return this.delete('/employees', id);
+    return this.delete('/Employee', id);
   }
 }
 

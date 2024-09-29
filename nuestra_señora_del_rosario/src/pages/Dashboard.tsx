@@ -7,6 +7,8 @@ import VolunteerRequests from '../components/specific/VolunteerRequests';
 import HomeDashboard from '../components/specific/HomeDashboard';
 import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
+import EmployeeList from '../components/specific/EmployeeList';
+import VoucherPaymentForm from '../components/specific/VoucherPaymentForm';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,11 +29,14 @@ function Dashboard() {
           <div className="p-4 rounded-lg">
             {/* Aquí van las rutas dinámicas */}
             <Routes>
-              <Route path='/' element={<HomeDashboard/>} />
-              <Route path="/personal" element={<EmployeeForm />} />
+              <Route path="/" element={<HomeDashboard />} />
+              <Route path="personal/registro" element={<EmployeeForm />} />
+              <Route path="personal/lista" element={<EmployeeList />} />
+              {/* Ruta con el parámetro dni */}
+              <Route path="comprobante-pago" element={<VoucherPaymentForm />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
-              <Route path="solicitudes/donaciones" element={<DonationRequests/>} />
+              <Route path="solicitudes/donaciones" element={<DonationRequests />} />
             </Routes>
           </div>
         </main>
