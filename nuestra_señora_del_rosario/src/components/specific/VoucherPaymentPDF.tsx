@@ -1,10 +1,9 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image, Font} from '@react-pdf/renderer';
 
-// Registrar fuente compatible como Helvetica
 Font.register({
-  family: 'Helvetica',
-  src: 'https://fonts.gstatic.com/s/helvetica/v1/Helvetica-Regular.woff2',
+  family: 'Noto Sans',
+  src: 'https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoSans/NotoSans-Regular.ttf',
 });
 
 interface PaymentReceiptPDFProps {
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontSize: 10,
-    fontFamily: 'Helvetica',
+    fontFamily: 'Noto Sans',
     backgroundColor: '#fff',
   },
   header: {
@@ -119,10 +118,10 @@ const styles = StyleSheet.create({
   },
 });
 
-// Función para formatear números como moneda
-const formatCurrency = (value: number) => {
-  return `₡${new Intl.NumberFormat('es-CR').format(value)}`;
-};
+/*const formatCurrency = (value: number) => {
+  return value > 0 ? `$${new Intl.NumberFormat('es-CR').format(value)}` : '';
+};*/
+
 
 const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
   employee,
@@ -206,19 +205,19 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Salario ({workedDays} días)</Text>
             <Text style={styles.tableColSmall}>{String(workedDays)}</Text>
-            <Text style={styles.tableCol}>{formatCurrency(grossIncome)}</Text>
+            <Text style={styles.tableCol}>₡{grossIncome}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Extras (hrs)</Text>
             <Text style={styles.tableColSmall}>{String(extrasHours || 0)}</Text>
-            <Text style={styles.tableCol}>{formatCurrency(extrasHours * 0)}</Text>
+            <Text style={styles.tableCol}>₡{extrasHours * 0}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Dobles (hrs)</Text>
             <Text style={styles.tableColSmall}>{String(doublesHours || 0)}</Text>
-            <Text style={styles.tableCol}>{formatCurrency(doublesHours * 0)}</Text>
+            <Text style={styles.tableCol}>₡{doublesHours * 0}</Text>
           </View>
 
           <View style={styles.tableRow}>
@@ -273,7 +272,7 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
           <View style={styles.tableRow}>
             <Text style={[styles.tableCol, styles.bold]}>Bruto devengado</Text>
             <Text style={styles.tableColSmall}></Text>
-            <Text style={styles.tableCol}>{formatCurrency(grossIncome)}</Text>
+            <Text style={styles.tableCol}>₡{grossIncome}</Text>
           </View>
         </View>
 
@@ -283,46 +282,46 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>CCSS (10.67%)</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(deductions.ccss)}</Text>
+            <Text style={styles.tableColSmall}>₡{deductions.ccss}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Embargo</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(deductions.embargo)}</Text>
+            <Text style={styles.tableColSmall}>₡{deductions.embargo}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Impuesto de Renta</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(deductions.rentTax)}</Text>
+            <Text style={styles.tableColSmall}>₡{deductions.rentTax}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Pensión Alimenticia</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(deductions.alimony)}</Text>
+            <Text style={styles.tableColSmall}>₡{deductions.alimony}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Otras deducciones</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(deductions.otherDeductions)}</Text>
+            <Text style={styles.tableColSmall}>₡{deductions.otherDeductions}</Text>
           </View>
 
           <View style={styles.tableRow}>
             <Text style={[styles.tableCol, styles.bold]}>Total Deducciones</Text>
-            <Text style={styles.tableColSmall}>{formatCurrency(totalDeductions)}</Text>
+            <Text style={styles.tableColSmall}>₡{totalDeductions}</Text>
           </View>
         </View>
 
         {/* Total Devengado Neto */}
-        <Text style={styles.totalAmount}>Total Devengado Neto: {formatCurrency(netIncome)}</Text>
+        <Text style={styles.totalAmount}>Total Devengado Neto: ₡{netIncome}</Text>
 
         {/* Pie de firma */}
         <View style={styles.footer}>
-          <Text>Hecho por: VILMA SONIA MEJÍA ALVARADO</Text>
           <Text style={styles.signature}>Firma de recibido</Text>
         </View>
       </Page>
     </Document>
   );
 };
+
 
 export default VoucherPaymentPDF;

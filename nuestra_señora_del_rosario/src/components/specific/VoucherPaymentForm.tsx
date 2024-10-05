@@ -2,7 +2,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import VoucherPaymentPDF from './VoucherPaymentPDF';
-import LoadingSpinner from '../microcomponents/LoadingSpinner';
+
 import { useThemeDark } from '../../hooks/useThemeDark';
 
 const VoucherPaymentForm: React.FC = () => {
@@ -302,7 +302,7 @@ const VoucherPaymentForm: React.FC = () => {
           {({ loading }) =>
             {
               return loading ? (
-                <p className="text-center mt-4 text-gray-500">Generando PDF... <LoadingSpinner/></p>
+                <p className="text-center mt-4 text-gray-500">Generando PDF...</p>
               ) : (
                 <button
                 className="px-7 py-4 bg-green-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-green-600 transition duration-200 mt-4">
