@@ -1,5 +1,5 @@
-import IconContext from "./IconsContext";
-import { FaUsers, FaClipboardList, FaCalendarAlt, FaDonate, FaHandsHelping, FaWarehouse, FaSignInAlt, FaIdCard, FaLock } from 'react-icons/fa';
+import { FaUsers, FaClipboardList, FaCalendarAlt, FaDonate, FaHandsHelping, FaWarehouse, FaSignInAlt, FaIdCard, FaLock, FaSearch } from 'react-icons/fa'; // Agrega FaSearch
+import IconContext from './IconsContext';
 
 export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const iconMap: { [key: string]: JSX.Element } = {
@@ -12,7 +12,8 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Voluntariado: <FaHandsHelping />,
     'Cronograma de Citas': <FaCalendarAlt />,
     Cedula: <FaIdCard />, 
-    Contraseña: <FaLock />, 
+    Contraseña: <FaLock />,
+   
   };
 
   const getIcon = (name: string) => iconMap[name] || null;
