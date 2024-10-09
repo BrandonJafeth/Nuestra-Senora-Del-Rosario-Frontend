@@ -16,6 +16,8 @@ interface PaymentReceiptPDFProps {
   workedDays: number;
   grossIncome: number;
   extrasHours: number;
+  totalExtraHoursAmount: number;
+  extraHourRate: number;
   doublesHours: number;
   mandatoryHolidays: number;
   doubleExtras: number;
@@ -131,6 +133,8 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
   doublesHours = 0,
   mandatoryHolidays = 0,
   doubleExtras = 0,
+  totalExtraHoursAmount = 0,
+  extraHourRate = 0,
   mixedHours = 0,
   nightHours = 0,
   adjustments = 0,
@@ -211,7 +215,7 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
           <View style={styles.tableRow}>
             <Text style={styles.tableCol}>Extras (hrs)</Text>
             <Text style={styles.tableColSmall}>{String(extrasHours || 0)}</Text>
-            <Text style={styles.tableCol}>₡{extrasHours * 0}</Text>
+            <Text style={styles.tableCol}>₡{extraHourRate}</Text>
           </View>
 
           <View style={styles.tableRow}>
@@ -272,7 +276,7 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
           <View style={styles.tableRow}>
             <Text style={[styles.tableCol, styles.bold]}>Bruto devengado</Text>
             <Text style={styles.tableColSmall}></Text>
-            <Text style={styles.tableCol}>₡{grossIncome}</Text>
+            <Text style={styles.tableCol}>₡{grossIncome + totalExtraHoursAmount}</Text>
           </View>
         </View>
 
@@ -313,6 +317,7 @@ const VoucherPaymentPDF: React.FC<PaymentReceiptPDFProps> = ({
 
         {/* Total Devengado Neto */}
         <Text style={styles.totalAmount}>Total Devengado Neto: ₡{netIncome}</Text>
+        <Text style={styles.totalAmount}>Total Monto Horas Extras: ₡{totalExtraHoursAmount}</Text>
 
         {/* Pie de firma */}
         <View style={styles.footer}>
