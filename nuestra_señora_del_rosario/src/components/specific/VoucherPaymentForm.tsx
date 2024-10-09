@@ -32,6 +32,8 @@ const VoucherPaymentForm: React.FC = () => {
   const [incapacity, setIncapacity] = useState(0);
   const [absence, setAbsence] = useState(0);
   const [vacationDays, setVacationDays] = useState(0);
+  const [extraHourRate, setExtraHourRate] = useState(0); // Valor de la hora extra
+  const [totalExtraHoursAmount, setTotalExtraHoursAmount] = useState(0); 
 
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -41,13 +43,21 @@ const VoucherPaymentForm: React.FC = () => {
 
   const [generatePDF, setGeneratePDF] = useState(false);
   // Calcular total de deducciones y neto devengado
-  const totalDeductions = Object.values(deductions).reduce((acc, val) => acc + val, 0);
-  const netIncome = grossIncome - totalDeductions;
+  const calculateExtraHoursTotal = () => {
+    const totalExtras = extrasHours * extraHourRate;
+    setTotalExtraHoursAmount(totalExtras);
+    setGrossIncome((prevIncome) => prevIncome + totalExtras); // Sumar horas extras al salario bruto sin reemplazarlo
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setGeneratePDF(true); 
+    calculateExtraHoursTotal(); // Calcula las horas extras y actualiza el salario bruto
+    setGeneratePDF(true);
   };
+
+  const totalDeductions = Object.values(deductions).reduce((acc, val) => acc + val, 0);
+  const netIncome = grossIncome + totalExtraHoursAmount - totalDeductions;
+
 
   return (
     <div className={`w-full max-w-4xl mx-auto p-6 rounded-[20px] shadow-2xl mt-10 ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
@@ -94,6 +104,17 @@ const VoucherPaymentForm: React.FC = () => {
           />
         </div>
 
+        {extrasHours > 0 && (
+          <div>
+            <label className="block mb-2">Valor por hora extra (₡)</label>
+            <input
+              type="number"
+              value={extraHourRate}
+              onChange={(e) => setExtraHourRate(parseFloat(e.target.value))}
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-black'}`}
+            />
+          </div>
+        )}
         <div>
           <label className="block mb-2">Dobles (hrs)</label>
           <input
@@ -283,6 +304,8 @@ const VoucherPaymentForm: React.FC = () => {
               workedDays={workedDays}
               grossIncome={grossIncome}
               extrasHours={extrasHours}
+               totalExtraHoursAmount={totalExtraHoursAmount} 
+               extraHourRate={extraHourRate}
               doublesHours={doublesHours}
               mandatoryHolidays={mandatoryHolidays}
               doubleExtras={doubleExtras}
