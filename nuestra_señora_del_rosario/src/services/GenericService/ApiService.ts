@@ -9,7 +9,7 @@ interface IReadService<T> {
 interface IWriteService<T> {
     create(endpoint: string, data: T): Promise<AxiosResponse<T>>;
     update(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>>;
-    patch(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>>; // Nuevo método
+    patch(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>>;
     delete(endpoint: string, id: string | number): Promise<AxiosResponse<void>>;
 }
 
@@ -38,13 +38,14 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
         return this.api.put<T>(`${endpoint}/${id}`, data);
     }
 
-    public async patch(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>> { // Implementación del método patch
+    public async patch(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>> {
         return this.api.patch<T>(`${endpoint}/${id}`, data);
     }
 
     public async delete(endpoint: string, id: string | number): Promise<AxiosResponse<void>> {
         return this.api.delete<void>(`${endpoint}/${id}`);
     }
+
 }
 
 export default ApiService;

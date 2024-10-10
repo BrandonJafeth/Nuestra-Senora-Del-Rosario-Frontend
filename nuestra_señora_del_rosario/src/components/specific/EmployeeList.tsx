@@ -14,7 +14,7 @@ const EmployeeList: React.FC = () => {
   if (error) return <p>Error al cargar los empleados: {`${error}`}</p>;
 
   const handleGenerateReceipt = (employee: any) => {
-    navigate(`/dashboard/comprobante-pago`, { state: { employee } });
+    navigate(`/dashboard/comprobante-pago`, { state: { employeeDni: employee.dni } });
   };
 
   return (
