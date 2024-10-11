@@ -17,9 +17,16 @@ class ResidentsService extends ApiService<Resident> {
     return this.getOne('/Residents', id);
   }
 
-  public updateResident(id: number, data: Partial<Resident>) {
-    return this.patch<Resident>(`/Residents/${id}`, data); 
+  // Actualizar residente (patch de campos específicos)
+  public updateResidentStatus(id: number, data: { 
+    id_Room: number; 
+    status: string; 
+    id_DependencyLevel: number; 
+    fechaNacimiento: string; 
+  }) {
+    return this.patch(`/Residents/${id}`, id,data);
   }
+
   // Eliminar un residente
   public deleteResident(id: number) {
     return this.delete('/Residents', id);

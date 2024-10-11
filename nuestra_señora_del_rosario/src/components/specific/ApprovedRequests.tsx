@@ -5,7 +5,7 @@ import { useApprovedRequests } from '../../hooks/useApprovedRequests';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
 import { useRoom } from '../../hooks/useRoom';
 import { ApplicationRequest } from '../../types/ApplicationType';
-import approvedRequestService from '../../services/ApprovedRequestsService'; // Servicio para manejar solicitudes aprobadas
+import residentsService from '../../services/ResidentsService'; // Servicio para manejar residentes desde solicitudes
 
 function ApprovedRequests() {
   const { approvedRequests = [], isLoading, error } = useApprovedRequests();
@@ -17,10 +17,11 @@ function ApprovedRequests() {
   const [roomNumber, setRoomNumber] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [sexo, setSexo] = useState('Masculino');
+  const [isUpdating, setIsUpdating] = useState(false); // Estado para manejar el proceso de guardado
 
   const navigate = useNavigate();
 
-  // Función para guardar la solicitud aprobada actualizada
+  // Función para crear un nuevo residente basado en la solicitud aprobada
   const handleSave = async () => {
     if (selectedRequest) {
       // Verificar si todos los campos necesarios están completos
@@ -29,22 +30,26 @@ function ApprovedRequests() {
         return;
       }
 
-      const updatedRequestData = {
-        id_Applicant: selectedRequest.id_Applicant,
+      const residentData = {
+        id_Applicant: selectedRequest.id_Applicant, // Relacionar con la solicitud aprobada
         id_Room: parseInt(roomNumber),
         entryDate,
         sexo,
         id_DependencyLevel: parseInt(dependencyLevel),
-        guardianName: `${selectedRequest.name_GD} ${selectedRequest.lastname1_GD} ${selectedRequest.lastname2_GD}`,
-        status: 'Activo', // Puedes cambiar este valor según sea necesario.
+        guardianName: `${selectedRequest.name_GD} ${selectedRequest.lastname1_GD} ${selectedRequest.lastname2_GD}`, // Nombre del guardián
+        status: 'Activo',
       };
 
+      setIsUpdating(true); // Cambiar estado a cargando
+
       try {
-        // Llamar al servicio para actualizar la solicitud aprobada
-        await approvedRequestService.updateApprovedRequest(updatedRequestData);
-        navigate('/dashboard/residentes'); // Navega a la lista de residentes después de guardar
+        // Llamar al servicio para crear un nuevo residente
+        await residentsService.createResidentFromApplicant(residentData);
+        setIsUpdating(false); // Resetear estado de cargando
+        navigate('/dashboard/residentes'); // Navegar a la lista de residentes después de guardar
       } catch (error) {
-        console.error('Error al actualizar la solicitud:', error);
+        setIsUpdating(false); // Resetear estado de cargando en caso de error
+        console.error('Error al crear el residente:', error);
         alert('Ocurrió un error al guardar los datos. Verifica la consola para más detalles.');
       }
     }

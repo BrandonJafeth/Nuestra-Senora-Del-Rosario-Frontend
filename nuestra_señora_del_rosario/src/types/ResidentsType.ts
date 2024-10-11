@@ -3,9 +3,9 @@
 // types/ResidentsType.ts
 
 export interface Resident {
-    id_Guardian: any;
+    id_Guardian: number;
     isGuardian: unknown;
-    id_Room: any;
+    id_Room: number;
     id_Resident: number;
     name_AP: string;
     lastname1_AP: string;
@@ -18,7 +18,9 @@ export interface Resident {
     status: string; // Activo o Inactivo
     entryDate: string; // Formato de fecha
     dependencyLevel: string; // Nivel de dependencia (Alto, Medio, Bajo)
+    edad : number;
     guardianPhone: string;
+    id_DependencyLevel: number;
   }
   
 

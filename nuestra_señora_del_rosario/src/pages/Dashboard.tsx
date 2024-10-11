@@ -11,7 +11,6 @@ import EmployeeList from '../components/specific/EmployeeList';
 import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
 import ResidentList from '../components/specific/ResidentList';
 import ApprovedRequests from '../components/specific/ApprovedRequests';
-import AddGuardianForm from '../components/specific/AddGuardianForm';
 import NewResidentForm from '../components/specific/NewResidentForm';
 
 
@@ -44,8 +43,7 @@ function Dashboard() {
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
               <Route path="Residentes" element={<ResidentList/>} />
                < Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
-              <Route path="NuevoResidente" element={<AddGuardianForm/>} />
-              <Route path="InformacionResidente" element={<NewResidentForm/>} />
+              <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
         </main>

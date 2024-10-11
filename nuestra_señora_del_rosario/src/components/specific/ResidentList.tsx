@@ -5,27 +5,29 @@ import { useResidents } from '../../hooks/useResidents';
 import { Resident } from '../../types/ResidentsType';
 import { useRoom } from '../../hooks/useRoom'; // Para cargar las habitaciones
 import { useDependencyLevel } from '../../hooks/useDependencyLevel'; // Para cargar los niveles de dependencia
-import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails'; // Importa el nuevo hook
+import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails'; // Hook para actualizar detalles del residente
+
+// Helper para formatear las fechas (YYYY-MM-DD)
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toISOString().split('T')[0]; // Deja solo la parte de la fecha
+};
 
 function ResidentList() {
   const { data: residents = [], isLoading, error } = useResidents();
-  const { data: rooms = [] } = useRoom(); // Cargar las habitaciones
-  const { data: dependencyLevels = [] } = useDependencyLevel(); // Cargar los niveles de dependencia
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para búsqueda
-  const [selectedResident, setSelectedResident] = useState<Resident | null>(null); // Residente seleccionado
-  const [showModal, setShowModal] = useState(false); // Estado para manejar la visibilidad del modal
+  const { data: rooms = [] } = useRoom(); 
+  const { data: dependencyLevels = [] } = useDependencyLevel();
+  const [searchTerm, setSearchTerm] = useState<string>(''); 
+  const [selectedResident, setSelectedResident] = useState<Resident | null>(null); 
+  const [showModal, setShowModal] = useState<boolean>(false); 
+  const [status, setStatus] = useState<string>('Activo'); // Local state para status
   const navigate = useNavigate();
 
   // Hook para actualizar el residente
   const {
-    id_Room,
-    entryDate,
-    sexo,
-    id_DependencyLevel,
-    setRoomNumber,
-    setEntryDate,
-    setSexo,
-    setDependencyLevel,
+    idRoom, 
+    idDependencyLevel,
+    setIdRoom,
+    setIdDependencyLevel,
     handleSubmit,
     isLoading: isUpdating,
   } = useUpdateResidentDetails(selectedResident?.id_Resident ?? 0);
@@ -33,17 +35,16 @@ function ResidentList() {
   // Manejar la visualización de detalles en el modal
   const handleShowDetails = (resident: Resident) => {
     setSelectedResident(resident);
-    setRoomNumber(resident.id_Room?.toString() ?? '');
-    setEntryDate(resident.entryDate ?? '');
-    setSexo(resident.sexo);
-    setDependencyLevel(resident.dependencyLevel?.toString() ?? '');
-    setShowModal(true); // Mostrar el modal
+    setIdRoom(resident.id_Room ?? 0); 
+    setIdDependencyLevel(resident.id_DependencyLevel ?? 0); 
+    setStatus(resident.status ?? 'Activo'); 
+    setShowModal(true); 
   };
 
   // Cerrar el modal
   const handleCloseDetails = () => {
     setSelectedResident(null);
-    setShowModal(false); // Ocultar el modal
+    setShowModal(false);
   };
 
   if (isLoading) {
@@ -53,6 +54,18 @@ function ResidentList() {
   if (error) {
     return <div>Error al cargar los residentes</div>;
   }
+
+  // Filtrar residentes según el término de búsqueda
+  const filteredResidents = residents.filter((resident) =>
+    `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  const handleUpdateClick = () => {
+    console.log('Botón de actualizar clicado');
+    handleSubmit();
+  };
 
   return (
     <div className="w-full max-w-[1169px] mx-auto p-6 bg-white rounded-[20px] shadow-2xl">
@@ -87,7 +100,7 @@ function ResidentList() {
       </div>
 
       {/* Tabla de Residentes */}
-      {residents.length > 0 ? (
+      {filteredResidents.length > 0 ? (
         <div className="flex justify-center">
           <table className="min-w-full max-w-5xl bg-transparent rounded-lg shadow-md">
             <thead>
@@ -100,7 +113,7 @@ function ResidentList() {
               </tr>
             </thead>
             <tbody>
-              {residents.map((resident: Resident) => (
+              {filteredResidents.map((resident: Resident) => (
                 <tr key={resident.id_Resident} className="bg-white text-gray-800 hover:bg-gray-200 text-center">
                   <td className="p-4">{resident.name_AP}</td>
                   <td className="p-4">{resident.lastname1_AP}</td>
@@ -130,11 +143,12 @@ function ResidentList() {
             <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
 
             <div className="grid grid-cols-2 gap-4">
+              {/* Número de habitación */}
               <div>
                 <label className="block font-bold">Habitación:</label>
                 <select
-                  value={id_Room}
-                  onChange={(e) => setRoomNumber(e.target.value)}
+                  value={idRoom}
+                  onChange={(e) => setIdRoom(Number(e.target.value))} // Convertir el valor a número
                   className="w-full p-2 mt-1 border rounded-md"
                 >
                   {rooms.map((room) => (
@@ -145,11 +159,12 @@ function ResidentList() {
                 </select>
               </div>
 
+              {/* Grado de Dependencia */}
               <div>
                 <label className="block font-bold">Grado de Dependencia:</label>
                 <select
-                  value={id_DependencyLevel}
-                  onChange={(e) => setDependencyLevel(e.target.value)}
+                  value={idDependencyLevel}
+                  onChange={(e) => setIdDependencyLevel(Number(e.target.value))} // Convertir el valor a número
                   className="w-full p-2 mt-1 border rounded-md"
                 >
                   {dependencyLevels.map((level) => (
@@ -160,25 +175,82 @@ function ResidentList() {
                 </select>
               </div>
 
+              {/* Sexo (No editable) */}
               <div>
                 <label className="block font-bold">Sexo:</label>
+                <input
+                  type="text"
+                  value={selectedResident.sexo} // Mostrar sin ser editable
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Fecha de Nacimiento */}
+              <div>
+                <label className="block font-bold">Fecha de Nacimiento:</label>
+                <input
+                  type="text"
+                  value={formatDate(selectedResident.fechaNacimiento)} // Mostrar sin ser editable
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Estado */}
+              <div>
+                <label className="block font-bold">Estado:</label>
                 <select
-                  value={sexo}
-                  onChange={(e) => setSexo(e.target.value)}
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
                   className="w-full p-2 mt-1 border rounded-md"
                 >
-                  <option value="Masculino">Masculino</option>
-                  <option value="Femenino">Femenino</option>
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
                 </select>
               </div>
 
+              {/* Fecha de Entrada */}
               <div>
                 <label className="block font-bold">Fecha de Entrada:</label>
                 <input
-                  type="date"
-                  value={entryDate}
-                  onChange={(e) => setEntryDate(e.target.value)}
-                  className="w-full p-2 mt-1 border rounded-md"
+                  type="text"
+                  value={formatDate(selectedResident.entryDate)} // Mostrar sin ser editable
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Edad */}
+              <div>
+                <label className="block font-bold">Edad:</label>
+                <input
+                  type="text"
+                  value={selectedResident.edad.toString()} // Mostrar la edad calculada
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Nombre del Guardián */}
+              <div>
+                <label className="block font-bold">Nombre del Guardián:</label>
+                <input
+                  type="text"
+                  value={selectedResident.guardianName} // Mostrar sin ser editable
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Teléfono del Guardián */}
+              <div>
+                <label className="block font-bold">Teléfono del Guardián:</label>
+                <input
+                  type="text"
+                  value={selectedResident.guardianPhone} // Mostrar sin ser editable
+                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
+                  readOnly
                 />
               </div>
             </div>
@@ -191,10 +263,10 @@ function ResidentList() {
                 Cancelar
               </button>
               <button
-                onClick={handleSubmit}
-                disabled={isUpdating}
-                className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-              >
+          onClick={handleUpdateClick} // Llama a la función que incluye el console.log
+          disabled={isUpdating}
+          className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+        >
                 {isUpdating ? 'Actualizando...' : 'Actualizar'}
               </button>
             </div>

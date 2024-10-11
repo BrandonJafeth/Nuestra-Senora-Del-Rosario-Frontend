@@ -1,6 +1,7 @@
 // hooks/useResidentCreate.ts
 import { useMutation } from 'react-query';
 import residentCreateService from '../services/ResidentCreateService';
+import residentsService from '../services/ResidentsService'; // Importar el servicio correcto
 import { ResidentPostType } from '../types/ResidentsType';
 import { useToast } from './useToast'; // Para mostrar mensajes Toast
 
@@ -26,7 +27,7 @@ export const useCreateResidentFromApplicant = () => {
   const { showToast } = useToast();
 
   return useMutation(
-    (applicantData: any) => residentCreateService.createResidentFromApplicant(applicantData),
+    (applicantData: any) => residentsService.createResidentFromApplicant(applicantData), 
     {
       onSuccess: () => {
         showToast('Residente creado desde la solicitud exitosamente', 'success');
