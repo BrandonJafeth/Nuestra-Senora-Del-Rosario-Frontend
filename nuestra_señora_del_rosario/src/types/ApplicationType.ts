@@ -1,5 +1,6 @@
 // types/ApplicationType.ts
 export interface ApplicationRequest {
+    status: string;
     id_ApplicationForm: number;
     id_Applicant: number;
     name_AP: string;

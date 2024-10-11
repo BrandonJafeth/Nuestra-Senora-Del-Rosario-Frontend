@@ -9,6 +9,10 @@ import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
 import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
+import ResidentList from '../components/specific/ResidentList';
+import ApprovedRequests from '../components/specific/ApprovedRequests';
+import NewResidentForm from '../components/specific/NewResidentForm';
+
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,6 +41,9 @@ function Dashboard() {
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
+              <Route path="Residentes" element={<ResidentList/>} />
+               < Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
+              <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
         </main>
