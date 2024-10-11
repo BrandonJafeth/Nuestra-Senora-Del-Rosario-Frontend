@@ -3,41 +3,46 @@ import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import { useResidents } from '../../hooks/useResidents';
 import { Resident } from '../../types/ResidentsType';
-import { useRoom } from '../../hooks/useRoom'; // Para cargar las habitaciones
-import { useDependencyLevel } from '../../hooks/useDependencyLevel'; // Para cargar los niveles de dependencia
-import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails'; // Hook para actualizar detalles del residente
+import { useRoom } from '../../hooks/useRoom';
+import { useDependencyLevel } from '../../hooks/useDependencyLevel';
+import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails';
 
 // Helper para formatear las fechas (YYYY-MM-DD)
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toISOString().split('T')[0]; // Deja solo la parte de la fecha
+  return new Date(dateString).toISOString().split('T')[0];
 };
 
 function ResidentList() {
-  const { data: residents = [], isLoading, error } = useResidents();
-  const { data: rooms = [] } = useRoom(); 
+  // Obtenemos la función refetch
+  const { data: residents = [], isLoading, error, refetch } = useResidents();
+  const { data: rooms = [] } = useRoom();
   const { data: dependencyLevels = [] } = useDependencyLevel();
   const [searchTerm, setSearchTerm] = useState<string>(''); 
   const [selectedResident, setSelectedResident] = useState<Resident | null>(null); 
   const [showModal, setShowModal] = useState<boolean>(false); 
-  const [status, setStatus] = useState<string>('Activo'); // Local state para status
   const navigate = useNavigate();
 
+  // Estado para controlar si estamos en modo edición
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  // Estado para los campos editables
+  const [idRoom, setIdRoom] = useState<number | ''>('');
+  const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
+  const [status, setStatus] = useState<string>('Activo'); 
+  const [sexo, setSexo] = useState<string>('');
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
   // Hook para actualizar el residente
-  const {
-    idRoom, 
-    idDependencyLevel,
-    setIdRoom,
-    setIdDependencyLevel,
-    handleSubmit,
-    isLoading: isUpdating,
-  } = useUpdateResidentDetails(selectedResident?.id_Resident ?? 0);
+  const { handleSubmit } = useUpdateResidentDetails(selectedResident?.id_Resident ?? 0);
 
   // Manejar la visualización de detalles en el modal
   const handleShowDetails = (resident: Resident) => {
     setSelectedResident(resident);
-    setIdRoom(resident.id_Room ?? 0); 
-    setIdDependencyLevel(resident.id_DependencyLevel ?? 0); 
+    setIdRoom(resident.id_Room ?? ''); 
+    setIdDependencyLevel(resident.id_DependencyLevel ?? ''); 
     setStatus(resident.status ?? 'Activo'); 
+    setSexo(resident.sexo ?? '');
+    setIsEditing(false); // Inicialmente, no estamos editando
     setShowModal(true); 
   };
 
@@ -45,6 +50,53 @@ function ResidentList() {
   const handleCloseDetails = () => {
     setSelectedResident(null);
     setShowModal(false);
+  };
+
+  // Filtrar residentes según el término de búsqueda
+  const filteredResidents = residents.filter((resident) =>
+    `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  // Función para manejar el inicio de edición
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  // Función para manejar la actualización al hacer clic en el botón "Guardar"
+  const handleUpdateClick = async () => {
+    setIsUpdating(true);
+    const updatedResidentData = {
+      id_Room: idRoom,
+      id_DependencyLevel: idDependencyLevel,
+      status,
+      sexo,
+    };
+
+    // Envía los datos actualizados al servidor
+    await handleSubmit(updatedResidentData);
+
+    // Refrescar la lista de residentes desde el servidor
+    await refetch();
+
+    // Obtener el residente actualizado de la lista de residentes
+    const updatedResident = residents.find((resident) => resident.id_Resident === selectedResident?.id_Resident);
+
+    if (updatedResident) {
+      // Actualizar el selectedResident con los datos actualizados
+      setSelectedResident(updatedResident);
+
+      // Actualizar los estados locales con los nuevos datos
+      setIdRoom(updatedResident.id_Room ?? '');
+      setIdDependencyLevel(updatedResident.id_DependencyLevel ?? '');
+      setStatus(updatedResident.status ?? 'Activo');
+      setSexo(updatedResident.sexo ?? '');
+    }
+
+    setIsUpdating(false);
+    setIsEditing(false); // Salimos del modo edición
+    setShowModal(false); // Cerramos el modal (opcional)
   };
 
   if (isLoading) {
@@ -55,21 +107,8 @@ function ResidentList() {
     return <div>Error al cargar los residentes</div>;
   }
 
-  // Filtrar residentes según el término de búsqueda
-  const filteredResidents = residents.filter((resident) =>
-    `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
-  const handleUpdateClick = () => {
-    console.log('Botón de actualizar clicado');
-    handleSubmit();
-  };
-
   return (
     <div className="w-full max-w-[1169px] mx-auto p-6 bg-white rounded-[20px] shadow-2xl">
-      {/* Título y Botones */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-center">Listado de Residentes</h2>
         <div className="flex space-x-4">
@@ -136,7 +175,6 @@ function ResidentList() {
         <div className="text-center text-gray-500">No se encontraron residentes.</div>
       )}
 
-      {/* Modal de Detalles del Residente Seleccionado */}
       {showModal && selectedResident && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl">
@@ -148,8 +186,9 @@ function ResidentList() {
                 <label className="block font-bold">Habitación:</label>
                 <select
                   value={idRoom}
-                  onChange={(e) => setIdRoom(Number(e.target.value))} // Convertir el valor a número
-                  className="w-full p-2 mt-1 border rounded-md"
+                  disabled={!isEditing}
+                  onChange={(e) => setIdRoom(Number(e.target.value))}
+                  className={`w-full p-2 mt-1 border rounded-md ${!isEditing ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                 >
                   {rooms.map((room) => (
                     <option key={room.id_Room} value={room.id_Room}>
@@ -164,8 +203,9 @@ function ResidentList() {
                 <label className="block font-bold">Grado de Dependencia:</label>
                 <select
                   value={idDependencyLevel}
-                  onChange={(e) => setIdDependencyLevel(Number(e.target.value))} // Convertir el valor a número
-                  className="w-full p-2 mt-1 border rounded-md"
+                  disabled={!isEditing}
+                  onChange={(e) => setIdDependencyLevel(Number(e.target.value))}
+                  className={`w-full p-2 mt-1 border rounded-md ${!isEditing ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                 >
                   {dependencyLevels.map((level) => (
                     <option key={level.id_DependencyLevel} value={level.id_DependencyLevel}>
@@ -175,14 +215,15 @@ function ResidentList() {
                 </select>
               </div>
 
-              {/* Sexo (No editable) */}
+              {/* Sexo */}
               <div>
                 <label className="block font-bold">Sexo:</label>
                 <input
                   type="text"
-                  value={selectedResident.sexo} // Mostrar sin ser editable
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
-                  readOnly
+                  value={sexo}
+                  readOnly={!isEditing}
+                  onChange={(e) => setSexo(e.target.value)}
+                  className={`w-full p-2 mt-1 border rounded-md ${!isEditing ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                 />
               </div>
 
@@ -191,7 +232,7 @@ function ResidentList() {
                 <label className="block font-bold">Fecha de Nacimiento:</label>
                 <input
                   type="text"
-                  value={formatDate(selectedResident.fechaNacimiento)} // Mostrar sin ser editable
+                  value={formatDate(selectedResident.fechaNacimiento)} 
                   className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
                   readOnly
                 />
@@ -200,14 +241,13 @@ function ResidentList() {
               {/* Estado */}
               <div>
                 <label className="block font-bold">Estado:</label>
-                <select
+                <input
+                  type="text"
                   value={status}
+                  readOnly={!isEditing}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full p-2 mt-1 border rounded-md"
-                >
-                  <option value="Activo">Activo</option>
-                  <option value="Inactivo">Inactivo</option>
-                </select>
+                  className={`w-full p-2 mt-1 border rounded-md ${!isEditing ? 'bg-gray-200 cursor-not-allowed' : ''}`}
+                />
               </div>
 
               {/* Fecha de Entrada */}
@@ -215,7 +255,7 @@ function ResidentList() {
                 <label className="block font-bold">Fecha de Entrada:</label>
                 <input
                   type="text"
-                  value={formatDate(selectedResident.entryDate)} // Mostrar sin ser editable
+                  value={formatDate(selectedResident.entryDate)}
                   className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
                   readOnly
                 />
@@ -226,7 +266,7 @@ function ResidentList() {
                 <label className="block font-bold">Edad:</label>
                 <input
                   type="text"
-                  value={selectedResident.edad.toString()} // Mostrar la edad calculada
+                  value={selectedResident.edad.toString()}
                   className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
                   readOnly
                 />
@@ -237,7 +277,7 @@ function ResidentList() {
                 <label className="block font-bold">Nombre del Guardián:</label>
                 <input
                   type="text"
-                  value={selectedResident.guardianName} // Mostrar sin ser editable
+                  value={selectedResident.guardianName}
                   className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
                   readOnly
                 />
@@ -248,7 +288,7 @@ function ResidentList() {
                 <label className="block font-bold">Teléfono del Guardián:</label>
                 <input
                   type="text"
-                  value={selectedResident.guardianPhone} // Mostrar sin ser editable
+                  value={selectedResident.guardianPhone}
                   className="w-full p-2 mt-1 border rounded-md bg-gray-200 cursor-not-allowed"
                   readOnly
                 />
@@ -260,15 +300,24 @@ function ResidentList() {
                 onClick={handleCloseDetails}
                 className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200"
               >
-                Cancelar
+                {isEditing ? 'Cancelar' : 'Cerrar'}
               </button>
-              <button
-          onClick={handleUpdateClick} // Llama a la función que incluye el console.log
-          disabled={isUpdating}
-          className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-        >
-                {isUpdating ? 'Actualizando...' : 'Actualizar'}
-              </button>
+              {!isEditing ? (
+                <button
+                  onClick={handleEditClick}
+                  className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                  Editar
+                </button>
+              ) : (
+                <button
+                  onClick={handleUpdateClick}
+                  disabled={isUpdating}
+                  className="ml-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                >
+                  {isUpdating ? 'Guardando...' : 'Guardar'}
+                </button>
+              )}
             </div>
           </div>
         </div>

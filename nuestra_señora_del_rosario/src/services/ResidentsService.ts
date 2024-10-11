@@ -1,6 +1,7 @@
 // services/ResidentsService.ts
+import axios, { AxiosResponse } from 'axios'; // Importamos axios para usar en la solicitud directa
 import ApiService from './GenericService/ApiService';
-import { Resident } from '../types/ResidentsType';
+import { Resident, ResidentPatchDto } from '../types/ResidentsType';
 
 class ResidentsService extends ApiService<Resident> {
   constructor() {
@@ -17,16 +18,14 @@ class ResidentsService extends ApiService<Resident> {
     return this.getOne('/Residents', id);
   }
 
-  // Actualizar residente (patch de campos específicos)
-  public updateResidentStatus(id: number, data: { 
-    id_Room: number; 
-    status: string; 
-    id_DependencyLevel: number; 
-    fechaNacimiento: string; 
-  }) {
-    return this.patch(`/Residents/${id}`, id,data);
+  // Actualizar residente (patch de campos específicos) - Este método usa axios directamente
+  public updateResidentStatus(id: number, data: ResidentPatchDto): Promise<AxiosResponse<void>> {
+    return axios.patch<void>(`https://localhost:7066/api/Residents/${id}`, data, {
+      headers: {
+        'Content-Type': 'application/json-patch+json', // Especificamos el tipo de contenido
+      },
+    });
   }
-
   // Eliminar un residente
   public deleteResident(id: number) {
     return this.delete('/Residents', id);

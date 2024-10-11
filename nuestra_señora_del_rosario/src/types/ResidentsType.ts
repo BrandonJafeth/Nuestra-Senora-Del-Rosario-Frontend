@@ -40,3 +40,11 @@ export interface Resident {
     location: string;           // Ubicación del residente
   }
   
+  // types/ResidentPatchDto.ts
+
+export interface ResidentPatchDto {
+  id_Room?: number;            // ID de la habitación, opcional
+  status?: string;             // Estado del residente, opcional ("Activo", "Inactivo")
+  id_DependencyLevel?: number; // Nivel de dependencia, opcional
+  fechaNacimiento?: string;    // Fecha de nacimiento en formato string (YYYY-MM-DD), opcional
+}
