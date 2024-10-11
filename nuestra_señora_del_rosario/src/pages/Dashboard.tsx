@@ -9,7 +9,11 @@ import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
 import VoucherPaymentForm from '../components/specific/VoucherPaymentForm';
-import ApprovedRequest from '../components/specific/ApprovedRequests';
+import ResidentList from '../components/specific/ResidentList';
+import ApprovedRequests from '../components/specific/ApprovedRequests';
+import AddGuardianForm from '../components/specific/AddGuardianForm';
+import NewResidentForm from '../components/specific/NewResidentForm';
+
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,7 +42,10 @@ function Dashboard() {
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
-              <Route path="Residentes" element={<ApprovedRequest/>} />
+              <Route path="Residentes" element={<ResidentList/>} />
+               < Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
+              <Route path="NuevoResidente" element={<AddGuardianForm/>} />
+              <Route path="InformacionResidente" element={<NewResidentForm/>} />
             </Routes>
           </div>
         </main>

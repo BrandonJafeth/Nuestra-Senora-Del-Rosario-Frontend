@@ -1,4 +1,4 @@
-import { FaUsers, FaClipboardList, FaCalendarAlt, FaDonate, FaHandsHelping, FaWarehouse, FaSignInAlt, FaIdCard, FaLock, FaSearch } from 'react-icons/fa'; // Agrega FaSearch
+import { FaUsers, FaClipboardList, FaCalendarAlt, FaDonate, FaHandsHelping, FaWarehouse, FaSignInAlt, FaIdCard, FaLock  } from 'react-icons/fa'; // Agrega FaSearch
 import IconContext from './IconsContext';
 
 export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -45,7 +45,8 @@ export const useInsertRequestForm = () => {
           email_GD: '',
           phone_GD,
           applicationDate: new Date().toISOString(),
-          status_Name: 'Approved', // Estado de solicitud aprobada directamente
+          status_Name: 'Approved',
+          status: ''
         },
         {
           onSuccess: () => {
