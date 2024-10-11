@@ -8,7 +8,7 @@ import HomeDashboard from '../components/specific/HomeDashboard';
 import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
-import VoucherPaymentForm from '../components/specific/VoucherPaymentForm';
+import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
 import ResidentList from '../components/specific/ResidentList';
 import ApprovedRequests from '../components/specific/ApprovedRequests';
 import AddGuardianForm from '../components/specific/AddGuardianForm';
@@ -38,7 +38,7 @@ function Dashboard() {
               <Route path="personal/registro" element={<EmployeeForm />} />
               <Route path="personal/lista" element={<EmployeeList />} />
               {/* Ruta con el parámetro dni */}
-              <Route path="comprobante-pago" element={<VoucherPaymentForm />} />
+              <Route path="comprobante-pago" element={<PaymentReceiptForm />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
