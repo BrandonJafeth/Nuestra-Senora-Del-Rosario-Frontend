@@ -12,6 +12,7 @@ import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
 import ResidentList from '../components/specific/ResidentList';
 import ApprovedRequests from '../components/specific/ApprovedRequests';
 import NewResidentForm from '../components/specific/NewResidentForm';
+import AppointmentCalendar from '../components/specific/AppointmentCalendar';
 
 
 function Dashboard() {
@@ -36,13 +37,13 @@ function Dashboard() {
               <Route path="/" element={<HomeDashboard />} />
               <Route path="personal/registro" element={<EmployeeForm />} />
               <Route path="personal/lista" element={<EmployeeList />} />
-              {/* Ruta con el parámetro dni */}
               <Route path="comprobante-pago" element={<PaymentReceiptForm />} />
+              <Route path="cronograma-citas" element={<AppointmentCalendar />} />
               <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
               <Route path="Residentes" element={<ResidentList/>} />
-               < Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
+              <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
