@@ -15,9 +15,9 @@ function ApplicationRequests() {
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
 
   const statusMapping = {
-    Pendiente: 'Pending',
-    Aprobado: 'Approved',
-    Rechazado: 'Rejected',
+    Pendiente: 'Pendiente',
+    Aprobado: 'Aprobado',
+    Rechazado: 'Rechazado',
     Todas: 'Todas'
   };
 
