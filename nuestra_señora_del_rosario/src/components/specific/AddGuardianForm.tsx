@@ -1,34 +1,76 @@
-import { useForm, SubmitHandler } from 'react-hook-form'; // Importamos React Hook Form
+import { useEffect, useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGuardianMutation } from '../../hooks/useGuardian'; 
 import { useToast } from '../../hooks/useToast'; 
-import { Guardian } from '../../types/GuardianType'; 
 import { useThemeDark } from '../../hooks/useThemeDark'; 
 import Toast from '../common/Toast'; 
+import { Guardian } from '../../types/GuardianType';
 
 interface AddGuardianFormProps {
   setIsGuardianAdded: (added: boolean) => void;
-  setGuardianId: (id: number | null) => void; 
+  setGuardianId: (id: number | null) => void;
 }
 
-// Definimos los tipos para el formulario
 type GuardianFormInputs = {
+  cedula_GD: string;
   name_GD: string;
   lastname1_GD: string;
-  lastname2_GD?: string; 
-  cedula_GD: string;
+  lastname2_GD?: string;
   email_GD?: string;
   phone_GD: string;
 };
 
 function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormProps) {
-  const { mutate: saveGuardian, isLoading } = useGuardianMutation();
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<GuardianFormInputs>();
   const { showToast, message, type } = useToast(); 
-  const { isDarkMode } = useThemeDark(); 
+  const { isDarkMode } = useThemeDark();
+  const { mutate: saveGuardian } = useGuardianMutation();
 
-  // Hook para manejar el formulario con validaciones
-  const { register, handleSubmit, formState: { errors } } = useForm<GuardianFormInputs>();
+  const [guardians, setGuardians] = useState<Guardian[]>([]);
+  const [filteredGuardians, setFilteredGuardians] = useState<Guardian[]>([]);
+  const [isNewGuardian, setIsNewGuardian] = useState(false);
+  const [selectedGuardian, setSelectedGuardian] = useState<Guardian | null>(null); // Estado para el guardián seleccionado
 
-  // Manejo del envío del formulario
+  // Cargar guardianes al montar el componente
+  useEffect(() => {
+    const fetchGuardians = async () => {
+      try {
+        const response = await fetch('https://localhost:7066/api/Guardian');
+        const data = await response.json();
+        setGuardians(data);
+      } catch (error) {
+        console.error('Error al cargar los guardianes:', error);
+        showToast('Error al cargar los guardianes.', 'error');
+      }
+    };
+
+    fetchGuardians();
+  }, []);
+
+  // Filtrar guardianes mientras el usuario escribe
+  const handleSearchByName = (name: string) => {
+    const filtered = guardians.filter(g => 
+      `${g.name_GD} ${g.lastname1_GD} ${g.lastname2_GD || ''}`
+        .toLowerCase()
+        .includes(name.toLowerCase())
+    );
+    setFilteredGuardians(filtered);
+  };
+
+  // Seleccionar un guardián y mostrar su información
+  const handleSelectGuardian = (guardian: Guardian) => {
+    const fullName = `${guardian.name_GD} ${guardian.lastname1_GD} ${guardian.lastname2_GD || ''}`;
+    setValue('name_GD', fullName);
+    setSelectedGuardian(guardian);
+    setGuardianId(guardian.id_Guardian);
+
+    // Limpiar sugerencias y cerrar la pantalla
+    setFilteredGuardians([]);
+    showToast('Encargado seleccionado y guardado', 'success');
+    setIsGuardianAdded(true); // Cerrar la pantalla
+  };
+
+  // Manejo del envío del formulario (creación)
   const onSubmit: SubmitHandler<GuardianFormInputs> = (data) => {
     saveGuardian(data as Guardian, {
       onSuccess: (response) => {
@@ -37,35 +79,71 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           setGuardianId(id);
           setIsGuardianAdded(true);
           showToast('Guardián añadido exitosamente', 'success');
-        } else {
-          console.error('No se pudo obtener el ID del guardián.');
         }
       },
       onError: (error) => {
-        console.error('Error al añadir el guardián:', error);
-        showToast('Error al añadir el guardián. Revisa los datos ingresados', 'error');
+        console.error('Error al guardar el guardián:', error);
+        showToast('Error al guardar el guardián.', 'error');
       },
     });
   };
 
+  
+
   return (
-    <div
-      className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${
-        isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'
-      }`}
-    >
-      <h2
-        className={`text-3xl font-bold text-center mb-8 ${
-          isDarkMode ? 'text-white' : 'text-gray-800'
-        }`}
-      >
-        Añadir Encargado
+    <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
+      <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+        {isNewGuardian ? 'Añadir Encargado' : 'Buscar Encargado'}
       </h2>
 
-      {/* Formulario con React Hook Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
-        {/* Nombre del guardián */}
-        <div>
+      <div className="flex justify-center space-x-4 mb-6">
+        <button
+          onClick={() => setIsNewGuardian(false)}
+          className={`px-4 py-2 rounded-lg text-white ${isNewGuardian ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'}`}
+        >
+          Buscar Encargado
+        </button>
+        <button
+          onClick={() => {
+            reset(); 
+            setIsNewGuardian(true);
+            setFilteredGuardians([]);
+          }}
+          className={`px-4 py-2 rounded-lg text-white ${isNewGuardian ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500'}`}
+        >
+          Nuevo Encargado
+        </button>
+      </div>
+
+      {!isNewGuardian ? (
+        <div className="mb-6">
+          <label className="block mb-2 text-lg">Nombre del Encargado</label>
+          <input
+            type="text"
+            {...register('name_GD')}
+            className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+            onChange={(e) => handleSearchByName(e.target.value)}
+          />
+
+          {filteredGuardians.length > 0 && (
+            <ul className="mt-2 border rounded-md bg-white shadow-md">
+              {filteredGuardians.map((guardian) => (
+                <li
+                  key={guardian.id_Guardian}
+                  onClick={() => handleSelectGuardian(guardian)}
+                  className="p-2 text-black hover:bg-gray-100 cursor-pointer"
+                >
+                  {guardian.name_GD} {guardian.lastname1_GD} {guardian.lastname2_GD}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+        // Formulario de creación de nuevo encargado
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
+          {/* Campos del formulario */}
+          <div>
           <label className="block mb-2 text-lg">Nombre del Encargado</label>
           <input
             {...register('name_GD', { required: 'El nombre es obligatorio' })}
@@ -127,22 +205,16 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           />
           {errors.phone_GD && <p className="text-red-500">{errors.phone_GD.message}</p>}
         </div>
-
-        {/* Botones de guardar */}
-        <div className="col-span-2 flex justify-center space-x-4 mt-8">
+          {/* Más campos... */}
           <button
-            type="submit"
-            disabled={isLoading}
-            className={`px-7 py-4 rounded-lg shadow-lg transition duration-200 ${
-              isLoading ? 'bg-gray-400' : isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
-            } text-white`}
-          >
-            {isLoading ? 'Guardando...' : 'Guardar Encargado'}
-          </button>
-        </div>
-      </form>
+  type="submit"
+  className="col-span-2 px-7 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mx-auto block"
+>
+  Guardar Encargado
+</button>
+</form>
+      )}
 
-      {/* Toast para mostrar mensajes */}
       <Toast message={message} type={type} />
     </div>
   );
