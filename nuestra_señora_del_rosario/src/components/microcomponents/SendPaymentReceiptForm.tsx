@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useSendPaymentReceiptByEmail } from '../../hooks/useSendPaymentReceiptByEmail';
+import { useToast } from '../../hooks/useToast'; // Importar el hook de notificaciones
+import Toast from '../common/Toast';
 
 interface SendPaymentReceiptFormProps {
   receiptId: number; // El ID del comprobante generado
@@ -8,15 +10,16 @@ interface SendPaymentReceiptFormProps {
 const SendPaymentReceiptForm: React.FC<SendPaymentReceiptFormProps> = ({ receiptId }) => {
   const [isSent, setIsSent] = useState(false);
   const { mutate: sendPaymentReceipt, isLoading } = useSendPaymentReceiptByEmail(receiptId);
+  const { showToast, message, type } = useToast(); // Usar el hook de Toast
 
   const handleSendEmail = () => {
     sendPaymentReceipt(undefined, { // No pasamos datos, solo usamos el receiptId
       onSuccess: () => {
         setIsSent(true);
-        alert('Comprobante enviado correctamente al correo del empleado.');
+        showToast('Comprobante enviado correctamente al correo del empleado.', 'success'); // Notificación de éxito
       },
       onError: () => {
-        alert('Error al enviar el comprobante.');
+        showToast('Error al enviar el comprobante.', 'error'); // Notificación de error
       },
     });
   };
@@ -32,6 +35,7 @@ const SendPaymentReceiptForm: React.FC<SendPaymentReceiptFormProps> = ({ receipt
       >
         {isLoading ? 'Enviando...' : isSent ? 'Comprobante Enviado' : 'Enviar Comprobante'}
       </button>
+      <Toast message={message} type={type} />
     </div>
   );
 };

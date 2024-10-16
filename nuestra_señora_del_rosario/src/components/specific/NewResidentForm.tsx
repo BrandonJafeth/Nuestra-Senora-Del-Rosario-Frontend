@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useRoom } from '../../hooks/useRoom'; // Hook para cargar habitaciones
 import { useDependencyLevel } from '../../hooks/useDependencyLevel'; // Hook para cargar niveles de dependencia
 import { useToast } from '../../hooks/useToast'; // Hook para mostrar notificaciones
-import { useCreateResident } from '../../hooks/useCreateResident '; // Hook para crear residentes
 import { ResidentPostType } from '../../types/ResidentsType'; // Importando el tipo ResidentPostType
 import AddGuardianForm from './AddGuardianForm'; // Importamos AddGuardianForm para crear el guardián
+import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para modo oscuro
+import { useCreateResident } from '../../hooks/useCreateResident ';
+import Toast from '../common/Toast';
 
 function NewResidentForm() {
   const { data: rooms } = useRoom();
   const { data: dependencyLevels } = useDependencyLevel();
-  const { showToast } = useToast();
+  const { showToast, message, type } = useToast();
+  const { isDarkMode } = useThemeDark(); // Detectar el modo oscuro
   const navigate = useNavigate();
   const { mutate: createResident, isLoading } = useCreateResident();
 
@@ -36,7 +39,6 @@ function NewResidentForm() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validar que el guardián ha sido añadido
     if (guardianId === null) {
       showToast('Por favor añade un guardián antes de continuar.', 'error');
       return;
@@ -49,7 +51,7 @@ function NewResidentForm() {
         showToast('Residente registrado exitosamente', 'success');
         navigate('/dashboard/residentes');
       },
-      onError: (error) => {
+      onError: (error: any) => {
         console.error('Error al crear el residente:', error);
         showToast('Error al crear el residente. Revisa los datos ingresados', 'error');
       },
@@ -57,10 +59,9 @@ function NewResidentForm() {
   };
 
   return (
-    <div className="w-full max-w-[1169px] mx-auto p-6 bg-white rounded-[20px] shadow-2xl">
-      <h2 className="text-3xl font-bold text-center mb-8">Añadir Información del Residente</h2>
+    <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
+      <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Añadir Información</h2>
 
-      {/* Mostrar el formulario de AddGuardianForm si no se ha añadido un guardián */}
       {!isGuardianAdded ? (
         <AddGuardianForm 
           setIsGuardianAdded={setIsGuardianAdded} 
@@ -75,7 +76,7 @@ function NewResidentForm() {
               type="text"
               value={residentData.name_AP}
               onChange={(e) => setResidentData({ ...residentData, name_AP: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -86,7 +87,7 @@ function NewResidentForm() {
               type="text"
               value={residentData.lastname1_AP}
               onChange={(e) => setResidentData({ ...residentData, lastname1_AP: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -97,7 +98,7 @@ function NewResidentForm() {
               type="text"
               value={residentData.lastname2_AP}
               onChange={(e) => setResidentData({ ...residentData, lastname2_AP: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -108,7 +109,7 @@ function NewResidentForm() {
               type="text"
               value={residentData.cedula_AP}
               onChange={(e) => setResidentData({ ...residentData, cedula_AP: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -118,7 +119,7 @@ function NewResidentForm() {
             <select
               value={residentData.sexo}
               onChange={(e) => setResidentData({ ...residentData, sexo: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             >
               <option value="Masculino">Masculino</option>
@@ -132,7 +133,7 @@ function NewResidentForm() {
               type="date"
               value={residentData.fechaNacimiento}
               onChange={(e) => setResidentData({ ...residentData, fechaNacimiento: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -142,7 +143,7 @@ function NewResidentForm() {
             <select
               value={residentData.id_Room}
               onChange={(e) => setResidentData({ ...residentData, id_Room: parseInt(e.target.value) })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             >
               <option value="">Seleccionar habitación</option>
@@ -159,7 +160,7 @@ function NewResidentForm() {
             <select
               value={residentData.id_DependencyLevel}
               onChange={(e) => setResidentData({ ...residentData, id_DependencyLevel: parseInt(e.target.value) })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             >
               <option value="">Seleccionar grado de dependencia</option>
@@ -177,7 +178,7 @@ function NewResidentForm() {
               type="date"
               value={residentData.entryDate}
               onChange={(e) => setResidentData({ ...residentData, entryDate: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -188,7 +189,7 @@ function NewResidentForm() {
               type="text"
               value={residentData.location}
               onChange={(e) => setResidentData({ ...residentData, location: e.target.value })}
-              className="w-full p-3 rounded-md bg-gray-200"
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
           </div>
@@ -197,8 +198,8 @@ function NewResidentForm() {
             {/* Botón de Enviar */}
             <button
               type="submit"
-              className="px-7 py-4 bg-blue-500 text-white text-lg rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
-              disabled={isLoading} // Desactivar mientras se envía la información
+              className={`px-7 py-4 rounded-lg shadow-lg transition duration-200 ${isLoading ? 'bg-gray-400' : isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+              disabled={isLoading}
             >
               {isLoading ? 'Guardando...' : 'Registrar Residente'}
             </button>
@@ -207,13 +208,14 @@ function NewResidentForm() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-7 py-4 bg-red-500 text-white text-lg rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
             >
               Volver
             </button>
           </div>
         </form>
       )}
+      <Toast message={message} type={type} />
     </div>
   );
 }
