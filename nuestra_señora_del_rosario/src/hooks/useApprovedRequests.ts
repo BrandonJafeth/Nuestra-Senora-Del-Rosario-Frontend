@@ -9,7 +9,7 @@ export const useApprovedRequests = () => {
   // Fetch de solicitudes aprobadas
   const { data: approvedRequests = [], isLoading, error } = useQuery('approvedRequests', async () => {
     const response = await applicationService.getAllApplicationRequests();
-    return response.data.filter((request: any) => request.status_Name === 'Approved'); // Solo solicitudes aprobadas
+    return response.data.filter((request: any) => request.status_Name === 'Aprobado'); // Solo solicitudes aprobadas
   });
 
   // Mutación para guardar un nuevo residente basado en una solicitud aprobada
