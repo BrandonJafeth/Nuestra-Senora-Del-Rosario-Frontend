@@ -70,28 +70,12 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     }
   };
 
-  const openHealthcareCenterModal = () => {
-    setHealthcareCenterModalOpen(true);
-  };
-
-  const closeHealthcareCenterModal = () => {
-    setHealthcareCenterModalOpen(false);
-    onClose();
-  };
+  const openHealthcareCenterModal = () => setHealthcareCenterModalOpen(true);
+  const closeHealthcareCenterModal = () => setHealthcareCenterModalOpen(false);
 
   if (loadingResidents || loadingHC || loadingSpecialties || loadingEmployees) {
     return <p>Cargando datos...</p>;
   }
-
-  // Estilos Condicionales para Inputs y Selects
-  const inputStyles = `w-full p-2 border rounded-lg focus:outline-none ${
-    isDarkMode
-      ? 'bg-gray-700 border-gray-500 text-white placeholder-gray-400 focus:border-blue-500'
-      : 'bg-white border-gray-300 text-black focus:border-blue-500'
-  }`;
-  const labelStyles = `block text-sm font-medium ${
-    isDarkMode ? 'text-white' : 'text-gray-700'
-  }`;
 
   return (
     <>
@@ -99,8 +83,8 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         isOpen={isOpen && !healthcareCenterModalOpen}
         onRequestClose={onClose}
         contentLabel="Agregar Cita"
-        className="custom-modal-content"
-        overlayClassName="custom-modal-overlay"
+        className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full mx-auto"
+            overlayClassName="custom-modal-overlay"
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Agregar Cita</h2>
@@ -113,14 +97,15 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Residente */}
           <div className="col-span-2">
-            <label className={labelStyles}>Residente:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Residente:
+            </label>
             <select
               name="id_Resident"
               value={formData.id_Resident}
               onChange={handleInputChange}
-              className={inputStyles}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona un residente</option>
               {residents?.map((resident) => (
@@ -131,38 +116,41 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
-          {/* Fecha */}
           <div>
-            <label className={labelStyles}>Fecha:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha:
+            </label>
             <input
               type="date"
               name="date"
               value={formData.date}
               onChange={handleInputChange}
-              className={inputStyles}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
 
-          {/* Hora */}
           <div>
-            <label className={labelStyles}>Hora:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Hora:
+            </label>
             <input
               type="time"
               name="time"
               value={formData.time}
               onChange={handleInputChange}
-              className={inputStyles}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
 
-          {/* Centro Médico */}
           <div>
-            <label className={labelStyles}>Centro Médico:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Centro Médico:
+            </label>
             <select
               name="id_HC"
               value={formData.id_HC}
               onChange={handleInputChange}
-              className={inputStyles}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona un centro</option>
               {healthcareCenters?.data.map((hc) => (
@@ -173,14 +161,15 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
-          {/* Especialidad */}
           <div>
-            <label className={labelStyles}>Especialidad:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Especialidad:
+            </label>
             <select
               name="id_Specialty"
               value={formData.id_Specialty}
               onChange={handleInputChange}
-              className={inputStyles}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona una especialidad</option>
               {specialties?.data.map((specialty) => (
@@ -191,50 +180,30 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
-          {/* Acompañante */}
           <div className="col-span-2">
-            <label className={labelStyles}>Acompañante:</label>
-            <select
-              name="id_Companion"
-              value={formData.id_Companion}
-              onChange={handleInputChange}
-              className={inputStyles}
-            >
-              <option value="">Selecciona un acompañante</option>
-              {employees?.map((employee) => (
-                <option key={employee.dni} value={employee.dni}>
-                  {employee.firstName} {employee.lastName1} {employee.lastName2}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Notas */}
-          <div className="col-span-2">
-            <label className={labelStyles}>Notas:</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Notas:
+            </label>
             <textarea
               name="notes"
               value={formData.notes}
               onChange={handleInputChange}
-              className={`${inputStyles} resize-none`}
+              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none"
               placeholder="Escribe notas adicionales"
             ></textarea>
           </div>
 
-          {/* Botones */}
-          <div className="col-span-2 flex justify-end space-x-4 mt-6">
+          <div className="col-span-2 flex justify-end mt-6 space-x-4">
             <button
               onClick={onClose}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
             >
-              Cerrar
+              Cancelar
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`px-4 py-2 rounded-lg ${
-                loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
-              } text-white`}
+              className={`px-4 py-2 rounded-lg ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
             >
               {loading ? <LoadingSpinner /> : 'Guardar'}
             </button>

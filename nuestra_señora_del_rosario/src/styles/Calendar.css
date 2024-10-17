@@ -1,19 +1,3 @@
-.custom-event-container {
-    margin: 0 2px; /* Reducir el margen horizontal */
-    padding: 3px 6px; /* Reducir el padding */
-    max-width: calc(100% - 4px); /* Asegurar que el contenedor no se desborde */
-    border-radius: 6px;
-    background-color: #2563EB    ;
-    color: white;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Evitar que el contenido desborde */
-    white-space: nowrap; /* Evitar saltos de línea */
-    text-overflow: ellipsis; /* Mostrar "..." si el texto es muy largo */
-  }
-  
-  /* styles/Calendar.css */
-
 /* Overlay del Modal */
 .custom-modal-overlay {
   position: fixed;
@@ -21,64 +5,67 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
-  z-index: 1050; /* Asegura que el overlay esté por encima del calendario */
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Overlay encima del calendario */
 }
 
 /* Contenedor del Modal */
 .custom-modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
+  position: relative;
+  background-color: #1f2937; /* Fondo oscuro para modo dark */
+  color: white;
+  padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1100; /* Superior al overlay */
-  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra sutil */
+  max-width: 600px;
   width: 100%;
+  overflow-y: auto;
+  max-height: 90vh;
+  z-index: 1100; /* Prioridad máxima */
 }
 
-/* Asegurar que el calendario quede en segundo plano */
+/* Asegurar que el calendario esté detrás del modal */
 .rbc-calendar {
-  z-index: 1;
+  position: relative;
+  z-index: 1; /* Calendario en segundo plano */
 }
 
-/* Estilos generales del toolbar */
-.custom-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+/* Los eventos y vistas del calendario también deben quedar detrás */
+.rbc-event,
+.rbc-month-view,
+.rbc-time-view,
+.rbc-time-content {
+  z-index: 0 !important; /* Eventos en segundo plano */
 }
 
-/* Botones en modo claro */
-.light-theme .custom-toolbar button {
-  background-color: white;
-  color: #1f2937; /* Gris oscuro para buen contraste */
-  border: 1px solid #e5e7eb;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+/* Contenedor personalizado para eventos */
+.custom-event-container {
+  margin: 0 2px;
+  padding: 3px 6px;
+  max-width: calc(100% - 4px);
+  border-radius: 6px;
+  background-color: #2563EB; /* Azul */
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.light-theme .custom-toolbar button:hover {
-  background-color: #f3f4f6; /* Fondo más claro al hacer hover */
+.rbc-calendar {
+  position: relative;
+  z-index: 1; /* En segundo plano */
 }
 
-/* Botones en modo oscuro */
-.dark-theme .custom-toolbar button {
-  background-color: #1D4ED8 ; /* Azul oscuro */
-  color: white; /* Texto blanco para buen contraste */
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+.custom-modal-overlay {
+  z-index: 9999 !important; /* Garantiza que esté encima de todo */
 }
 
-.dark-theme .custom-toolbar button:hover {
-  background-color: #2563eb; /* Azul claro al hacer hover */
+.custom-modal-content {
+  z-index: 10000 !important; /* Modal siempre por encima */
 }
+

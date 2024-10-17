@@ -82,59 +82,61 @@ const AppointmentCalendar = () => {
   return (
     <div className={`h-[80vh] p-4 rounded-lg shadow-lg ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
       <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '100%' }}
-        dayPropGetter={dayPropGetter}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={() => ({ className: 'custom-event-container' })}
-        messages={{
-          next: 'Siguiente',
-          previous: 'Anterior',
-          today: 'Hoy',
-          month: 'Mes',
-          noEventsInRange: 'No hay eventos en este rango.',
-        }}
-        components={{
-          toolbar: (props) => (
-            <div className="flex justify-between items-center mb-4">
-              <button
-                onClick={handleAddAppointment}
-                className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-              >
-                Agregar Cita
-              </button>
-              <div className="text-center flex-grow">
-                <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                  {format(props.date, 'MMMM yyyy', { locale: es })}
-                </h2>
-              </div>
-              <div className="space-x-4">
-                <button
-                  onClick={() => props.onNavigate('TODAY')}
-                  className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-                >
-                  Hoy
-                </button>
-                <button
-                  onClick={() => props.onNavigate('PREV')}
-                  className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => props.onNavigate('NEXT')}
-                  className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-                >
-                  Siguiente
-                </button>
-              </div>
-            </div>
-          ),
-        }}
-      />
+  localizer={localizer}
+  events={events}
+  startAccessor="start"
+  endAccessor="end"
+  style={{ height: '100%' }}
+  dayPropGetter={dayPropGetter}
+  onSelectEvent={handleSelectEvent}
+  eventPropGetter={() => ({ className: 'custom-event-container' })}
+  messages={{
+    next: 'Siguiente',
+    previous: 'Anterior',
+    today: 'Hoy',
+    month: 'Mes',
+    noEventsInRange: 'No hay eventos en este rango.',
+  }}
+  className="rbc-calendar" /* Asegúrate de mantener esta clase */
+  components={{
+    toolbar: (props) => (
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={handleAddAppointment}
+          className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+        >
+          Agregar Cita
+        </button>
+        <div className="text-center flex-grow">
+          <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            {format(props.date, 'MMMM yyyy', { locale: es })}
+          </h2>
+        </div>
+        <div className="space-x-4">
+          <button
+            onClick={() => props.onNavigate('TODAY')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Hoy
+          </button>
+          <button
+            onClick={() => props.onNavigate('PREV')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => props.onNavigate('NEXT')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    ),
+  }}
+/>
+
 
       {/* Modal para mostrar las citas del día */}
       <Modal
