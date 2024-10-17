@@ -5,6 +5,11 @@ class HealthcareCenterService extends ApiService<HealthcareCenter> {
     public getAllHealthcareCenters() {
         return this.getAll('/HealthcareCenter');
     }
+
+    public createHealthcareCenter(data: HealthcareCenter) {
+        return this.create('/HealthcareCenter', data);
+      }
+    
 }
 
 const healthcareCenterService = new HealthcareCenterService();
