@@ -3,7 +3,7 @@
     padding: 3px 6px; /* Reducir el padding */
     max-width: calc(100% - 4px); /* Asegurar que el contenedor no se desborde */
     border-radius: 6px;
-    background-color: #584fff;
+    background-color: #2563EB    ;
     color: white;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -12,3 +12,73 @@
     text-overflow: ellipsis; /* Mostrar "..." si el texto es muy largo */
   }
   
+  /* styles/Calendar.css */
+
+/* Overlay del Modal */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  z-index: 1050; /* Asegura que el overlay esté por encima del calendario */
+}
+
+/* Contenedor del Modal */
+.custom-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1100; /* Superior al overlay */
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Asegurar que el calendario quede en segundo plano */
+.rbc-calendar {
+  z-index: 1;
+}
+
+/* Estilos generales del toolbar */
+.custom-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Botones en modo claro */
+.light-theme .custom-toolbar button {
+  background-color: white;
+  color: #1f2937; /* Gris oscuro para buen contraste */
+  border: 1px solid #e5e7eb;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.light-theme .custom-toolbar button:hover {
+  background-color: #f3f4f6; /* Fondo más claro al hacer hover */
+}
+
+/* Botones en modo oscuro */
+.dark-theme .custom-toolbar button {
+  background-color: #1D4ED8 ; /* Azul oscuro */
+  color: white; /* Texto blanco para buen contraste */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dark-theme .custom-toolbar button:hover {
+  background-color: #2563eb; /* Azul claro al hacer hover */
+}
