@@ -1,0 +1,14 @@
+.custom-event-container {
+    margin: 0 2px; /* Reducir el margen horizontal */
+    padding: 3px 6px; /* Reducir el padding */
+    max-width: calc(100% - 4px); /* Asegurar que el contenedor no se desborde */
+    border-radius: 6px;
+    background-color: #584fff;
+    color: white;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Evitar que el contenido desborde */
+    white-space: nowrap; /* Evitar saltos de línea */
+    text-overflow: ellipsis; /* Mostrar "..." si el texto es muy largo */
+  }
+  
