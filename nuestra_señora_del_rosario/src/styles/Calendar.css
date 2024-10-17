@@ -1,0 +1,71 @@
+/* Overlay del Modal */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Overlay encima del calendario */
+}
+
+/* Contenedor del Modal */
+.custom-modal-content {
+  position: relative;
+  background-color: #1f2937; /* Fondo oscuro para modo dark */
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra sutil */
+  max-width: 600px;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 90vh;
+  z-index: 1100; /* Prioridad máxima */
+}
+
+/* Asegurar que el calendario esté detrás del modal */
+.rbc-calendar {
+  position: relative;
+  z-index: 1; /* Calendario en segundo plano */
+}
+
+/* Los eventos y vistas del calendario también deben quedar detrás */
+.rbc-event,
+.rbc-month-view,
+.rbc-time-view,
+.rbc-time-content {
+  z-index: 0 !important; /* Eventos en segundo plano */
+}
+
+/* Contenedor personalizado para eventos */
+.custom-event-container {
+  margin: 0 2px;
+  padding: 3px 6px;
+  max-width: calc(100% - 4px);
+  border-radius: 6px;
+  background-color: #2563EB; /* Azul */
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rbc-calendar {
+  position: relative;
+  z-index: 1; /* En segundo plano */
+}
+
+.custom-modal-overlay {
+  z-index: 9999 !important; /* Garantiza que esté encima de todo */
+}
+
+.custom-modal-content {
+  z-index: 10000 !important; /* Modal siempre por encima */
+}
+
