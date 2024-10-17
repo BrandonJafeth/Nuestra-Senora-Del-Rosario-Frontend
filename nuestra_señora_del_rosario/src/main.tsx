@@ -11,6 +11,27 @@ import ToggleProvider from './context/ToggleProvider';
 import { ThemeProvider } from './context/ThemeProvider';
 import { QueryClient, QueryClientProvider } from 'react-query'; // Importa React Query
 
+if ('Notification' in window && navigator.serviceWorker) {
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      console.log('Permiso de notificación concedido.');
+    } else {
+      console.warn('Permisos de notificación denegados.');
+    }
+  });
+}
+
+
+if ('Notification' in window) {
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      console.log('Permisos de notificación concedidos.');
+    } else {
+      console.warn('Permisos de notificación denegados.');
+    }
+  });
+}
+
 // Crea una instancia de QueryClient
 const queryClient = new QueryClient();
 
