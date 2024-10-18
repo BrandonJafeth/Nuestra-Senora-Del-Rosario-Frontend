@@ -1,9 +1,9 @@
-export interface Notification {
-    id: number;
-    title: string;
-    message: string;
-    createdAt: string;  // ISO date string
-    isRead: boolean;
-    appointmentId: number;
-  }
-  
+// types.ts
+export interface NotificationGetDto {
+  id: number;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string; // Usamos string para fechas (ISO 8601)
+  appointmentId: number;
+}

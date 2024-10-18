@@ -9,6 +9,8 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import Modal from 'react-modal';
 import AddAppointmentModal from './AddAppointmentModal'; // Importa el modal de agregar cita
 import '../../styles/Calendar.css';
+import NotificationList from '../microcomponents/Notification';
+import NotificationComponent from '../microcomponents/Notification';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
@@ -181,6 +183,7 @@ const AppointmentCalendar = () => {
         companions={[]} // Y los acompañantes aquí
         onSave={handleSaveAppointment}
       />
+      <NotificationComponent />
     </div>
   );
 };
