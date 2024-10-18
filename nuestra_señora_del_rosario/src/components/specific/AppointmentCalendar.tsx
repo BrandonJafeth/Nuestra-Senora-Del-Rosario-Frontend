@@ -137,7 +137,6 @@ const AppointmentCalendar = () => {
   }}
 />
 
-
       {/* Modal para mostrar las citas del día */}
       <Modal
         isOpen={modalIsOpen}

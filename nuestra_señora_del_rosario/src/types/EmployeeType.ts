@@ -11,5 +11,6 @@
     emergencyPhone: string;
     professionName: string;
     typeOfSalaryName: string;
+    fullName: string;
   }
   

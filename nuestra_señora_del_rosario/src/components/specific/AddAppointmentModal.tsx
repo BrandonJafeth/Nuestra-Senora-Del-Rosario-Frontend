@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
-import { useThemeDark } from '../../hooks/useThemeDark';
 import { useResidents } from '../../hooks/useResidents';
 import { useHealthcareCenters } from '../../hooks/useHealthcareCenters';
 import { useSpeciality } from '../../hooks/useSpeciality';
-import { useEmployee } from '../../hooks/useEmployee';
 import appointmentService from '../../services/AppointmentService';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import AddHealthcareCenterModal from './AddHealthcareCenterModal';
+import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
+import ResidentDropdown from '../microcomponents/ResidentDropdown';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -20,11 +20,11 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const { isDarkMode } = useThemeDark();
   const { data: residents, isLoading: loadingResidents } = useResidents();
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
-  const { data: employees, isLoading: loadingEmployees } = useEmployee();
+  const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
@@ -42,10 +42,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
@@ -74,7 +71,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const closeHealthcareCenterModal = () => setHealthcareCenterModalOpen(false);
 
   if (loadingResidents || loadingHC || loadingSpecialties || loadingEmployees) {
-    return <p>Cargando datos...</p>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -84,10 +81,12 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         onRequestClose={onClose}
         contentLabel="Agregar Cita"
         className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full mx-auto"
-            overlayClassName="custom-modal-overlay"
+        overlayClassName="custom-modal-overlay"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Agregar Cita</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            Agregar Cita
+          </h2>
           <button
             onClick={openHealthcareCenterModal}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -101,19 +100,11 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Residente:
             </label>
-            <select
-              name="id_Resident"
-              value={formData.id_Resident}
-              onChange={handleInputChange}
-              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            >
-              <option value="">Selecciona un residente</option>
-              {residents?.map((resident) => (
-                <option key={resident.id_Resident} value={resident.id_Resident}>
-                  {`${resident.name_AP} ${resident.lastname1_AP} ${resident.lastname2_AP}`}
-                </option>
-              ))}
-            </select>
+            <ResidentDropdown
+  value={formData.id_Resident}
+  onChange={(value) => setFormData({ ...formData, id_Resident: value })}
+/>
+
           </div>
 
           <div>
@@ -180,6 +171,26 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
+          {/* Dropdown de Acompañante */}
+          <div className="col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Acompañante:
+            </label>
+            <select
+              name="id_Companion"
+              value={formData.id_Companion}
+              onChange={handleInputChange}
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="">Selecciona un acompañante</option>
+              {employees?.data.map((employee) => (
+                <option key={employee.dni} value={employee.dni}>
+                  {employee.fullName}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Notas:
@@ -188,7 +199,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               name="notes"
               value={formData.notes}
               onChange={handleInputChange}
-              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none"
+              className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none"
               placeholder="Escribe notas adicionales"
             ></textarea>
           </div>
@@ -203,7 +214,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`px-4 py-2 rounded-lg ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+              className={`px-4 py-2 rounded-lg ${
+                loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white`}
             >
               {loading ? <LoadingSpinner /> : 'Guardar'}
             </button>
