@@ -88,10 +88,11 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             value={type_HC}
             onChange={(e) => setType_HC(e.target.value)}
             required
-            className={`${inputStyles} appearance-none`}
+            className={`${inputStyles}`}
           >
-            <option value="Public">Public</option>
-            <option value="Private">Private</option>
+            <option value="" disabled>Seleccione un tipo</option>
+           <option value="Público">Público</option>
+            <option value="Privado">Privado</option>
           </select>
         </div>
 

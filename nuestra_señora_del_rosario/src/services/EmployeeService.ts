@@ -18,6 +18,11 @@ class EmployeeService extends ApiService<EmployeeType> {
     return this.update('/Employee', id, data);
   }
 
+  public getEmployeesByRole(role: string) {
+    return this.getAll(`/Employee/by-role/${role}`); // Llamada con el rol como parámetro
+  }
+
+
   public deleteEmployee(id: number) {
     return this.delete('/Employee', id);
   }
