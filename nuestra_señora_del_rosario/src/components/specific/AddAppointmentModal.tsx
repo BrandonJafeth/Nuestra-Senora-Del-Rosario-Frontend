@@ -48,15 +48,24 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
+  
+      // Validar que se haya seleccionado fecha y hora
+      if (!formData.date || !formData.time) {
+        throw new Error('Por favor, selecciona una fecha y hora válidas.');
+      }
+  
+      // Construir el objeto de la cita con los tipos correctos
       const appointmentData = {
         id_Resident: Number(formData.id_Resident),
-        date: `${formData.date}T${formData.time}:00.000Z`,
+        date: new Date(formData.date), // Usar tipo Date directamente
+        time: formData.time + ':00', // Asegurar formato "HH:mm:ss"
         id_HC: Number(formData.id_HC),
         id_Specialty: Number(formData.id_Specialty),
-        id_Companion: formData.id_Companion,
+        id_Companion: Number(formData.id_Companion),
         notes: formData.notes || '',
       };
-
+  
+      // Enviar los datos al backend
       await appointmentService.createAppointment(appointmentData);
       onSave();
       onClose();
@@ -65,8 +74,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
+  };  
+  
+  
   const openHealthcareCenterModal = () => setHealthcareCenterModalOpen(true);
   const closeHealthcareCenterModal = () => setHealthcareCenterModalOpen(false);
 
