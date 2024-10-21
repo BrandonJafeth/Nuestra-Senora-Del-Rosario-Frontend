@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { format, parseISO, startOfWeek, getDay } from 'date-fns';
@@ -9,8 +9,10 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import Modal from 'react-modal';
 import AddAppointmentModal from './AddAppointmentModal'; // Importa el modal de agregar cita
 import '../../styles/Calendar.css';
-import NotificationList from '../microcomponents/Notification';
-import NotificationComponent from '../microcomponents/Notification';
+import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-motion para animar el toast
+import { FiBell, FiCheckCircle } from 'react-icons/fi'; // Icono para el toast
+import { useNotification } from '../../hooks/useNotification';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
@@ -24,12 +26,30 @@ const localizer = dateFnsLocalizer({
 Modal.setAppElement('#root');
 
 const AppointmentCalendar = () => {
+  const Navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
   const { data: appointments, isLoading, error, refetch } = useAppointments(); // `refetch` para actualizar datos
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dailyAppointments, setDailyAppointments] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false); // Estado para abrir/cerrar modal de agregar cita
+  const { notifications } = useNotification();
+  const [newNotification, setNewNotification] = useState<any | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [unreadCount, setUnreadCount] = useState(0); // Estado para almacenar el número de notificaciones no leídas
+
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const latestNotification = notifications[0];
+      setNewNotification(latestNotification);
+      setShowPopup(true);
+
+      // Ocultar el popup después de 3 segundos
+      const timer = setTimeout(() => setShowPopup(false), 3000);
+      return () => clearTimeout(timer); // Limpiar el temporizador al desmontar
+    }
+  }, [notifications]);
 
   const dayPropGetter = (date: Date) => {
     if (new Date().toDateString() === date.toDateString()) {
@@ -80,6 +100,10 @@ const AppointmentCalendar = () => {
     refetch(); // Refrescar las citas después de agregar una nueva
     setShowAddModal(false); // Cerrar el modal
   };
+
+const goToNotifications = () => {
+Navigate('/dashboard/notifications');
+}
 
   return (
     <div className={`h-[80vh] p-4 rounded-lg shadow-lg ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
@@ -133,6 +157,19 @@ const AppointmentCalendar = () => {
           >
             Siguiente
           </button>
+          <button
+        onClick={goToNotifications}
+        className={`relative px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+      >
+        <FiBell />
+
+        {/* Badge de notificaciones no leídas */}
+        {unreadCount > 0 && (
+          <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+            {unreadCount}
+          </span>
+        )}
+      </button>
         </div>
       </div>
     ),
@@ -183,7 +220,21 @@ const AppointmentCalendar = () => {
         companions={[]} // Y los acompañantes aquí
         onSave={handleSaveAppointment}
       />
-      <NotificationComponent />
+       <AnimatePresence>
+        {showPopup && newNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white p-6 rounded-lg shadow-lg"
+          >
+            <h3 className="text-lg font-bold">{newNotification.title}</h3>
+            <p>{newNotification.message}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
     </div>
   );
 };
