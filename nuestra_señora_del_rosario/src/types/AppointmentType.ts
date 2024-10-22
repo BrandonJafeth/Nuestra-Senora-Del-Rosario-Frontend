@@ -1,3 +1,4 @@
+
 export interface Appointment {
     id_Appointment: number;
     residentFullName: string;
@@ -10,4 +11,13 @@ export interface Appointment {
     statusName: string;
     notes?: string;
   }
-  
+
+// Ajustamos el tipo según los requerimientos del backend
+export interface AppointmentUpdateDto {
+  id_Appointment: number;
+  date: string; // ISO format 'YYYY-MM-DD'
+  time: string; // ISO format 'HH:mm:ss'
+  id_Companion: number;
+  id_StatusAP: number;
+  notes: string;
+}

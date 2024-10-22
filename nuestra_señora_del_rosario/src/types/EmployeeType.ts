@@ -13,4 +13,9 @@
     typeOfSalaryName: string;
     fullName: string;
   }
+
   
+export interface Companion {
+    dni: string;
+    fullName: string;
+  }
