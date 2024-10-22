@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-motion para animar el toast
 import { FiBell, FiCheckCircle } from 'react-icons/fi'; // Icono para el toast
 import { useNotification } from '../../hooks/useNotification';
+import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
@@ -186,15 +187,15 @@ Navigate('/dashboard/notifications');
         style={{ content: { zIndex: 1000 } }}
       >
         <h2 className="text-xl font-bold mb-4">
-          Citas del {selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''}
+          Citas del {selectedDate ? formatLongDate(selectedDate.toISOString()) : ''}
         </h2>
         {dailyAppointments.length > 0 ? (
           <ul className="space-y-4">
             {dailyAppointments.map((appointment, index) => (
               <li key={index} className={`p-4 rounded-lg shadow ${isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'}`}>
                 <p className="font-semibold">Residente: {appointment.residentFullName}</p>
-                <p>Fecha: {appointment.date}</p>
-                <p>Hora: {appointment.time}</p>
+                <p>Fecha: {formatDate(appointment.date)}</p>
+                <p>Hora: {formatTime(appointment.time)}</p>
                 <p>Especialidad: {appointment.specialtyName}</p>
                 <p>Centro: {appointment.healthcareCenterName}</p>
                 <p>Estado: {appointment.statusName}</p>
