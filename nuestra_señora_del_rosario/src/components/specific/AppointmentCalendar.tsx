@@ -211,15 +211,15 @@ const openNotesModal = () => setNotesModalIsOpen(true);
         style={{ content: { zIndex: 1000 } }}
       >
         <h2 className="text-xl font-bold mb-4">
-          Citas del {selectedDate ? format(selectedDate, 'PPP', { locale: es }) : ''}
+          Citas del {selectedDate ? formatLongDate(selectedDate.toISOString()) : ''}
         </h2>
         {dailyAppointments.length > 0 ? (
           <ul className="space-y-4">
             {dailyAppointments.map((appointment, index) => (
               <li key={index} className={`p-4 rounded-lg shadow ${isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'}`}>
                 <p className="font-semibold">Residente: {appointment.residentFullName}</p>
-                <p>Fecha: {appointment.date}</p>
-                <p>Hora: {appointment.time}</p>
+                <p>Fecha: {formatDate(appointment.date)}</p>
+                <p>Hora: {formatTime(appointment.time)}</p>
                 <p>Especialidad: {appointment.specialtyName}</p>
                 <p>Centro: {appointment.healthcareCenterName}</p>
                 <p>Estado: {appointment.statusName}</p>
