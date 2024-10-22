@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-mo
 import { FiBell, FiCheckCircle } from 'react-icons/fi'; // Icono para el toast
 import { useNotification } from '../../hooks/useNotification';
 import NoteForm from './NoteForm';
+import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
