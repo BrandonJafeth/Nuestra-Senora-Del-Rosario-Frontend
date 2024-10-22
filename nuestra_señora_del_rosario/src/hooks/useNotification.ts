@@ -1,33 +1,49 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
+// src/hooks/useNotification.ts
+import { useEffect, useState } from 'react';
+import { NotificationGetDto } from '../types/NotificationType';
+import NotificationService from '../services/NotificationService';
 
-const API_URL = 'https://localhost:7066/api/Notification';
 
-export const useNotifications = () => {
-  const queryClient = useQueryClient();
+export const useNotification = () => {
+  const [notifications, setNotifications] = useState<NotificationGetDto[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Cargar las notificaciones no leídas
-  const { data, isLoading, error } = useQuery('notifications', async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
-  });
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await NotificationService.getUnreadNotifications();
+        setNotifications(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error al obtener notificaciones:', err);
+        setError('Error al obtener notificaciones.');
+        setLoading(false);
+      }
+    };
 
-  // Mutación para marcar una notificación como leída
-  const markAsRead = useMutation(
-    (notificationId: number) =>
-      axios.put(`${API_URL}/${notificationId}`), // Realiza la petición PUT
-    {
-      onSuccess: () => {
-        // Refresca las notificaciones después de marcar como leída
-        queryClient.invalidateQueries('notifications');
-      },
+    // Escucha de nuevas notificaciones en tiempo real
+    NotificationService.onNotificationReceived((notification) => {
+      setNotifications((prev) => [...prev, notification]);
+    });
+
+    fetchNotifications();
+
+    // Desconectar la conexión de SignalR al desmontar el componente
+    return () => {
+      NotificationService.disconnect();
+    };
+  }, []);
+
+  const markAsRead = async (id: number) => {
+    try {
+      await NotificationService.markAsRead(id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      console.error('Error al marcar la notificación como leída:', err);
+      setError('Error al marcar la notificación como leída.');
     }
-  );
-
-  return {
-    data,
-    isLoading,
-    error,
-    markAsRead: (id: number) => markAsRead.mutate(id), // Exponer la mutación
   };
+
+  return { notifications, loading, error, markAsRead };
 };
