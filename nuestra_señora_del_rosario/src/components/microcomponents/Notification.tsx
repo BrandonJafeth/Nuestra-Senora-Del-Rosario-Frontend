@@ -63,21 +63,6 @@ const NotificationComponent: React.FC = () => {
           ))}
         </ul>
       )}
-
-      {/* Popup de Nueva Notificación */}
-      <AnimatePresence>
-        {showPopup && newNotification && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white p-6 rounded-lg shadow-lg"
-          >
-            <h3 className="text-lg font-bold">{newNotification.title}</h3>
-            <p>{newNotification.message}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

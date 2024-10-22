@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-motion para animar el toast
 import { FiBell, FiCheckCircle } from 'react-icons/fi'; // Icono para el toast
 import { useNotification } from '../../hooks/useNotification';
+import NoteForm from './NoteForm';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
@@ -37,6 +38,8 @@ const AppointmentCalendar = () => {
   const [newNotification, setNewNotification] = useState<any | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState(0); // Estado para almacenar el número de notificaciones no leídas
+  const [notesModalIsOpen, setNotesModalIsOpen] = useState(false); // Estado para el modal de notas
+ 
 
 
   useEffect(() => {
@@ -91,6 +94,8 @@ const AppointmentCalendar = () => {
     setModalIsOpen(true);
   };
 
+
+  
   const handleAddAppointment = () => {
     setShowAddModal(true); // Abrir el modal para agregar cita
   };
@@ -104,6 +109,9 @@ const AppointmentCalendar = () => {
 const goToNotifications = () => {
 Navigate('/dashboard/notifications');
 }
+
+const openNotesModal = () => setNotesModalIsOpen(true);
+  const closeNotesModal = () => setNotesModalIsOpen(false);
 
   return (
     <div className={`h-[80vh] p-4 rounded-lg shadow-lg ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
@@ -127,12 +135,29 @@ Navigate('/dashboard/notifications');
   components={{
     toolbar: (props) => (
       <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={handleAddAppointment}
-          className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-        >
-          Agregar Cita
-        </button>
+       <div className="flex justify-start items-center space-x-4 mb-4">
+  <button
+    onClick={handleAddAppointment}
+    className={`px-4 py-2 rounded ${
+      isDarkMode
+        ? 'bg-blue-600 text-white hover:bg-blue-700'
+        : 'bg-blue-500 text-white hover:bg-blue-600'
+    }`}
+  >
+    Agregar Cita
+  </button>
+
+  <button
+    onClick={openNotesModal}
+    className={`px-4 py-2 rounded ${
+      isDarkMode
+        ? 'bg-blue-600 text-white hover:bg-blue-700'
+        : 'bg-blue-500 text-white hover:bg-blue-600'
+    }`}
+  >
+    Notas
+  </button>
+</div>
         <div className="text-center flex-grow">
           <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             {format(props.date, 'MMMM yyyy', { locale: es })}
@@ -220,21 +245,51 @@ Navigate('/dashboard/notifications');
         companions={[]} // Y los acompañantes aquí
         onSave={handleSaveAppointment}
       />
-       <AnimatePresence>
-        {showPopup && newNotification && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white p-6 rounded-lg shadow-lg"
-          >
-            <h3 className="text-lg font-bold">{newNotification.title}</h3>
-            <p>{newNotification.message}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+     <AnimatePresence>
+  {showPopup && newNotification && (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }} // Aparece desde abajo
+      animate={{ opacity: 1, y: 0 }} // Subida suave al mostrarse
+      exit={{ opacity: 0, y: 30 }} // Desaparece bajando
+      transition={{ duration: 0.5 }}
+      className="fixed bg-blue-600 text-white p-6 rounded-lg shadow-lg flex items-center space-x-4"
+      style={{
+        bottom: '20px', // Posición desde el borde inferior
+        right: '20px',  // Posición desde el borde derecho
+        zIndex: 1050,   // Asegura que esté delante de otros elementos
+        pointerEvents: 'auto', // Permite interacción
+      }}
+    >
+      <h3 className="text-lg font-bold">{newNotification.title}</h3>
+      <p className="ml-4">{newNotification.message}</p>
+    </motion.div>
+  )}
+</AnimatePresence>
 
+<Modal
+  isOpen={notesModalIsOpen}
+  onRequestClose={closeNotesModal}
+  contentLabel="Agregar Nota"
+  className={`relative p-6 rounded-lg shadow-lg max-w-md mx-auto bg-white dark:bg-gray-800`}
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+  style={{
+    content: {
+      zIndex: 1050, // Asegura que tenga prioridad
+      position: 'relative',
+    },
+  }}
+>
+  {/* Botón de cerrar en la esquina superior derecha */}
+  <button
+    onClick={closeNotesModal}
+    className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition"
+  >
+    ✕
+  </button>
 
+  {/* Formulario de Nota */}
+  <NoteForm />
+</Modal>
     </div>
   );
 };
