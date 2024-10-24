@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -11,10 +12,11 @@ import AddAppointmentModal from './AddAppointmentModal'; // Importa el modal de 
 import '../../styles/Calendar.css';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-motion para animar el toast
-import { FiBell, FiCheckCircle } from 'react-icons/fi'; // Icono para el toast
+import { FiBell } from 'react-icons/fi'; // Icono para el toast
 import { useNotification } from '../../hooks/useNotification';
 import NoteForm from './NoteForm';
 import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
+import DailyAppointment from './DailyAppointment';
 
 const locales = { es };
 const localizer = dateFnsLocalizer({
@@ -224,6 +226,7 @@ const openNotesModal = () => setNotesModalIsOpen(true);
                 <p>Especialidad: {appointment.specialtyName}</p>
                 <p>Centro: {appointment.healthcareCenterName}</p>
                 <p>Estado: {appointment.statusName}</p>
+                
               </li>
             ))}
           </ul>
@@ -235,7 +238,16 @@ const openNotesModal = () => setNotesModalIsOpen(true);
           Cerrar
         </button>
       </Modal>
-
+      
+      <DailyAppointment
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+        selectedDate={selectedDate}
+        dailyAppointments={dailyAppointments}
+        isDarkMode={isDarkMode}
+        setDailyAppointments={setDailyAppointments}
+        onSave={refetch}
+      />
       {/* Modal para agregar nueva cita */}
       <AddAppointmentModal
         isOpen={showAddModal}
