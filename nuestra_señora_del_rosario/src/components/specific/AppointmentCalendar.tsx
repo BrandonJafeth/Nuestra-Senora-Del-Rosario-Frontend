@@ -156,7 +156,7 @@ const openNotesModal = () => setNotesModalIsOpen(true);
         : 'bg-blue-500 text-white hover:bg-blue-600'
     }`}
   >
-    Notas
+   Agregar Nota
   </button>
 </div>
         <div className="text-center flex-grow">

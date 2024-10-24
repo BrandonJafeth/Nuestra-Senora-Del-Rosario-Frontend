@@ -6,9 +6,10 @@ class NoteService extends ApiService<NoteRequest> {
     super(); 
   }
 
-  public getAllNotes() {
-    return this.getAll('/Note');
-  }
+  public getAllNotes = async () => {
+    return await this.getAll('/Note');
+  };
+  
 
   public getNotesById(id: number) {
     return this.getOne('/Note', id);

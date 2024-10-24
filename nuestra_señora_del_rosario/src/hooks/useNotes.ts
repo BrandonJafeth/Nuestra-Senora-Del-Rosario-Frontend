@@ -3,12 +3,10 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import notesService from '../services/NoteService';
 import { NoteRequest } from '../types/NoteTypes';
 
-// Hook para obtener todas las notas
 export const useNotes = () => {
   return useQuery('notes', notesService.getAllNotes, {
-    select: (response) => response.data, // Extrae los datos del response
-    staleTime: 1000 * 60 * 5, // Cachea las notas por 5 minutos
-    refetchOnWindowFocus: false, // Evita refetch al cambiar de pestaña
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutos
+    refetchOnWindowFocus: false,
   });
 };
 
