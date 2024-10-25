@@ -7,6 +7,7 @@ import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 import { Companion } from '../../types/EmployeeType';
 import { useToast } from '../../hooks/useToast'; // Hook de Toast
 import { useAppointmentStatuses } from '../../hooks/useappointmentStatus';
+import Toast from '../common/Toast';
 
 interface DailyAppointmentsModalProps {
   modalIsOpen: boolean;
@@ -114,7 +115,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
 
   return (
     <>
-      {message && <div className={`toast toast-${type}`}>{message}</div>}
+      {<div className={`toast toast-${type}`}></div>}
 
       <Modal
         isOpen={modalIsOpen}
@@ -143,6 +144,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 <p className="font-semibold">Residente: {appointment.residentFullName}</p>
                 <p>Fecha: {formatDate(appointment.date)}</p>
                 <p>Hora: {formatTime(appointment.time)}</p>
+                <p>Acompañante: {appointment.companionName}</p>
                 <p>Especialidad: {appointment.specialtyName}</p>
                 <p>Centro: {appointment.healthcareCenterName}</p>
                 <p>Estado: {appointment.statusName}</p>
@@ -262,6 +264,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
           </form>
         )}
       </Modal>
+      <Toast message={message} type={type} />
     </>
   );
 };
