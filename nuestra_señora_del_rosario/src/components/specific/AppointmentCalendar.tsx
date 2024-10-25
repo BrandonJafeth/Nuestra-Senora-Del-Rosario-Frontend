@@ -40,7 +40,7 @@ const AppointmentCalendar = () => {
   const { notifications } = useNotification();
   const [newNotification, setNewNotification] = useState<any | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [unreadCount, setUnreadCount] = useState(0); // Estado para almacenar el número de notificaciones no leídas
+  const [unreadCount, setUnreadCount] = useState(0); 
   const [notesModalIsOpen, setNotesModalIsOpen] = useState(false); // Estado para el modal de notas
  
 
@@ -203,41 +203,6 @@ const openNotesModal = () => setNotesModalIsOpen(true);
     ),
   }}
 />
-
-      {/* Modal para mostrar las citas del día */}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        contentLabel="Citas del día"
-        className={`p-6 rounded-lg shadow-lg max-w-md mx-auto mt-20 ${isDarkMode ? 'bg-[#1f2937] text-white' : 'bg-white text-gray-800'}`}
-        overlayClassName={`fixed inset-0 ${isDarkMode ? 'bg-black bg-opacity-75' : 'bg-black bg-opacity-50'} z-50`}
-        style={{ content: { zIndex: 1000 } }}
-      >
-        <h2 className="text-xl font-bold mb-4">
-          Citas del {selectedDate ? formatLongDate(selectedDate.toISOString()) : ''}
-        </h2>
-        {dailyAppointments.length > 0 ? (
-          <ul className="space-y-4">
-            {dailyAppointments.map((appointment, index) => (
-              <li key={index} className={`p-4 rounded-lg shadow ${isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'}`}>
-                <p className="font-semibold">Residente: {appointment.residentFullName}</p>
-                <p>Fecha: {formatDate(appointment.date)}</p>
-                <p>Hora: {formatTime(appointment.time)}</p>
-                <p>Especialidad: {appointment.specialtyName}</p>
-                <p>Centro: {appointment.healthcareCenterName}</p>
-                <p>Estado: {appointment.statusName}</p>
-                
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No hay citas programadas para este día.</p>
-        )}
-
-        <button onClick={() => setModalIsOpen(false)} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Cerrar
-        </button>
-      </Modal>
       
       <DailyAppointment
         modalIsOpen={modalIsOpen}
