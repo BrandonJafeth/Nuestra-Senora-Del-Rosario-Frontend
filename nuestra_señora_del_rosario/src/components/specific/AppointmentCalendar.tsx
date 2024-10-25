@@ -15,7 +15,6 @@ import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-mo
 import { FiBell } from 'react-icons/fi'; // Icono para el toast
 import { useNotification } from '../../hooks/useNotification';
 import NoteForm from './NoteForm';
-import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 import DailyAppointment from './DailyAppointment';
 
 const locales = { es };
@@ -47,6 +46,10 @@ const AppointmentCalendar = () => {
 
   useEffect(() => {
     if (notifications.length > 0) {
+
+      const unreadNotifications = notifications.filter((n) => !n.isRead);
+      setUnreadCount(unreadNotifications.length);
+
       const latestNotification = notifications[0];
       setNewNotification(latestNotification);
       setShowPopup(true);
