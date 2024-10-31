@@ -17,7 +17,7 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     private api: AxiosInstance;
 
     constructor() {
-        this.api = axios.create({ baseURL: 'https://localhost:7066/api' });
+        this.api = axios.create({ baseURL: 'https://nuestra-senora-del-rosario-backend-2.onrender.com/api' });
     }
 
     // Methods from IReadService
