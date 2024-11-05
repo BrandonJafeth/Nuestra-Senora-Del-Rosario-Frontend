@@ -4,4 +4,7 @@ export interface Product {
     totalQuantity: number;
     categoryName: string;
     unitOfMeasure: string;
+    categoryID: number;
+    unitOfMeasureID: number;
+    initialQuantity: number;
   }

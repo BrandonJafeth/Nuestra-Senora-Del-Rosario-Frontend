@@ -10,6 +10,10 @@ class ProductService extends ApiService<Product> {
   public getAllProducts() {
     return this.getAll('/Product');
   }
+
+  public createProduct(product: Product) {
+    return this.create('/Product', product);
+  }
 }
 
 const productService = new ProductService();

@@ -1,4 +1,3 @@
-// components/InventoryTable.tsx
 import React, { useState } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import Skeleton from 'react-loading-skeleton';
@@ -6,19 +5,22 @@ import { useThemeDark } from '../../hooks/useThemeDark';
 import 'react-loading-skeleton/dist/skeleton.css';
 import InventoryReportViewer from '../microcomponents/InventoryReportViewer';
 import InventoryMovementForm from './InventoryMovementForm';
+import ProductAddModal from './AddProductModal';
+
 
 const InventoryTable: React.FC = () => {
   const { data: products, isLoading: productsLoading, isError: productsError } = useProducts();
-  const { isDarkMode } = useThemeDark(); // Dark mode state
+  const { isDarkMode } = useThemeDark();
   
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false); // Estado para el modal de agregar producto
   const [selectedProductID, setSelectedProductID] = useState<number | null>(null);
 
   // Obtener el mes y año actuales
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
+  // Funciones para abrir y cerrar el modal de movimientos
   const openModal = (productID: number) => {
     setSelectedProductID(productID);
     setIsModalOpen(true);
@@ -27,6 +29,15 @@ const InventoryTable: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProductID(null);
+  };
+
+  // Funciones para abrir y cerrar el modal de agregar producto
+  const openProductModal = () => {
+    setIsProductModalOpen(true);
+  };
+
+  const closeProductModal = () => {
+    setIsProductModalOpen(false);
   };
 
   if (productsLoading) {
@@ -62,6 +73,17 @@ const InventoryTable: React.FC = () => {
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
+      
+      {/* Botón para abrir el modal de agregar producto */}
+      <div className="absolute top-4 left-4">
+        <button
+          onClick={openProductModal} // Usa la función para abrir el modal de agregar producto
+          className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+        >
+          Agregar Producto
+        </button>
+      </div>
+
       <div className="absolute top-4 right-4">
         <InventoryReportViewer month={currentMonth} year={currentYear} />
       </div>
@@ -94,7 +116,7 @@ const InventoryTable: React.FC = () => {
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                   <button
                     onClick={() => openModal(item.productID)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue                    -600 transition duration-200"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
                   >
                     Agregar Movimiento
                   </button>
@@ -113,9 +135,14 @@ const InventoryTable: React.FC = () => {
           productID={selectedProductID}
         />
       )}
+
+      {/* Modal para agregar producto */}
+      <ProductAddModal
+        isOpen={isProductModalOpen}
+        onRequestClose={closeProductModal}
+      />
     </div>
   );
 };
 
 export default InventoryTable;
-
