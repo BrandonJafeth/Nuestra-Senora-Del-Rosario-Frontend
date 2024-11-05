@@ -14,8 +14,8 @@ import ApprovedRequests from '../components/specific/ApprovedRequests';
 import NewResidentForm from '../components/specific/NewResidentForm';
 import AppointmentCalendar from '../components/specific/AppointmentCalendar';
 import NotificationMailbox from '../components/specific/NotificationMailbox';
-import NotificationsPage from '../components/specific/NotificationMailbox';
 import InventoryTable from '../components/specific/InventoryTable';
+import ProductCalendar from '../components/specific/ProductCalendar';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -45,7 +45,8 @@ function Dashboard() {
               <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
               <Route path="Residentes" element={<ResidentList/>} />
-              <Route path='Inventario' element={<InventoryTable />} />
+              <Route path='inventario/lista-productos' element={<InventoryTable />} />
+              <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
