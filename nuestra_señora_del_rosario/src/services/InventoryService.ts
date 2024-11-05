@@ -10,6 +10,7 @@ class InventoryService extends ApiService<InventoryReport> {
   public getMonthlyReport(month: number, year: number) {
     return this.getAll(`/Inventory/report/month?month=${month}&year=${year}`);
   }
+  
 }
 
 const inventoryService = new InventoryService();

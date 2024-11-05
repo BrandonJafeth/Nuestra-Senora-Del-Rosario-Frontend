@@ -3,6 +3,7 @@ import React from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { useInventoryReport } from '../../hooks/useInventoryReport';
 import InventoryReportPDF from '../specific/InventoryReport';
+import LoadingSpinner from './LoadingSpinner';
 
 interface InventoryReportViewerProps {
   month: number;
@@ -12,7 +13,7 @@ interface InventoryReportViewerProps {
 const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, year }) => {
   const { data: report, isLoading, error } = useInventoryReport(month, year);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p><LoadingSpinner/></p>;
   if (error) return <p>Error: {error.message}</p>;
 
   return (

@@ -1,0 +1,45 @@
+/* CustomCalendar.css */
+
+.compact-calendar .rbc-month-view {
+    font-size: 0.85rem; /* Reduce font size */
+  }
+  
+  .compact-calendar .rbc-month-view .rbc-header,
+  .compact-calendar .rbc-month-view .rbc-date-cell {
+    padding: 4px 2px; /* Reduce padding for smaller cells */
+  }
+  
+  .compact-calendar .rbc-event {
+    padding: 2px 4px; /* Smaller padding for events */
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+  
+  .compact-calendar .rbc-date-cell {
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+  }
+  
+  .compact-calendar .rbc-day-bg,
+  .compact-calendar .rbc-date-cell {
+    border: 1px solid #e5e7eb; /* Add border to cells */
+  }
+  
+  .custom-modal-content {
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .custom-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
