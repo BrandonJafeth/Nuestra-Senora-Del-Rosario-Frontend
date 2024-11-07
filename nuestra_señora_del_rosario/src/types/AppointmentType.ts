@@ -18,6 +18,6 @@ date: string; // ISO format 'YYYY-MM-DD'
 time: string; // ISO format 'HH:mm:ss'
 id_Companion: number;
 id_StatusAP: number;
-notes: string;
+notes:string;
 }
 
