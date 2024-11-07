@@ -1,5 +1,10 @@
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import { useResidents } from '../../hooks/useResidents'; // Hook personalizado para obtener residentes
+
+interface ResidentOption {
+  value: number;
+  label: string;
+}
 
 const customStyles = {
   control: (base: any) => ({
@@ -40,7 +45,7 @@ const ResidentDropdown: React.FC<ResidentDropdownProps> = ({ value, onChange }) 
     <Select
       options={options} // Opciones del select
       value={selectedOption} // Opción seleccionada
-      onChange={(selected) => onChange(selected?.value ?? 0)} // Sincroniza el valor con el estado
+      onChange={(selected: SingleValue<ResidentOption>) => onChange(selected?.value ?? 0)}
       styles={customStyles} // Aplicamos estilos personalizados
       placeholder="Selecciona un residente"
       isSearchable // Permitir búsqueda en el dropdown

@@ -33,7 +33,7 @@ export const useEmployeeForm = () => {
       email,
       emergencyPhone,
       typeOfSalaryId,
-      professionId,
+      professionId
     };
 
     try {

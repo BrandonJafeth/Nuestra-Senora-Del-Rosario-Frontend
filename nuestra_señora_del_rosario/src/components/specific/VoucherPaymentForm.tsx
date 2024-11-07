@@ -37,7 +37,7 @@ import Toast from '../common/Toast';
     });
   
     const [generatedReceiptId, setGeneratedReceiptId] = useState<number | null>(null); // Estado para almacenar el ID del comprobante generado
-    const { mutate: createPaymentReceipt, isLoading, isSuccess, isError } = useCreatePaymentReceipt();
+    const { mutate: createPaymentReceipt, isLoading } = useCreatePaymentReceipt();
   
     // Enlace para descargar el comprobante en formato PDF
     const downloadLink = generatedReceiptId

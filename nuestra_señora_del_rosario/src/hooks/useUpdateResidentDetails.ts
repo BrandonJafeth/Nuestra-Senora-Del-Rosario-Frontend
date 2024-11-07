@@ -1,41 +1,21 @@
 // hooks/useUpdateResidentDetails.ts
 import { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { useToast } from './useToast'; // Para mostrar notificaciones
-import residentsService from '../services/ResidentsService'; // residentsService correcto
+import { useToast } from './useToast';
+import residentsService from '../services/ResidentsService';
 import { ResidentPatchDto } from '../types/ResidentsType';
 
 export const useUpdateResidentDetails = (residentId: number) => {
-  const [idRoom, setIdRoom] = useState<number | ''>(''); // Para almacenar el ID de la habitación
-  const [status, setStatus] = useState<string>('Activo'); // Estado (Activo o Inactivo)
-  const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>(''); // Nivel de dependencia
+  const [idRoom, setIdRoom] = useState<number | ''>('');
+  const [status, setStatus] = useState<string>('Activo');
+  const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
 
   const queryClient = useQueryClient();
-  const { showToast } = useToast(); // Para notificaciones de éxito o error
+  const { showToast } = useToast();
 
-  // Mutación para realizar la actualización del residente
+  // Mutación para actualizar el residente
   const mutation = useMutation(
-    async () => {
-      // Solo enviamos los campos que tienen valores válidos (no vacíos)
-      const dataToSend: Partial<ResidentPatchDto> = {};
-
-      // Validar campos antes de enviarlos
-      if (idRoom !== '') {
-        dataToSend.id_Room = idRoom;
-      }
-
-      if (idDependencyLevel !== '') {
-        dataToSend.id_DependencyLevel = idDependencyLevel;
-      }
-
-      if (status) {
-        dataToSend.status = status;
-      }
-
-      // Imprimir datos a enviar para verificar
-      console.log('Datos antes de enviar:', dataToSend);
-
-      // Realizar la solicitud PATCH
+    async (dataToSend: Partial<ResidentPatchDto>) => {
       return residentsService.updateResidentStatus(residentId, dataToSend);
     },
     {
@@ -50,25 +30,24 @@ export const useUpdateResidentDetails = (residentId: number) => {
     }
   );
 
-  // Función para manejar el envío de los datos actualizados
-  const handleSubmit = async () => {
-    console.log('Datos antes de enviar:', { idRoom, status, idDependencyLevel });
-    if (!idDependencyLevel && !status && !idRoom) {
+  // Función para manejar el envío con datos como argumento
+  const handleSubmit = async (updatedResidentData: Partial<ResidentPatchDto>) => {
+    if (!updatedResidentData.id_Room && !updatedResidentData.status && !updatedResidentData.id_DependencyLevel) {
       showToast('Por favor completa los campos a actualizar', 'error');
       return;
     }
-    await mutation.mutateAsync(); // Ejecuta la mutación
+    await mutation.mutateAsync(updatedResidentData);
   };
 
   return {
     idRoom,
     status,
     idDependencyLevel,
-    setIdRoom, // Setter para ID de la habitación
-    setStatus, // Setter para estado
-    setIdDependencyLevel, // Setter para nivel de dependencia
-    handleSubmit, // Función para enviar los datos
-    isLoading: mutation.isLoading, // Estado de carga
-    error: mutation.error, // Error en caso de fallo
+    setIdRoom,
+    setStatus,
+    setIdDependencyLevel,
+    handleSubmit,
+    isLoading: mutation.isLoading,
+    error: mutation.error,
   };
 };

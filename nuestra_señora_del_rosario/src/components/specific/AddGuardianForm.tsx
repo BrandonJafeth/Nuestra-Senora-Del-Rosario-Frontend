@@ -29,7 +29,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   const [guardians, setGuardians] = useState<Guardian[]>([]);
   const [filteredGuardians, setFilteredGuardians] = useState<Guardian[]>([]);
   const [isNewGuardian, setIsNewGuardian] = useState(false);
-  const [selectedGuardian, setSelectedGuardian] = useState<Guardian | null>(null); // Estado para el guardián seleccionado
+  const [, setSelectedGuardian] = useState<Guardian | null>(null); // Estado para el guardián seleccionado
 
   // Cargar guardianes al montar el componente
   useEffect(() => {

@@ -80,15 +80,16 @@ function ResetPasswordForm() {
 
         {/* Mostrar spinner o botón para actualizar */}
         <div className="w-full mt-8 flex justify-between items-center">
-          <button 
-            type="submit" 
-            className={`bg-[#f2f4f7] dark:bg-gray-600 text-[#0d313f] dark:text-white py-3 px-6 rounded-full shadow-lg hover:bg-[#e6e8ec] dark:hover:bg-gray-500 transition ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            disabled={isLoading || error} // Deshabilitar botón si hay error o está cargando
-          >
-            {isLoading ? 'Actualizando...' : 'Restablecer contraseña'}
-          </button>
+        <button 
+  type="submit" 
+  className={`bg-[#f2f4f7] dark:bg-gray-600 text-[#0d313f] dark:text-white py-3 px-6 rounded-full shadow-lg hover:bg-[#e6e8ec] dark:hover:bg-gray-500 transition ${
+    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+  }`}
+  disabled={isLoading || Boolean(error)}
+>
+  {isLoading ? 'Actualizando...' : 'Restablecer contraseña'}
+</button>
+
 
           {/* Texto de "¿Recordó su contraseña?" en una columna */}
           <div className="flex flex-col items-end space-y-2 text-white text-sm">
