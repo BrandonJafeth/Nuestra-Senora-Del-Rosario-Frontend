@@ -30,8 +30,8 @@ function ResidentList() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   // Estado para los campos editables
-  const [idRoom, setIdRoom] = useState<number | ''>('');
-  const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
+  const [idRoom, setIdRoom] = useState<number | undefined>(undefined);
+  const [idDependencyLevel, setIdDependencyLevel] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string>('Activo'); 
   const [sexo, setSexo] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -72,8 +72,8 @@ function ResidentList() {
   const handleUpdateClick = async () => {
     setIsUpdating(true);
     const updatedResidentData = {
-      id_Room: idRoom,
-      id_DependencyLevel: idDependencyLevel,
+      id_Room: idRoom || undefined,
+      id_DependencyLevel: idDependencyLevel || undefined,
       status,
       sexo,
     };

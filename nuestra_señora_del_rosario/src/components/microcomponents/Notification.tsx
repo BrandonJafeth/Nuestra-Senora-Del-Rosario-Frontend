@@ -1,12 +1,11 @@
 // src/components/NotificationComponent.tsx
 import React, { useEffect, useState } from 'react';
-import { useNotification } from '../../hooks/useNotification';
-import { motion, AnimatePresence } from 'framer-motion'; // Para animaciones opcionales
+import { useNotification } from '../../hooks/useNotification';// Para animaciones opcionales
 
 const NotificationComponent: React.FC = () => {
   const { notifications, loading, error, markAsRead } = useNotification();
-  const [showPopup, setShowPopup] = useState<boolean>(false); // Controlar notificación emergente
-  const [newNotification, setNewNotification] = useState<any | null>(null); // Notificación reciente
+  const [, setShowPopup] = useState<boolean>(false); // Controlar notificación emergente
+  const [, setNewNotification] = useState<any | null>(null); // Notificación reciente
 
   // Detectar si hay una nueva notificación
   useEffect(() => {

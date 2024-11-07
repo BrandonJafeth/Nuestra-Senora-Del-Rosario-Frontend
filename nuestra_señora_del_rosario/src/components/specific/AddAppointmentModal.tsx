@@ -12,20 +12,24 @@ import ResidentDropdown from '../microcomponents/ResidentDropdown';
 interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newAppointment: any) => void; // Cambiar aquí para aceptar un parámetro
+  residents: any[];
+  healthcareCenters: any[];
+  specialties: any[];
+  companions: any[];
 }
+
 
 const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   isOpen,
   onClose,
   onSave,
 }) => {
-  const { data: residents, isLoading: loadingResidents } = useResidents();
+  const { isLoading: loadingResidents } = useResidents();
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');
-  const [searchTerm, setSearchTerm] = useState('');
-
+  
   const [loading, setLoading] = useState(false);
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
 
@@ -37,6 +41,12 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     id_Specialty: 0,
     id_Companion: '',
     notes: undefined,
+    residentFullName: '',
+    residentCedula: '',
+    specialtyName: '',
+    healthcareCenterName: '',
+    companionName: '',
+    statusName: ''
   });
 
   const handleInputChange = (
@@ -56,25 +66,32 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   
       // Construir el objeto de la cita con los tipos correctos
       const appointmentData = {
+        id_Appointment: 0, // or some default value
         id_Resident: Number(formData.id_Resident),
-        date: new Date(formData.date), // Usar tipo Date directamente
-        time: formData.time + ':00', // Asegurar formato "HH:mm:ss"
+        date: formData.date, 
+        time: formData.time + ':00', 
         id_HC: Number(formData.id_HC),
         id_Specialty: Number(formData.id_Specialty),
         id_Companion: Number(formData.id_Companion),
         notes: formData.notes || '',
+        residentFullName: '',
+        residentCedula: '',
+        specialtyName: '',
+        healthcareCenterName: '',
+        companionName: '',
+        statusName: ''
       };
   
-      // Enviar los datos al backend
+      // Llamar a onSave con los datos de la cita
       await appointmentService.createAppointment(appointmentData);
-      onSave();
+      onSave(appointmentData); // Pasar el objeto de cita a onSave
       onClose();
     } catch (error) {
       console.error('Error al crear la cita:', error);
     } finally {
       setLoading(false);
     }
-  };  
+  };
   
   
   const openHealthcareCenterModal = () => setHealthcareCenterModalOpen(true);

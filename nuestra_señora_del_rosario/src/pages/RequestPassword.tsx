@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useThemeDark } from '../hooks/useThemeDark';
 import RequestPasswordForm from '../components/specific/RequestPasswordForm';
 import { Icon } from '@iconify/react/dist/iconify.js';

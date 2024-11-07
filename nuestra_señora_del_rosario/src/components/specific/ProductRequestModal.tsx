@@ -12,7 +12,9 @@ import { useCreateInventoryMovement } from '../../hooks/useInventoryMovement';
 interface ProductRequestModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
+  onSave: (movement: InventoryMovement) => void; // Agrega esta línea
 }
+
 
 const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onRequestClose }) => {
   const { data: products } = useProducts();

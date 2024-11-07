@@ -19,16 +19,26 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
   return (
     <div>
       {report && (
-        <PDFDownloadLink
-          document={<InventoryReportPDF report={report} />}
-          fileName={`Inventory_Report_${month}_${year}.pdf`}
-        >
-          {({ loading }) => (
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200">
-              {loading ? 'Generando reporte...' : 'Descargar Reporte'}
-            </button>
-          )}
-        </PDFDownloadLink>
+     <PDFDownloadLink
+     document={<InventoryReportPDF report={report} />}
+     fileName={`Inventory_Report_${month}_${year}.pdf`}
+   >
+     {({ loading }: { loading: boolean }) => 
+       loading ? (
+         <span className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200">
+           Generando reporte...
+         </span>
+       ) : (
+         <span className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200">
+           Descargar Reporte
+         </span>
+       )
+      }
+
+     
+   </PDFDownloadLink>
+   
+    
       )}
     </div>
   );

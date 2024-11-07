@@ -30,23 +30,24 @@ class NotificationService {
   }
 
   // Registra los eventos relevantes de la conexión
-  private registerConnectionEvents() {
-    if (!this.connection) return;
+  // Registro de eventos de conexión con tipo explícito para error
+private registerConnectionEvents() {
+  if (!this.connection) return;
 
-    this.connection.onreconnecting((error) => {
-      console.warn(`🔄 Reconectando con SignalR... Intento #${this.reconnectAttempts}`, error);
-    });
+  this.connection.onreconnecting((error: Error | undefined) => {
+    console.warn(`🔄 Reconectando con SignalR... Intento #${this.reconnectAttempts}`, error);
+  });
 
-    this.connection.onreconnected(() => {
-      console.log('✅ Reconexión exitosa con SignalR.');
-      this.reconnectAttempts = 0; // Reiniciar contador de intentos
-    });
+  this.connection.onreconnected(() => {
+    console.log('✅ Reconexión exitosa con SignalR.');
+    this.reconnectAttempts = 0; // Reiniciar contador de intentos
+  });
 
-    this.connection.onclose(async (error) => {
-      console.error('❌ Conexión cerrada. Intentando reconectar...', error);
-      await this.reconnectWithBackoff(); // Intentar reconexión controlada
-    });
-  }
+  this.connection.onclose(async (error: Error | undefined) => {
+    console.error('❌ Conexión cerrada. Intentando reconectar...', error);
+    await this.reconnectWithBackoff(); // Intentar reconexión controlada
+  });
+}
 
   // Intentar iniciar la conexión
   private async startConnection() {

@@ -9,8 +9,8 @@
     address: string;
     email: string;
     emergencyPhone: string;
-    professionName: string;
-    typeOfSalaryName: string;
-    fullName: string;
+    professionName?: string;
+    typeOfSalaryName?: string;
+    fullName?: string;
   }
   
