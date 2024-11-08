@@ -4,7 +4,7 @@ import { AppointmentUpdateDto } from '../../types/AppointmentType';
 import { useUpdateAppointment } from '../../hooks/useUpdateAppointment';
 import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
 import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
-import { Companion } from '../../types/EmployeeType';
+import { EmployeeType } from '../../types/EmployeeType';
 import { useToast } from '../../hooks/useToast'; // Hook de Toast
 import { useAppointmentStatuses } from '../../hooks/useappointmentStatus';
 import Toast from '../common/Toast';
@@ -37,7 +37,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
   const { data: companionsResponse } = useEmployeesByRole('Encargado');
 
   const statuses = statusesResponse?.data || [];
-  const companions: Companion[] = companionsResponse?.data || [];
+  const companions: EmployeeType[] = companionsResponse?.data || [];
 
   const { mutate: updateAppointment, isLoading: updating } = useUpdateAppointment();
   const { showToast, message, type } = useToast(); // Hook de Toast
@@ -70,13 +70,20 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     updated: AppointmentUpdateDto
   ): Partial<AppointmentUpdateDto> => {
     const changes: Partial<AppointmentUpdateDto> = {};
+  
     for (const key in updated) {
-      if (updated[key as keyof AppointmentUpdateDto] !== original[key as keyof AppointmentUpdateDto]) {
-        changes[key as keyof AppointmentUpdateDto] = updated[key as keyof AppointmentUpdateDto];
+      const originalValue = original[key as keyof AppointmentUpdateDto];
+      const updatedValue = updated[key as keyof AppointmentUpdateDto];
+  
+      // Validación y conversión de tipo explícita para evitar el error
+      if (updatedValue !== originalValue) {
+        (changes as any)[key] = updatedValue;
       }
     }
     return changes;
   };
+  
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
