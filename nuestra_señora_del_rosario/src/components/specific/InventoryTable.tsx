@@ -6,14 +6,15 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import InventoryReportViewer from '../microcomponents/InventoryReportViewer';
 import InventoryMovementForm from './InventoryMovementForm';
 import ProductAddModal from './AddProductModal';
-
+import ProductEditModal from './ModalEditProduct';
 
 const InventoryTable: React.FC = () => {
   const { data: products, isLoading: productsLoading, isError: productsError } = useProducts();
   const { isDarkMode } = useThemeDark();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false); // Estado para el modal de agregar producto
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
   const [selectedProductID, setSelectedProductID] = useState<number | null>(null);
 
   // Obtener el mes y año actuales
@@ -38,6 +39,17 @@ const InventoryTable: React.FC = () => {
 
   const closeProductModal = () => {
     setIsProductModalOpen(false);
+  };
+
+  // Funciones para abrir y cerrar el modal de edición de producto
+  const openEditModal = (productID: number) => {
+    setSelectedProductID(productID);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedProductID(null);
   };
 
   if (productsLoading) {
@@ -77,7 +89,7 @@ const InventoryTable: React.FC = () => {
       {/* Botón para abrir el modal de agregar producto */}
       <div className="absolute top-4 left-4">
         <button
-          onClick={openProductModal} // Usa la función para abrir el modal de agregar producto
+          onClick={openProductModal}
           className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
         >
           Agregar Producto
@@ -116,9 +128,15 @@ const InventoryTable: React.FC = () => {
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                   <button
                     onClick={() => openModal(item.productID)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+                    className="px-4 py-2 mr-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
                   >
                     Agregar Movimiento
+                  </button>
+                  <button
+                    onClick={() => openEditModal(item.productID)} // Abre el modal de edición
+                    className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition duration-200"
+                  >
+                    Editar
                   </button>
                 </td>
               </tr>
@@ -141,6 +159,15 @@ const InventoryTable: React.FC = () => {
         isOpen={isProductModalOpen}
         onRequestClose={closeProductModal}
       />
+
+      {/* Modal para editar producto */}
+      {selectedProductID && (
+        <ProductEditModal
+          isOpen={isEditModalOpen}
+          onRequestClose={closeEditModal}
+          productId={selectedProductID}
+        />
+      )}
     </div>
   );
 };
