@@ -227,22 +227,39 @@ function ResidentList() {
                 )}
               </div>
 
+        {/* Estado */}
+        <div>
+          <label className="block font-bold">Estado:</label>
+          {isEditing ? (
+    <select
+      value={status}
+      onChange={(e) => setStatus(e.target.value)}
+      className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+    >
+      <option value="">Selecciona un estado</option>
+      <option value="Femenino">Activo</option>
+      <option value="Masculino">Inactivo</option>
+    </select>
+  ) : (
+    <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{status || 'No especificado'}</p>
+  )}
+        </div>
+
+        {/* Sexo */}
               <div>
   <label className="block font-bold">Sexo:</label>
   {isEditing ? (
-    <select
-      value={sexo}
-      onChange={(e) => setSexo(e.target.value)}
-      className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
-    >
-      <option value="">Selecciona un sexo</option>
-      <option value="Femenino">Femenino</option>
-      <option value="Masculino">Masculino</option>
-    </select>
+    // Si deseas deshabilitar la edición completamente, muestra el sexo como texto en lugar del select
+    <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">
+      {sexo || 'No especificado'}
+    </p>
   ) : (
-    <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{sexo || 'No especificado'}</p>
+    <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">
+      {sexo || 'No especificado'}
+    </p>
   )}
 </div>
+
 
 
         {/* Fecha de Nacimiento */}
@@ -257,16 +274,6 @@ function ResidentList() {
         </div>
 
         {/* Estado */}
-        <div>
-          <label className="block font-bold">Estado:</label>
-          <input
-            type="text"
-            value={status}
-            readOnly={!isEditing}
-            onChange={(e) => setStatus(e.target.value)}
-            className={`w-full p-2 mt-1 border rounded-md ${isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'}`}
-          />
-        </div>
 
         {/* Fecha de Entrada */}
         <div>
@@ -292,7 +299,7 @@ function ResidentList() {
 
         {/* Nombre del Guardián */}
         <div>
-          <label className="block font-bold">Nombre del Guardián:</label>
+          <label className="block font-bold">Nombre del Encargado:</label>
           <input
             type="text"
             value={selectedResident.guardianName}
@@ -303,7 +310,7 @@ function ResidentList() {
 
         {/* Teléfono del Guardián */}
         <div>
-          <label className="block font-bold">Teléfono del Guardián:</label>
+          <label className="block font-bold">Teléfono del Encargado:</label>
           <input
             type="text"
             value={selectedResident.guardianPhone}
