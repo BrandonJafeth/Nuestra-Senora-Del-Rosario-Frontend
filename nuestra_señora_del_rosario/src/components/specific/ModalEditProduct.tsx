@@ -21,6 +21,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
   initialProductData,
 }) => {
   const [productData, setProductData] = useState<Partial<Product>>(initialProductData);
+  const [errors, setErrors] = useState<{ categoryID?: string; unitOfMeasureID?: string }>({});
   const updateProduct = useUpdateProduct();
   const { showToast, message, type } = useToast();
   const { data: categories } = useCategories();
@@ -28,6 +29,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
   useEffect(() => {
     setProductData(initialProductData);
+    setErrors({}); // Reset errors when initial data changes
   }, [initialProductData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -36,6 +38,20 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
   };
 
   const handleSave = () => {
+    const newErrors: { categoryID?: string; unitOfMeasureID?: string } = {};
+
+    if (!productData.categoryID) {
+      newErrors.categoryID = 'Selecciona una categoría';
+    }
+    if (!productData.unitOfMeasureID) {
+      newErrors.unitOfMeasureID = 'Selecciona una unidad de medida';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     updateProduct.mutate(
       { id: productId, productPatch: productData },
       {
@@ -78,7 +94,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                 name="categoryID"
                 value={productData.categoryID || ''}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                className={`mt-1 block w-full px-4 py-2 border ${errors.categoryID ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
               >
                 <option value="">Selecciona una categoría</option>
                 {categories?.map((category) => (
@@ -87,6 +103,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                   </option>
                 ))}
               </select>
+              {errors.categoryID && <p className="text-red-500 text-sm mt-1">{errors.categoryID}</p>}
             </label>
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Unidad de Medida:</span>
@@ -94,7 +111,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                 name="unitOfMeasureID"
                 value={productData.unitOfMeasureID || ''}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                className={`mt-1 block w-full px-4 py-2 border ${errors.unitOfMeasureID ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
               >
                 <option value="">Selecciona una unidad</option>
                 {unitsOfMeasure?.map((unit) => (
@@ -103,6 +120,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                   </option>
                 ))}
               </select>
+              {errors.unitOfMeasureID && <p className="text-red-500 text-sm mt-1">{errors.unitOfMeasureID}</p>}
             </label>
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Cantidad Total:</span>
