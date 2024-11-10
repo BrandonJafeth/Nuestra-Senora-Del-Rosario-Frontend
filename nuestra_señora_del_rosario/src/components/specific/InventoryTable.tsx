@@ -7,6 +7,7 @@ import InventoryReportViewer from '../microcomponents/InventoryReportViewer';
 import InventoryMovementForm from './InventoryMovementForm';
 import ProductAddModal from './AddProductModal';
 import ProductEditModal from './ModalEditProduct';
+import { Product } from '../../types/ProductType';
 
 const InventoryTable: React.FC = () => {
   const { data: products, isLoading: productsLoading, isError: productsError } = useProducts();
@@ -15,21 +16,22 @@ const InventoryTable: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false); // Estado para el modal de agregar producto
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
-  const [selectedProductID, setSelectedProductID] = useState<number | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Obtener el mes y año actuales
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
   // Funciones para abrir y cerrar el modal de movimientos
-  const openModal = (productID: number) => {
-    setSelectedProductID(productID);
+  const openModal = (product: Product) => {
+    setSelectedProduct(product); // Asigna el producto completo, no solo el ID
     setIsModalOpen(true);
-  };
+};
+
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedProductID(null);
+    setSelectedProduct(null);
   };
 
   // Funciones para abrir y cerrar el modal de agregar producto
@@ -42,14 +44,14 @@ const InventoryTable: React.FC = () => {
   };
 
   // Funciones para abrir y cerrar el modal de edición de producto
-  const openEditModal = (productID: number) => {
-    setSelectedProductID(productID);
+  const openEditModal = (product: Product) => {
+    setSelectedProduct(product); // Asigna el producto seleccionado
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setSelectedProductID(null);
+    setSelectedProduct(null);
   };
 
   if (productsLoading) {
@@ -127,13 +129,13 @@ const InventoryTable: React.FC = () => {
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{item.categoryName || 'N/A'}</td>
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                   <button
-                    onClick={() => openModal(item.productID)}
+                    onClick={() => openModal(item)}
                     className="px-4 py-2 mr-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
                   >
                     Agregar Movimiento
                   </button>
                   <button
-                    onClick={() => openEditModal(item.productID)} // Abre el modal de edición
+                    onClick={() => openEditModal(item)} // Abre el modal de edición con el producto
                     className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition duration-200"
                   >
                     Editar
@@ -146,11 +148,11 @@ const InventoryTable: React.FC = () => {
       </div>
 
       {/* Modal para agregar movimiento */}
-      {selectedProductID && (
+      {selectedProduct && (
         <InventoryMovementForm
           isOpen={isModalOpen}
           onClose={closeModal}
-          productID={selectedProductID}
+          productID={selectedProduct.productID}
         />
       )}
 
@@ -161,11 +163,12 @@ const InventoryTable: React.FC = () => {
       />
 
       {/* Modal para editar producto */}
-      {selectedProductID && (
+      {selectedProduct && (
         <ProductEditModal
           isOpen={isEditModalOpen}
           onRequestClose={closeEditModal}
-          productId={selectedProductID}
+          productId={selectedProduct.productID}
+          initialProductData={selectedProduct} // Enviamos los datos iniciales
         />
       )}
     </div>

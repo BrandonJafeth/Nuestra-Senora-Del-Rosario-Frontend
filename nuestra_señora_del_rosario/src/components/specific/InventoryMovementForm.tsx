@@ -18,7 +18,7 @@ interface InventoryMovementFormProps {
 const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, onClose, productID }) => {
   const [formData, setFormData] = useState<InventoryMovement>({
     productID,
-    quantity: 1, // Valor inicial positivo
+    quantity: 1,
     date: new Date().toISOString(),
     movementType: 'Ingreso',
   });
@@ -31,7 +31,6 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
     const { name, value } = e.target;
     const parsedValue = parseInt(value);
 
-    // Validar que quantity sea mayor a 0 antes de actualizar el estado
     if (name === 'quantity' && parsedValue > 0) {
       setFormData((prevData) => ({
         ...prevData,
@@ -45,12 +44,12 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
     mutation.mutate(formData, {
       onSuccess: () => {
         showToast('Movimiento de inventario agregado con éxito.', 'success');
-        setTimeout(onClose, 3000); // Espera 3 segundos antes de cerrar el modal
+        setTimeout(onClose, 2000);
       },
       onError: (error) => {
         console.error(error);
         showToast('Hubo un error al agregar el movimiento.', 'error');
-        setTimeout(onClose, 3000); // Espera 3 segundos antes de cerrar el modal
+        setTimeout(onClose, 2000);
       },
     });
   };
@@ -65,7 +64,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
       transform: 'translate(-50%, -50%)',
       padding: '20px',
       borderRadius: '10px',
-      width: '300px',
+      width: '320px',
       backgroundColor: isDarkMode ? '#1e293b' : 'white',
       color: isDarkMode ? 'white' : 'black',
       border: isDarkMode ? '1px solid #475569' : '1px solid #d1d5db',
@@ -95,28 +94,31 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
               id="quantity"
               name="quantity"
               value={formData.quantity}
-              min="1" // Mínimo permitido en el input
+              min="1"
               onChange={handleChange}
-              className={`mt-1 block w-full border ${isDarkMode ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-black'} rounded-md shadow-sm`}
+              className={`mt-1 block w-full border ${isDarkMode ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-black'} rounded-md shadow-sm text-lg font-semibold text-center`}
               required
             />
           </div>
-
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
-          >
-            Confirmar Movimiento
-          </button>
-          <button
-            type="button"
-            onClick={() => {
+          <div className="flex justify-center mt-4 space-x-2">
+            <button
+              type="button"
+              onClick={() => {
                 onClose();
-            }}
-            className="w-full px-4 py-2 mt-2 bg-gray-400 text-white rounded-xl hover:bg-gray-500 transition duration-200"
-          >
-            Cancelar
-          </button>
+              }}
+              className="ml-4 px-6 py-2 rounded-lg bg-red-500 text-white rounded-xl hover:bg-red-600 transition duration-200"
+              tabIndex={1}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+              tabIndex={0}
+            >
+              Confirmar Movimiento
+            </button>
+          </div>
         </form>
       </Modal>
 

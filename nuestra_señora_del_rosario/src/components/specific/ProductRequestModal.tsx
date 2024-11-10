@@ -98,20 +98,24 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
               required
             />
           </div>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="w-full px-4 py-2 mt-4 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
-          >
-            Registrar Egreso
-          </button>
+          <div className='flex justify-center mt-4'>
           <button
             type="button"
             onClick={onRequestClose}
-            className="w-full px-4 py-2 mt-2 rounded-xl bg-gray-400 text-white hover:bg-gray-500 transition duration-200"
-          >
+            className="ml-4 px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition duration-200"
+              tabIndex={1}
+         >
             Cancelar
           </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
+          tabIndex={0}
+          >
+            Registrar Egreso
+          </button>
+          </div>
         </form>
       </Modal>
 

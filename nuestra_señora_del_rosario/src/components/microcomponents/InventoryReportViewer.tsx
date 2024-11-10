@@ -19,7 +19,7 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
     if (!report) return;
     const pdfDoc = <InventoryReportPDF report={report} />;
     const blob = await pdf(pdfDoc).toBlob(); // Genera el PDF como un blob
-    saveAs(blob, `Inventory_Report_${month}_${year}.pdf`); // Guarda el PDF usando file-saver
+    saveAs(blob, `Reporte_Mensual_Inventario_${month}_${year}.pdf`); // Guarda el PDF usando file-saver
     setLoading(false);
   };
 

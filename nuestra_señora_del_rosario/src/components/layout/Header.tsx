@@ -73,11 +73,16 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                   aria-expanded="false"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <img
-                    className="w-8 h-8 rounded-full"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                    alt="user photo"
-                  />
+                  <svg
+  xmlns="http://www.w3.org/2000/svg"
+  fill="currentColor"
+  viewBox="0 0 24 24"
+  className="w-8 h-8 bg-gray-200 dark:bg-gray-600 dark:text-white rounded-full p-1"
+>
+  <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+</svg>
+
+
                 </button>
               </div>
 
