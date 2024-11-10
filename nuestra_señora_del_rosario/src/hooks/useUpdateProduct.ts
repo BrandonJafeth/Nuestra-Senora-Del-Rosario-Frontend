@@ -1,30 +1,17 @@
-// hooks/useUpdateProduct.ts
 import { useMutation, useQueryClient } from 'react-query';
-import UpdateProductService from '../services/UpdateProductService';
-import { ProductPatchType } from '../types/ProductPatchType';
-import { useToast } from './useToast';
+import productService from '../services/ProductService';
+import { Product } from '../types/ProductType';
 
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
 
   return useMutation(
-    async ({ id, patchData }: { id: number; patchData: Partial<ProductPatchType> }) => {
-      const response = await UpdateProductService.updateProduct(id, patchData);
-      if (!response) {
-        throw new Error('Error updating product');
-      }
-      return response;
-    },
+    (data: { id: number; productPatch: Partial<Product> }) =>
+      productService.updateProduct(data.id, data.productPatch),
     {
-      onSuccess: async () => {
+      onSuccess: () => {
+        // Invalida y vuelve a obtener los productos para reflejar los cambios en tiempo real
         queryClient.invalidateQueries('products');
-        showToast('Producto actualizado exitosamente', 'success');
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      },
-      onError: async () => {
-        showToast('Error al actualizar el producto', 'error');
-        await new Promise((resolve) => setTimeout(resolve, 2000));
       },
     }
   );

@@ -1,61 +1,53 @@
-// components/ProductEditModal.tsx
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import { Product } from '../../types/ProductType';
 import { useUpdateProduct } from '../../hooks/useUpdateProduct';
-import { useProductById } from '../../hooks/useProductById';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 import { useCategories } from '../../hooks/useCategories';
 import { useUnitsOfMeasure } from '../../hooks/useUnitOfMeasure';
-import { useToast } from '../../hooks/useToast';
-import { useThemeDark } from '../../hooks/useThemeDark'; // Importar hook de modo oscuro
-import Toast from '../common/Toast';
-import { ProductPatchType } from '../../types/ProductPatchType';
 
 interface ProductEditModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-  productId: number | null;
+  productId: number;
+  initialProductData: Partial<Product>;
 }
 
-const ProductEditModal: React.FC<ProductEditModalProps> = ({ isOpen, onRequestClose, productId }) => {
-  const { mutate: updateProduct } = useUpdateProduct();
-  const { data: product, isLoading: productLoading } = useProductById(productId);
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { data: unitsOfMeasure, isLoading: unitsLoading } = useUnitsOfMeasure();
-  const { message, type } = useToast();
-  const { isDarkMode } = useThemeDark(); // Modo oscuro
-
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
-  const [selectedUnit, setSelectedUnit] = useState<number | undefined>();
+const ProductEditModal: React.FC<ProductEditModalProps> = ({
+  isOpen,
+  onRequestClose,
+  productId,
+  initialProductData,
+}) => {
+  const [productData, setProductData] = useState<Partial<Product>>(initialProductData);
+  const updateProduct = useUpdateProduct();
+  const { showToast, message, type } = useToast();
+  const { data: categories } = useCategories();
+  const { data: unitsOfMeasure } = useUnitsOfMeasure();
 
   useEffect(() => {
-    if (product && isOpen) {
-      setName(product.name);
-      setQuantity(product.totalQuantity);
-      setSelectedCategory(product.categoryID);
-      setSelectedUnit(product.unitOfMeasureID);
-    }
-  }, [product, isOpen]);
+    setProductData(initialProductData);
+  }, [initialProductData]);
 
-  const handleUpdate = () => {
-    if (productId) {
-      const patchData: ProductPatchType[] = [
-        { op: 'replace', path: '/name', value: name },
-        { op: 'replace', path: '/totalQuantity', value: quantity.toString() },
-        { op: 'replace', path: '/categoryID', value: selectedCategory?.toString() || '' },
-        { op: 'replace', path: '/unitOfMeasureID', value: selectedUnit?.toString() || '' },
-      ];
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setProductData((prev) => ({ ...prev, [name]: name === "categoryID" || name === "unitOfMeasureID" ? Number(value) : value }));
+  };
 
-      updateProduct(
-        { id: productId, patchData },
-        {
-          onSuccess: () => {
-            onRequestClose();
-          },
-        }
-      );
-    }
+  const handleSave = () => {
+    updateProduct.mutate(
+      { id: productId, productPatch: productData },
+      {
+        onSuccess: () => {
+          showToast('Producto actualizado exitosamente.', 'success');
+          setTimeout(onRequestClose, 2000);
+        },
+        onError: () => {
+          showToast('Hubo un error al actualizar el producto.', 'error');
+        },
+      }
+    );
   };
 
   return (
@@ -64,54 +56,29 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ isOpen, onRequestCl
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         contentLabel="Editar Producto"
-        className={`relative z-50 w-full max-w-md mx-auto p-6 rounded-lg shadow-lg ${
-          isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'
-        }`}
-        overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40"
+        className="flex items-center justify-center min-h-screen"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
       >
-        <h2 className={`text-2xl font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Editar Producto
-        </h2>
-        {productLoading || categoriesLoading || unitsLoading ? (
-          <p className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Cargando datos del producto...</p>
-        ) : (
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Editar Producto</h2>
           <form className="space-y-4">
-            <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Nombre del Producto
-              </label>
+            <label className="block">
+              <span className="text-gray-700 dark:text-gray-300">Nombre:</span>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 ${
-                  isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
-                }`}
+                name="name"
+                value={productData.name || ''}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Cantidad
-              </label>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(parseInt(e.target.value))}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 ${
-                  isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
-                }`}
-              />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Categoría
-              </label>
+            </label>
+            <label className="block">
+              <span className="text-gray-700 dark:text-gray-300">Categoría:</span>
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(Number(e.target.value))}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 ${
-                  isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
-                }`}
+                name="categoryID"
+                value={productData.categoryID || ''}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="">Selecciona una categoría</option>
                 {categories?.map((category) => (
@@ -120,17 +87,14 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ isOpen, onRequestCl
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Unidad de Medida
-              </label>
+            </label>
+            <label className="block">
+              <span className="text-gray-700 dark:text-gray-300">Unidad de Medida:</span>
               <select
-                value={selectedUnit}
-                onChange={(e) => setSelectedUnit(Number(e.target.value))}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 ${
-                  isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'
-                }`}
+                name="unitOfMeasureID"
+                value={productData.unitOfMeasureID || ''}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="">Selecciona una unidad</option>
                 {unitsOfMeasure?.map((unit) => (
@@ -139,27 +103,35 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ isOpen, onRequestCl
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="flex justify-between mt-4">
-              <button
-                type="button"
-                onClick={handleUpdate}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
-                Actualizar
-              </button>
-              <button
-                type="button"
-                onClick={onRequestClose}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Cancelar
-              </button>
-            </div>
+            </label>
+            <label className="block">
+              <span className="text-gray-700 dark:text-gray-300">Cantidad Total:</span>
+              <input
+                type="number"
+                name="totalQuantity"
+                value={productData.totalQuantity || 0}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              />
+            </label>
           </form>
-        )}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleSave}
+              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+            >
+              Guardar
+            </button>
+            <button
+              onClick={onRequestClose}
+              className="ml-4 px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition duration-200"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       </Modal>
-      {message && <Toast message={message} type={type} />}
+      <Toast message={message} type={type} />
     </>
   );
 };

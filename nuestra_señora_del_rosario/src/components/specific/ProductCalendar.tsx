@@ -10,9 +10,9 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { InventoryMovement } from '../../types/InventoryMovement';
 import ProductRequestModal from './ProductRequestModal';
-import Modal from 'react-modal';
 import { useDailyMovements } from '../../hooks/useDailyMovement';
-
+import DailyMovementsModal from './DailyMovementModal';
+import { useCreateInventoryMovement } from '../../hooks/useInventoryMovement';
 moment.locale('es');
 const localizer = momentLocalizer(moment);
 
@@ -35,37 +35,32 @@ const ProductCalendar: React.FC = () => {
     },
   ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProductRequestModalOpen, setIsProductRequestModalOpen] = useState(false); // Estado para el modal de consumo de productos
+  const [isDailyMovementsModalOpen, setIsDailyMovementsModalOpen] = useState(false); // Estado para el modal de movimientos diarios
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { isDarkMode } = useThemeDark();
   const formattedDate = selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '';
   const { data: dailyMovements, isLoading } = useDailyMovements(formattedDate);
 
-  const handleOpenProductModal = () => {
-    setIsModalOpen(true);
+  // Hook para crear un movimiento de inventario
+  const createInventoryMovement = useCreateInventoryMovement();
+
+  const handleOpenProductRequestModal = () => {
+    setIsProductRequestModalOpen(true);
   };
 
-  const handleCloseProductModal = () => {
-    setIsModalOpen(false);
+  const handleCloseProductRequestModal = () => {
+    setIsProductRequestModalOpen(false);
   };
 
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date);
-    setIsModalOpen(true);
+    setIsDailyMovementsModalOpen(true);
   };
 
   const handleSaveMovement = async (movement: InventoryMovement) => {
-    // Aquí harías el POST a la API
-    try {
-      const response = await fetch('/api/inventory/movement', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(movement),
-      });
-
-      if (response.ok) {
+    createInventoryMovement.mutate(movement, {
+      onSuccess: () => {
         alert('Producto egresado correctamente');
         setEvents([
           ...events,
@@ -73,17 +68,16 @@ const ProductCalendar: React.FC = () => {
             title: `Consumo de ${movement.productID}`,
             start: new Date(),
             end: new Date(),
-            product: 'Producto', // Cambia por el nombre real si está disponible
+            product: 'Producto',
             quantity: movement.quantity,
           },
         ]);
-      } else {
+      },
+      onError: (error) => {
+        console.error('Error al registrar el egreso:', error);
         alert('Error al registrar el egreso');
-      }
-    } catch (error) {
-      console.error('Error al realizar la petición:', error);
-      alert('Error al realizar la petición');
-    }
+      },
+    });
   };
 
   return (
@@ -115,7 +109,7 @@ const ProductCalendar: React.FC = () => {
               </div>
               <div className="space-x-4">
                 <button
-                  onClick={handleOpenProductModal}
+                  onClick={handleOpenProductRequestModal}
                   className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
                 >
                   Pedir Producto
@@ -144,50 +138,19 @@ const ProductCalendar: React.FC = () => {
         }}
       />
 
-      {/* Modal de Pedir Producto */}
       <ProductRequestModal
-        isOpen={isModalOpen && selectedDate === null}
-        onRequestClose={handleCloseProductModal}
+        isOpen={isProductRequestModalOpen}
+        onRequestClose={handleCloseProductRequestModal}
         onSave={handleSaveMovement}
       />
 
-      {/* Modal de Movimientos Diarios */}
-      {selectedDate && (
-        <Modal
-          isOpen={!!selectedDate}
-          onRequestClose={() => setSelectedDate(null)}
-          contentLabel="Movimientos Diarios"
-          className={`relative z-50 w-full max-w-md mx-auto p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
-          overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40"
-        >
-          <h2 className="text-2xl font-bold mb-4 text-center">Movimientos para {formattedDate}</h2>
-
-          {isLoading ? (
-            <p className="text-center">Cargando movimientos...</p>
-          ) : dailyMovements && dailyMovements.length > 0 ? (
-            <ul className="space-y-2">
-              {dailyMovements.map((movement) => (
-                <li key={movement.productID} className="border-b py-2">
-                  <p>Producto: {movement.productName}</p>
-                  <p>Ingresos: {movement.totalIngresos}</p>
-                  <p>Egresos: {movement.totalEgresos}</p>
-                  <p>Unidad: {movement.unitOfMeasure}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center">No hay movimientos registrados para este día.</p>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setSelectedDate(null)}
-            className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Cerrar
-          </button>
-        </Modal>
-      )}
+      <DailyMovementsModal
+        isOpen={isDailyMovementsModalOpen}
+        onRequestClose={() => setIsDailyMovementsModalOpen(false)}
+        movements={dailyMovements || null}
+        formattedDate={formattedDate}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

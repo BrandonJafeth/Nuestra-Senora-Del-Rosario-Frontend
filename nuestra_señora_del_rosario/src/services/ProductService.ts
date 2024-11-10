@@ -18,6 +18,10 @@ class ProductService extends ApiService<Product> {
   public createProduct(product: Product) {
     return this.create('/Product', product);
   }
+
+  public updateProduct(id: number, productPatch: Partial<Product>) {
+    return this.patch('/Product', id, productPatch);
+  }
 }
 
 const productService = new ProductService();

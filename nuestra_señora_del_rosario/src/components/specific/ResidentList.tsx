@@ -185,51 +185,65 @@ function ResidentList() {
       <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* Número de habitación */}
-        <div>
-          <label className="block font-bold">Habitación:</label>
-          <select
-            value={idRoom}
-            disabled={!isEditing}
-            onChange={(e) => setIdRoom(Number(e.target.value))}
-            className={`w-full p-2 mt-1 border rounded-md ${isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'}`}
-          >
-            {rooms.map((room) => (
-              <option key={room.id_Room} value={room.id_Room}>
-                {room.roomNumber}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Número de habitación */}
+      <div>
+                <label className="block font-bold">Habitación:</label>
+                {isEditing ? (
+                  <select
+                    value={idRoom ?? selectedResident.roomNumber}
+                    onChange={(e) => setIdRoom(Number(e.target.value))}
+                    className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+                  >
+                    <option value="">Selecciona una habitación</option>
+                    {rooms.map((room) => (
+                      <option key={room.id_Room} value={room.id_Room}>
+                        {room.roomNumber}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{selectedResident.roomNumber}</p>
+                )}
+              </div>
 
-        {/* Grado de Dependencia */}
-        <div>
-          <label className="block font-bold">Grado de Dependencia:</label>
-          <select
-            value={idDependencyLevel}
-            disabled={!isEditing}
-            onChange={(e) => setIdDependencyLevel(Number(e.target.value))}
-            className={`w-full p-2 mt-1 border rounded-md ${isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'}`}
-          >
-            {dependencyLevels.map((level) => (
-              <option key={level.id_DependencyLevel} value={level.id_DependencyLevel}>
-                {level.levelName}
-              </option>
-            ))}
-          </select>
-        </div>
+              {/* Grado de Dependencia */}
+              <div>
+                <label className="block font-bold">Grado de Dependencia:</label>
+                {isEditing ? (
+                  <select
+                    value={idDependencyLevel ?? selectedResident.dependencyLevel}
+                    onChange={(e) => setIdDependencyLevel(Number(e.target.value))}
+                    className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+                  >
+                    <option value="">Selecciona un grado de dependencia</option>
+                    {dependencyLevels.map((level) => (
+                      <option key={level.id_DependencyLevel} value={level.id_DependencyLevel}>
+                        {level.levelName}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{selectedResident.dependencyLevel}</p>
+                )}
+              </div>
 
-        {/* Sexo */}
-        <div>
-          <label className="block font-bold">Sexo:</label>
-          <input
-            type="text"
-            value={sexo}
-            readOnly={!isEditing}
-            onChange={(e) => setSexo(e.target.value)}
-            className={`w-full p-2 mt-1 border rounded-md ${isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'}`}
-          />
-        </div>
+              <div>
+  <label className="block font-bold">Sexo:</label>
+  {isEditing ? (
+    <select
+      value={sexo}
+      onChange={(e) => setSexo(e.target.value)}
+      className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+    >
+      <option value="">Selecciona un sexo</option>
+      <option value="Femenino">Femenino</option>
+      <option value="Masculino">Masculino</option>
+    </select>
+  ) : (
+    <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{sexo || 'No especificado'}</p>
+  )}
+</div>
+
 
         {/* Fecha de Nacimiento */}
         <div>
@@ -302,7 +316,7 @@ function ResidentList() {
       <div className="mt-6 flex justify-end">
         <button
           onClick={handleCloseDetails}
-          className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-gray-500 hover:bg-gray-600' : 'bg-gray-600 hover:bg-gray-700'} text-white`}
+          className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white`}
         >
           {isEditing ? 'Cancelar' : 'Cerrar'}
         </button>
@@ -317,7 +331,7 @@ function ResidentList() {
           <button
             onClick={handleUpdateClick}
             disabled={isUpdating}
-            className={`ml-4 px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-green-500 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
+            className={`ml-4 px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
           >
             {isUpdating ? 'Guardando...' : 'Guardar'}
           </button>

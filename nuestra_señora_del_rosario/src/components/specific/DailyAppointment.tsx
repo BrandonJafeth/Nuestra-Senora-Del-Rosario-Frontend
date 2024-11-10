@@ -256,6 +256,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
               <button
                 onClick={() => setEditModalIsOpen(false)}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              tabIndex={1}
               >
                 Cancelar
               </button>
@@ -264,6 +265,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 className={`px-4 py-2 rounded-lg ${
                   updating ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
+              tabIndex={0}
               >
                 Guardar
               </button>
