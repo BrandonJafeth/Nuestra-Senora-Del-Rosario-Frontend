@@ -11,6 +11,10 @@ class ProductService extends ApiService<Product> {
     return this.getAll('/Product');
   }
 
+  getProductById(id: number) {
+    return this.getOne('/Product', id);
+  }
+
   public createProduct(product: Product) {
     return this.create('/Product', product);
   }
