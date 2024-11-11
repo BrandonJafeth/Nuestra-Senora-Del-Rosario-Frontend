@@ -15,12 +15,12 @@ function ApplicationRequests() {
   const pageSize = 5; // Número de solicitudes por página
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
-  const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado ' | 'Pendiente' | 'Todas'>('Todas');
+  const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
 
   const statusMapping = {
     Pendiente: 'Pendiente',
     Aprobado: 'Aprobado',
-    Rechazado: 'Rechazado ',
+    Rechazado: 'Rechazado',
     Todas: 'Todas'
   };
 
@@ -89,7 +89,7 @@ function ApplicationRequests() {
               <button
                 key={status.id_Status}
                 className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}
-                onClick={() => setFilterStatus(status.status_Name as 'Aprobado' | 'Rechazado ' | 'Pendiente' | 'Todas')}
+                onClick={() => setFilterStatus(status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas')}
               >
                 {status.status_Name}
               </button>
@@ -169,7 +169,7 @@ function ApplicationRequests() {
                       className={`px-3 py-1 rounded-lg text-white ${
                         request.status_Name === 'Aprobado'
                           ? 'bg-green-500'
-                          : request.status_Name === 'Rechazado '
+                          : request.status_Name === 'Rechazado'
                           ? 'bg-red-500'
                           : 'bg-yellow-500'
                       }`}
@@ -247,7 +247,7 @@ function ApplicationRequests() {
                     className={`px-3 py-1 ml-2 rounded-lg text-white ${
                       selectedApplication.status_Name === 'Aprobado'
                         ? 'bg-green-500'
-                        : selectedApplication.status_Name === 'Rechazado '
+                        : selectedApplication.status_Name === 'Rechazado'
                         ? 'bg-red-500'
                         : 'bg-yellow-500'
                     }`}
