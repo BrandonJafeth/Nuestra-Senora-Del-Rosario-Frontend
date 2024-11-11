@@ -147,7 +147,15 @@ function DonationRequests() {
                   <td className="p-4">{request.methodDonation}</td>
                   <td className="p-4">{new Date(request.delivery_date).toLocaleDateString()}</td>
                   <td className="p-4">
-                    <span className={"px-3 py-2 rounded-xl "}>
+                    <span
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        request.status_Name === 'Aprobado'
+                          ? 'bg-green-500'
+                          : request.status_Name === 'Rechazado'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`}
+                    >
                       {request.status_Name}
                     </span>
                   </td>
@@ -168,26 +176,26 @@ function DonationRequests() {
 
       {/* Controles de paginación */}
       <div className="flex justify-center items-center mt-4 space-x-4">
-  <button
-    onClick={handlePreviousPage}
-    disabled={pageNumber === 1}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowLeft />
-  </button>
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
 
-  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-    Página {pageNumber} de {data?.totalPages}
-  </span>
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {data?.totalPages}
+        </span>
 
-  <button
-    onClick={handleNextPage}
-    disabled={pageNumber === data?.totalPages}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowRight />
-  </button>
-</div>
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === data?.totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
 
       {/* Modal de detalles */}
       {selectedDonation && (
@@ -209,7 +217,21 @@ function DonationRequests() {
               <div><p><strong>Fecha de Donación:</strong> {new Date(selectedDonation.delivery_date).toLocaleDateString()}</p></div>
               <div><p><strong>Tipo de Donación:</strong> {selectedDonation.donationType}</p></div>
               <div><p><strong>Método:</strong> {selectedDonation.methodDonation}</p></div>
-              <div><p><strong>Estatus:</strong> {selectedDonation.status_Name}</p></div>
+              <div>
+                <p><strong>Estatus:</strong>
+                  <span
+                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                      selectedDonation.status_Name === 'Aprobado'
+                        ? 'bg-green-500'
+                        : selectedDonation.status_Name === 'Rechazado'
+                        ? 'bg-red-500'
+                        : 'bg-yellow-500'
+                    }`}
+                  >
+                    {selectedDonation.status_Name}
+                  </span>
+                </p>
+              </div>
             </div>
             <div className="flex justify-center space-x-4 mt-8">
               <button
