@@ -92,8 +92,6 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
     });
   };
 
-  
-
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
       <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>

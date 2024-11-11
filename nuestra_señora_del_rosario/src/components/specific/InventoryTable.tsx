@@ -144,7 +144,7 @@ const InventoryTable: React.FC = () => {
                   </button>
                   <button
                     onClick={() => openEditModal(item)}
-                    className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition duration-200"
+                    className="px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
                   >
                     Editar
                   </button>
