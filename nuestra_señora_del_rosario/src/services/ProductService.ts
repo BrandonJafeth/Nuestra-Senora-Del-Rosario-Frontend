@@ -7,9 +7,10 @@ class ProductService extends ApiService<Product> {
     super();
   }
 
-  public getAllProducts() {
-    return this.getAll('/Product');
-  }
+ // En ProductService.ts
+public getAllProducts(pageNumber: number, pageSize: number) {
+  return this.getAllPages('/Product', pageNumber, pageSize);
+}
 
   getProductById(id: number) {
     return this.getOne('/Product', id);
