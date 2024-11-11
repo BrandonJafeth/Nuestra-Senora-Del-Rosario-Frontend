@@ -25,7 +25,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const { isLoading: loadingResidents } = useResidents();
+  const pageSize = 10; // Define pageSize
+  const pageNumber = 1; // Define pageNumber
+  const { isLoading: loadingResidents } = useResidents(pageSize, pageNumber);
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');

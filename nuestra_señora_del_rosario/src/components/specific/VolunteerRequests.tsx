@@ -8,8 +8,8 @@ import { useVolunteerTypes } from '../../hooks/useVolunteerTypes';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import '../../styles/Style.css';
-import { useUpdateVolunteerStatus } from '../../hooks/useVolunteerStatusUpdate ';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useUpdateVolunteerStatus } from '../../hooks/useVolunteerStatusUpdate ';
 
 function VolunteerRequests() {
   const { isDarkMode } = useThemeDark();
@@ -17,7 +17,7 @@ function VolunteerRequests() {
   const pageSize = 5; // Número de voluntarios por página
   const { data, isLoading, error } = useVolunteerRequests(pageNumber, pageSize);
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
-  const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
+  const [filterStatus, setFilterStatus] = useState<'Todas' | 'Aceptada' | 'Rechazada' | 'Pendiente'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
 
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
@@ -25,24 +25,20 @@ function VolunteerRequests() {
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
 
-  // Función para aceptar una solicitud
   const handleAccept = (volunteer: VolunteerRequest) => {
     updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 });
     setSelectedVolunteer(null);
   };
 
-  // Función para rechazar una solicitud
   const handleReject = (volunteer: VolunteerRequest) => {
     updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
     setSelectedVolunteer(null);
   };
 
-  // Función para ver más información
   const handleViewDetails = (volunteer: VolunteerRequest) => {
     setSelectedVolunteer(volunteer);
   };
 
-  // Paginación
   const handleNextPage = () => {
     if (data && pageNumber < data.totalPages) {
       setPageNumber(pageNumber + 1);
@@ -141,13 +137,25 @@ function VolunteerRequests() {
                   key={request.id_FormVoluntarie}
                   className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
                 >
-                  <td className={`p-4 ${request.status_Name === 'Rechazada' ? 'text-red-500' : isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <td className="p-4">
                     {`${request.vn_Name} ${request.vn_Lastname1} ${request.vn_Lastname2}`}
                   </td>
                   <td className="p-4">{request.name_voluntarieType}</td>
                   <td className="p-4">{new Date(request.delivery_Date).toLocaleDateString()}</td>
                   <td className="p-4">{new Date(request.end_Date).toLocaleDateString()}</td>
-                  <td className="p-4"><span className={"px-3 py-2 rounded-xl "}>{request.status_Name}</span></td>
+                  <td className="p-4">
+                    <span
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        request.status_Name === 'Aprobado'
+                          ? 'bg-green-500'
+                          : request.status_Name === 'Rechazado'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`}
+                    >
+                      {request.status_Name}
+                    </span>
+                  </td>
                   <td className="p-4">
                     <button
                       className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
@@ -165,26 +173,26 @@ function VolunteerRequests() {
 
       {/* Controles de paginación */}
       <div className="flex justify-center items-center mt-4 space-x-4">
-  <button
-    onClick={handlePreviousPage}
-    disabled={pageNumber === 1}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowLeft />
-  </button>
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
 
-  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-    Página {pageNumber} de {data?.totalPages}
-  </span>
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {data?.totalPages}
+        </span>
 
-  <button
-    onClick={handleNextPage}
-    disabled={pageNumber === data?.totalPages}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowRight />
-  </button>
-</div>
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === data?.totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
 
       {/* Modal de detalles */}
       {selectedVolunteer && (
@@ -204,7 +212,21 @@ function VolunteerRequests() {
               <div><p><strong>Teléfono:</strong> {selectedVolunteer.vn_Phone}</p></div>
               <div><p><strong>Fecha de Inicio:</strong> {new Date(selectedVolunteer.delivery_Date).toLocaleDateString()}</p></div>
               <div><p><strong>Fecha de Fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}</p></div>
-              <div><p><strong>Estatus:</strong><span className={"px-3 py-1 ml-2 "}>{selectedVolunteer.status_Name}</span></p></div>
+              <div>
+                <p><strong>Estatus:</strong>
+                  <span
+                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                      selectedVolunteer.status_Name === 'Aprobado'
+                        ? 'bg-green-500'
+                        : selectedVolunteer.status_Name === 'Rechazado'
+                        ? 'bg-red-500'
+                        : 'bg-yellow-500'
+                    }`}
+                  >
+                    {selectedVolunteer.status_Name}
+                  </span>
+                </p>
+              </div>
               <div><p><strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}</p></div>
             </div>
             <div className="flex justify-center space-x-4 mt-8">

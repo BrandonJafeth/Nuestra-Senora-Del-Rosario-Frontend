@@ -28,16 +28,18 @@ interface ResidentDropdownProps {
 }
 
 const ResidentDropdown: React.FC<ResidentDropdownProps> = ({ value, onChange }) => {
-  const { data: residents, isLoading } = useResidents(); // Obtener residentes
+  const pageSize = 10; // Define pageSize
+  const ageNum = 65; // Define ageNum
+  const { data: residents, isLoading } = useResidents(pageSize, ageNum); // Obtener residentes
 
   // Convertimos los residentes en opciones de react-select
-  const options = residents?.map((resident) => ({
+  const options = residents?.map((resident : any) => ({
     value: resident.id_Resident,
     label: `${resident.name_AP} ${resident.lastname1_AP} ${resident.lastname2_AP}`,
   })) || [];
 
   // Buscamos la opción seleccionada actualmente
-  const selectedOption = options.find((option) => option.value === value) || null;
+  const selectedOption = options.find((option: any) => option.value === value) || null;
 
   if (isLoading) return <p>Cargando residentes...</p>;
 
