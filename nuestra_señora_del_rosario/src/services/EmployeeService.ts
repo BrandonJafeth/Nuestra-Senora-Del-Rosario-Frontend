@@ -10,6 +10,10 @@ class EmployeeService extends ApiService<EmployeeType> {
     return this.getOne('/Employee', id);
   }
 
+  public getAllEmployeePages(page: number, pageSize: number) {
+    return this.getAllPages('/Employee', page, pageSize);
+  }
+
   public createEmployee(data: EmployeeType) {
     return this.create('/Employee', data);
   }

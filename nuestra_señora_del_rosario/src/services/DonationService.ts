@@ -14,6 +14,10 @@ class DonationService extends ApiService<DonationRequest> {
     return this.getAll('/FormDonation');
   }
 
+  public getAllDonationsPages(page: number, pageSize: number) {
+    return this.getAllPages('/FormDonation', page, pageSize);
+  }
+
   public getDonationRequestById(id: number) {
     return this.getOne('/FormDonation', id);
   }
