@@ -10,7 +10,7 @@ class ResidentsService extends ApiService<Resident> {
 
   // Obtener todos los residentes
   public getAllResidents() {
-    return this.getAll('/Residents');
+    return this.getAll('/Residents/all');
   }
 
   public getAllResidentsPages(page: number, pageSize: number) {
