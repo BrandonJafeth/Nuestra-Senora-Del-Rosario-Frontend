@@ -1,6 +1,6 @@
 // types/ApplicationType.ts
 export interface ApplicationRequest {
-    status:  'Aprobado' | 'Rechazado ' | 'Pendiente';
+    status:  '';
     id_ApplicationForm: number;
     id_Applicant: number;
     name_AP: string;
