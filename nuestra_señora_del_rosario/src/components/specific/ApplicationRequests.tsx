@@ -27,12 +27,12 @@ function ApplicationRequests() {
   const { mutate: updateApplicationStatus } = useUpdateApplicationStatus();
   
   // Filtros para las solicitudes
-  const filteredRequests = (data?.forms || []).filter((request) => {
-    return (
-      filterStatus === 'Todas' || 
-      request.status_Name === statusMapping[filterStatus]
-    );
-  });
+  const filteredRequests = Array.isArray(data?.forms)
+  ? data.forms.filter((request) => {
+      return filterStatus === 'Todas' || request.status_Name === statusMapping[filterStatus];
+    })
+  : [];
+
   
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
 
