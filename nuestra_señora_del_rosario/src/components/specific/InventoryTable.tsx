@@ -1,3 +1,4 @@
+// FILE: components/InventoryTable.tsx
 import React, { useState } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import Skeleton from 'react-loading-skeleton';
@@ -8,33 +9,34 @@ import InventoryMovementForm from './InventoryMovementForm';
 import ProductAddModal from './AddProductModal';
 import ProductEditModal from './ModalEditProduct';
 import { Product } from '../../types/ProductType';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const InventoryTable: React.FC = () => {
-  const { data: products, isLoading: productsLoading, isError: productsError } = useProducts();
   const { isDarkMode } = useThemeDark();
 
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5;
+
+  const { data, isLoading: productsLoading, isError: productsError } = useProducts(pageNumber, pageSize);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false); // Estado para el modal de agregar producto
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Obtener el mes y año actuales
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
+  const products = data?.products || [];
+  const totalPages = data?.totalPages || 1;
 
-  // Funciones para abrir y cerrar el modal de movimientos
   const openModal = (product: Product) => {
-    setSelectedProduct(product); // Asigna el producto completo, no solo el ID
+    setSelectedProduct(product);
     setIsModalOpen(true);
-};
-
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
   };
 
-  // Funciones para abrir y cerrar el modal de agregar producto
   const openProductModal = () => {
     setIsProductModalOpen(true);
   };
@@ -43,15 +45,22 @@ const InventoryTable: React.FC = () => {
     setIsProductModalOpen(false);
   };
 
-  // Funciones para abrir y cerrar el modal de edición de producto
   const openEditModal = (product: Product) => {
-    setSelectedProduct(product); // Asigna el producto seleccionado
+    setSelectedProduct(product);
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setSelectedProduct(null);
+  };
+
+  const handleNextPage = () => {
+    if (pageNumber < totalPages) setPageNumber(pageNumber + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) setPageNumber(pageNumber - 1);
   };
 
   if (productsLoading) {
@@ -88,7 +97,6 @@ const InventoryTable: React.FC = () => {
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
       
-      {/* Botón para abrir el modal de agregar producto */}
       <div className="absolute top-4 left-4">
         <button
           onClick={openProductModal}
@@ -99,7 +107,7 @@ const InventoryTable: React.FC = () => {
       </div>
 
       <div className="absolute top-4 right-4">
-        <InventoryReportViewer month={currentMonth} year={currentYear} />
+        <InventoryReportViewer month={new Date().getMonth() + 1} year={new Date().getFullYear()} />
       </div>
 
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -118,7 +126,7 @@ const InventoryTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {products?.map((item) => (
+            {products.map((item: any) => (
               <tr
                 key={item.productID}
                 className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
@@ -135,8 +143,8 @@ const InventoryTable: React.FC = () => {
                     Agregar Movimiento
                   </button>
                   <button
-                    onClick={() => openEditModal(item)} // Abre el modal de edición con el producto
-                    className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition duration-200"
+                    onClick={() => openEditModal(item)}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
                   >
                     Editar
                   </button>
@@ -147,7 +155,28 @@ const InventoryTable: React.FC = () => {
         </table>
       </div>
 
-      {/* Modal para agregar movimiento */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+  <button
+    onClick={handlePreviousPage}
+    disabled={pageNumber === 1}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowLeft />
+  </button>
+
+  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+    Página {pageNumber} de {totalPages}
+  </span>
+
+  <button
+    onClick={handleNextPage}
+    disabled={pageNumber === totalPages}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowRight />
+  </button>
+</div>
+
       {selectedProduct && (
         <InventoryMovementForm
           isOpen={isModalOpen}
@@ -156,19 +185,17 @@ const InventoryTable: React.FC = () => {
         />
       )}
 
-      {/* Modal para agregar producto */}
       <ProductAddModal
         isOpen={isProductModalOpen}
         onRequestClose={closeProductModal}
       />
 
-      {/* Modal para editar producto */}
       {selectedProduct && (
         <ProductEditModal
           isOpen={isEditModalOpen}
           onRequestClose={closeEditModal}
           productId={selectedProduct.productID}
-          initialProductData={selectedProduct} // Enviamos los datos iniciales
+          initialProductData={selectedProduct}
         />
       )}
     </div>

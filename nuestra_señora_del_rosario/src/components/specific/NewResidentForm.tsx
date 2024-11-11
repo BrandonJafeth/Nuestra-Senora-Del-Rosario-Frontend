@@ -8,6 +8,7 @@ import AddGuardianForm from './AddGuardianForm'; // Importamos AddGuardianForm p
 import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para modo oscuro
 import { useCreateResident } from '../../hooks/useCreateResident ';
 import Toast from '../common/Toast';
+import { FaArrowLeft } from 'react-icons/fa';
 
 function NewResidentForm() {
   const { data: rooms } = useRoom();
@@ -58,10 +59,28 @@ function NewResidentForm() {
     });
   };
 
+  const navigateBack = () => {  
+ window.history.back(); // Navegar hacia atrás
+  }
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-      <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Añadir Información</h2>
+       <div className="flex justify-between items-center mb-6">
+        {/* Botón de regresar */}
+        <button
+          onClick={navigateBack}
+          className="flex items-center space-x-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+        >
+          <FaArrowLeft size={20} />
+          <span className="text-lg font-semibold">Regresar</span>
+        </button>
 
+        {/* Título */}
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mr-64">
+  Añadir Informacion
+</h1>
+
+      </div>
       {!isGuardianAdded ? (
         <AddGuardianForm 
           setIsGuardianAdded={setIsGuardianAdded} 

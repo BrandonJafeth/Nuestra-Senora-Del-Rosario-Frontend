@@ -26,6 +26,12 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     public async getAll(endpoint: string): Promise<AxiosResponse<T[]>> {
         return this.api.get<T[]>(endpoint);
     }
+    
+   // En ApiService.ts
+public async getAllPages(endpoint: string, pageNumber: number, pageSize: number): Promise<AxiosResponse<any>> {
+    return this.api.get(endpoint, { params: { pageNumber, pageSize } });
+}
+
 
     public async getOne(endpoint: string, id: string | number): Promise<AxiosResponse<T>> {
         return this.api.get<T>(`${endpoint}/${id}`);

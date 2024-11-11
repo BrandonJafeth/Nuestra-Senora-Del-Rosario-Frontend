@@ -42,7 +42,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
       createProductMutation.mutate(newProduct, {
         onSuccess: () => {
           showToast('Producto agregado exitosamente.', 'success');
-          setTimeout(onRequestClose, 3000);
+          setTimeout(onRequestClose, 2000);
         },
         onError: () => {
           showToast('Hubo un error al agregar el producto.', 'error');
