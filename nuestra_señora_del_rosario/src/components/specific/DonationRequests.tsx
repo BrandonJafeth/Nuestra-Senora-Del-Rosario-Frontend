@@ -23,12 +23,13 @@ function DonationRequests() {
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
 
-  const filteredRequests = data?.donations.filter((request) => {
+  const filteredRequests = Array.isArray(data?.donations) 
+  ? data?.donations.filter((request) => {
     return (
       (filterStatus === 'Todas' || request.status_Name === filterStatus) &&
       (filterType === 'Todas' || request.donationType === filterType)
     );
-  }) || [];
+  }) : [];
 
   const handleAccept = (donation: DonationRequest) => {
     updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });

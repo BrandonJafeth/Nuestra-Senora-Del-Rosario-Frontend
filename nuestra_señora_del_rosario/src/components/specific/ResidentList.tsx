@@ -50,11 +50,11 @@ function ResidentList() {
     setShowModal(false);
   };
 
-  const filteredResidents = data?.residents.filter((resident) =>
+  const filteredResidents = Array.isArray(data?.residents) ? data?.residents.filter((resident) =>
     `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
-  ) || [];
+  ) : [];
 
   const handleEditClick = () => {
     setIsEditing(true);

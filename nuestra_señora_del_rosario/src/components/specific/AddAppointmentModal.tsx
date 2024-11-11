@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
-import { useResidents } from '../../hooks/useResidents';
 import { useHealthcareCenters } from '../../hooks/useHealthcareCenters';
 import { useSpeciality } from '../../hooks/useSpeciality';
 import appointmentService from '../../services/AppointmentService';
@@ -8,6 +7,7 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import AddHealthcareCenterModal from './AddHealthcareCenterModal';
 import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
 import ResidentDropdown from '../microcomponents/ResidentDropdown';
+import { useAllResidents } from '../../hooks/useAllResidents';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -25,9 +25,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const pageSize = 10; // Define pageSize
-  const pageNumber = 1; // Define pageNumber
-  const { isLoading: loadingResidents } = useResidents(pageSize, pageNumber);
+  const { isLoading: loadingResidents } = useAllResidents();
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');
