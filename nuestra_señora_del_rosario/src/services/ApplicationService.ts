@@ -16,6 +16,10 @@ class ApplicationService extends ApiService<ApplicationRequest> {
     return this.getOne('/ApplicationForm', id);
   }
 
+  public getAllAplicationPages(page: number, pageSize: number) {
+    return this.getAllPages('/ApplicationForm', page, pageSize);
+  }
+
   public createApplicationRequest(data: ApplicationRequest) {
     return this.create('/ApplicationForm', data);
   }

@@ -9,6 +9,7 @@ import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast';
 import { useToast } from '../../hooks/useToast';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 // Helper para formatear las fechas (YYYY-MM-DD)
 const formatDate = (dateString: string) => {
@@ -17,15 +18,16 @@ const formatDate = (dateString: string) => {
 
 function ResidentList() {
   const { isDarkMode } = useThemeDark();
-  const { data: residents = [], isLoading, error, refetch } = useResidents();
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5; // Número de residentes por página
+  const { data, isLoading, error, refetch } = useResidents(pageNumber, pageSize);
   const { data: rooms = [] } = useRoom();
   const { data: dependencyLevels = [] } = useDependencyLevel();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const navigate = useNavigate();
-  const {showToast, message, type} = useToast();
-
+  const { showToast, message, type } = useToast();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [idRoom, setIdRoom] = useState<number | ''>('');
   const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
@@ -48,11 +50,11 @@ function ResidentList() {
     setShowModal(false);
   };
 
-  const filteredResidents = residents.filter((resident) =>
+  const filteredResidents = data?.residents.filter((resident) =>
     `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -69,7 +71,7 @@ function ResidentList() {
     await handleSubmit(updatedResidentData);
     await refetch();
 
-    const updatedResident = residents.find(
+    const updatedResident = data?.residents.find(
       (resident) => resident.id_Resident === selectedResident?.id_Resident
     );
 
@@ -79,10 +81,23 @@ function ResidentList() {
       setIdDependencyLevel(updatedResident.id_DependencyLevel ?? '');
       setStatus(updatedResident.status ?? 'Activo');
     }
-showToast('Error al actualizar el residente', 'error');
+
+    showToast('Error al actualizar el residente', 'error');
     setIsUpdating(false);
     setIsEditing(false);
     setShowModal(false);
+  };
+
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber((prev) => prev - 1);
+    }
   };
 
   if (isLoading) {
@@ -158,6 +173,29 @@ showToast('Error al actualizar el residente', 'error');
       ) : (
         <div className="text-center text-gray-500">No se encontraron residentes.</div>
       )}
+
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+  <button
+    onClick={handlePreviousPage}
+    disabled={pageNumber === 1}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowLeft />
+  </button>
+
+  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+    Página {pageNumber} de {data?.totalPages}
+  </span>
+
+  <button
+    onClick={handleNextPage}
+    disabled={pageNumber === data?.totalPages}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowRight />
+  </button>
+</div>
 
       {showModal && selectedResident && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

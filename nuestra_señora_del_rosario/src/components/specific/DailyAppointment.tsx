@@ -8,6 +8,7 @@ import { EmployeeType } from '../../types/EmployeeType';
 import { useToast } from '../../hooks/useToast'; // Hook de Toast
 import { useAppointmentStatuses } from '../../hooks/useappointmentStatus';
 import Toast from '../common/Toast';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 interface DailyAppointmentsModalProps {
   modalIsOpen: boolean;
@@ -28,6 +29,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
   isDarkMode,
   onSave,
 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0); // Índice actual de la cita
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
   const [formData, setFormData] = useState<AppointmentUpdateDto | null>(null);
@@ -70,11 +72,11 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     updated: AppointmentUpdateDto
   ): Partial<AppointmentUpdateDto> => {
     const changes: Partial<AppointmentUpdateDto> = {};
-  
+
     for (const key in updated) {
       const originalValue = original[key as keyof AppointmentUpdateDto];
       const updatedValue = updated[key as keyof AppointmentUpdateDto];
-  
+
       // Validación y conversión de tipo explícita para evitar el error
       if (updatedValue !== originalValue) {
         (changes as any)[key] = updatedValue;
@@ -82,8 +84,6 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     }
     return changes;
   };
-  
-  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,9 +120,24 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
 
   if (statusesError) return <p>Error al cargar los estados. Inténtalo de nuevo más tarde.</p>;
 
+  // Funciones para manejar la paginación de citas
+  const handleNextAppointment = () => {
+    if (currentIndex < dailyAppointments.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePreviousAppointment = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const currentAppointment = dailyAppointments[currentIndex]; // Cita actual
+
   return (
     <>
-      {<div className={`toast toast-${type}`}></div>}
+      <Toast message={message} type={type} />
 
       <Modal
         isOpen={modalIsOpen}
@@ -138,26 +153,42 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         <h2 className="text-xl font-bold mb-4">
           Citas del {selectedDate ? formatLongDate(selectedDate.toISOString()) : ''}
         </h2>
-        {dailyAppointments.length > 0 ? (
-          <ul className="space-y-4">
-            {dailyAppointments.map((appointment) => (
-              <li
-                key={appointment.id_Appointment}
-                className={`p-4 rounded-lg shadow ${
-                  isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'
-                }`}
-                onClick={() => handleOpenEditModal(appointment)}
+        {currentAppointment ? (
+          <div className="space-y-4">
+            <div
+              className={`p-4 rounded-lg shadow ${isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'}`}
+              onClick={() => handleOpenEditModal(currentAppointment)}
+            >
+              <p className="font-semibold">Residente: {currentAppointment.residentFullName}</p>
+              <p>Fecha: {formatDate(currentAppointment.date)}</p>
+              <p>Hora: {formatTime(currentAppointment.time)}</p>
+              <p>Acompañante: {currentAppointment.companionName}</p>
+              <p>Especialidad: {currentAppointment.specialtyName}</p>
+              <p>Centro: {currentAppointment.healthcareCenterName}</p>
+              <p>Estado: {currentAppointment.statusName}</p>
+            </div>
+            <div className="flex justify-center items-center mt-4 space-x-4">
+              <button
+                onClick={handlePreviousAppointment}
+                disabled={currentIndex === 0}
+                className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
               >
-                <p className="font-semibold">Residente: {appointment.residentFullName}</p>
-                <p>Fecha: {formatDate(appointment.date)}</p>
-                <p>Hora: {formatTime(appointment.time)}</p>
-                <p>Acompañante: {appointment.companionName}</p>
-                <p>Especialidad: {appointment.specialtyName}</p>
-                <p>Centro: {appointment.healthcareCenterName}</p>
-                <p>Estado: {appointment.statusName}</p>
-              </li>
-            ))}
-          </ul>
+                <FaArrowLeft />
+              </button>
+
+              <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                Cita {currentIndex + 1} de {dailyAppointments.length}
+              </span>
+
+              <button
+                onClick={handleNextAppointment}
+                disabled={currentIndex === dailyAppointments.length - 1}
+                className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+              >
+                <FaArrowRight />
+              </button>
+            </div>
+          </div>
         ) : (
           <p>No hay citas programadas para este día.</p>
         )}
@@ -256,7 +287,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
               <button
                 onClick={() => setEditModalIsOpen(false)}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg"
-              tabIndex={1}
+                tabIndex={1}
               >
                 Cancelar
               </button>
@@ -265,7 +296,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 className={`px-4 py-2 rounded-lg ${
                   updating ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
-              tabIndex={0}
+                tabIndex={0}
               >
                 Guardar
               </button>
@@ -273,7 +304,6 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
           </form>
         )}
       </Modal>
-      <Toast message={message} type={type} />
     </>
   );
 };

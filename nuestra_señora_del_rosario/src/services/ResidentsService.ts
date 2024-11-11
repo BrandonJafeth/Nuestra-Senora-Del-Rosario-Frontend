@@ -13,6 +13,10 @@ class ResidentsService extends ApiService<Resident> {
     return this.getAll('/Residents');
   }
 
+  public getAllResidentsPages(page: number, pageSize: number) {
+    return this.getAllPages('/Residents', page, pageSize);
+  }
+
   // Obtener un residente por ID
   public getResidentById(id: number) {
     return this.getOne('/Residents', id);

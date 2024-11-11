@@ -14,6 +14,10 @@ class VolunteeringService extends ApiService<VolunteerRequest> {
     return this.getAll('/FormVoluntarie');
   }
 
+  public getAllVolunteerPages(page: number, pageSize: number) {
+    return this.getAllPages('/FormVoluntarie', page, pageSize);
+  }
+
   public getVolunteerRequestById(id: number) {
     return this.getOne('/FormVoluntarie', id);
   }
