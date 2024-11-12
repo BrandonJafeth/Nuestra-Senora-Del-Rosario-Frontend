@@ -297,7 +297,7 @@ function ResidentList() {
               </div>
 
               <div>
-                <label className="block font-bold">Nombre del Guardián:</label>
+                <label className="block font-bold">Nombre del Encargado:</label>
                 <input
                   type="text"
                   value={selectedResident.guardianName}
@@ -307,7 +307,7 @@ function ResidentList() {
               </div>
 
               <div>
-                <label className="block font-bold">Teléfono del Guardián:</label>
+                <label className="block font-bold">Teléfono del Encargado:</label>
                 <input
                   type="text"
                   value={selectedResident.guardianPhone}
