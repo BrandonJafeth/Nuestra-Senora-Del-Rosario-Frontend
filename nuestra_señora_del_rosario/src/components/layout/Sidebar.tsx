@@ -19,10 +19,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const [isPersonalDropdownOpen, setPersonalDropdownOpen] = useState(false);
   const togglePersonalDropdown = () => setPersonalDropdownOpen(!isPersonalDropdownOpen);
 
+  // Estado para el dropdown de "Inventario"
+  const [isInventoryDropdownOpen, setInventoryDropdownOpen] = useState(false);
+  const toggleInventoryDropdown = () => setInventoryDropdownOpen(!isInventoryDropdownOpen);
+
   // Definimos los ítems de menú con condiciones basadas en el rol
   const menuItems = [
     { name: 'Residentes', link: '/dashboard/residentes'},
-    { name: 'Inventario', link: '/dashboard/inventario' }, 
     { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Manager', 'Admin', 'HR'] }, 
   ];
 
@@ -55,6 +58,69 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                 </Link>
               </li>
             ))}
+
+          {/* Dropdown de Inventario */}
+          <li className="relative">
+            <button
+              onClick={toggleInventoryDropdown}
+              className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
+                isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
+              }`}
+            >
+              <span className="flex items-center justify-center w-6 h-6">
+                {getIcon('Inventario')}
+              </span>
+              <span className="flex-1 ml-3 text-left">Inventario</span>
+              <svg
+                className={`w-5 h-5 transform transition-transform duration-300 ${
+                  isInventoryDropdownOpen ? 'rotate-180' : 'rotate-0'
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Submenú dentro del Dropdown de Inventario */}
+            {isInventoryDropdownOpen && (
+              <ul className="pl-8 mt-2 space-y-1 py-2">
+                <li>
+                  <Link
+                    to="inventario/lista-productos"
+                    className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                      isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center w-5 h-5">
+                      {getIcon('Lista de productos')}
+                    </span>
+                    <span className="ml-2">Lista de productos</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="inventario/consumo-productos"
+                    className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                      isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center w-5 h-5">
+                      {getIcon('Consumo de Productos')}
+                    </span>
+                    <span className="ml-2">Consumo de Productos</span>
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
 
           {/* Dropdown de Solicitudes, solo visible para Admin */}
           {userRole === 'Admin' && (

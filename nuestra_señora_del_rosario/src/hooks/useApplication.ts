@@ -1,10 +1,22 @@
-// hooks/useApplicationRequests.ts
+// hooks/useResidents.ts
 import { useQuery } from 'react-query';
+import { ApplicationRequest } from '../types/ApplicationType';
 import applicationService from '../services/ApplicationService';
 
-export const useApplicationRequests = () => {
-  return useQuery('applicationRequests', async () => {
-    const response = await applicationService.getAllApplicationRequests();
-    return response.data; // Extrae los datos de la respuesta de Axios
-  });
+interface AplicationData {
+  forms: ApplicationRequest[];
+  totalPages: number;
+}
+
+export const useAplicationRequests = (pageNumber: number, pageSize: number) => {
+  return useQuery<AplicationData, Error>(
+    ['forms', pageNumber, pageSize],
+    async () => {
+      const response = await applicationService.getAllAplicationPages(pageNumber, pageSize);
+      return response.data;
+    },
+    {
+      keepPreviousData: true, // Mantiene datos previos mientras se cargan los nuevos
+    }
+  );
 };

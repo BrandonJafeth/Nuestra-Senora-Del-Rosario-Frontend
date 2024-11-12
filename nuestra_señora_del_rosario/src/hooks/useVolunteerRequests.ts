@@ -1,11 +1,24 @@
+// hooks/useResidents.ts
+import { useQuery } from 'react-query';
+import volunteeringService from '../services/VolunteeringService';
+import { VolunteerRequest } from '../types/VolunteerType';
 
-import { useQuery } from 'react-query'; 
-import volunteeringService from '../services/VolunteeringService'; 
+interface VolunteerData {
+  formVoluntaries: VolunteerRequest[];
+  totalPages: number;
+}
 
-
-export const useVolunteerRequests = () => {
-  return useQuery('volunteerRequests', async () => {
-    const response = await volunteeringService.getAllVolunteerRequests();
-    return response.data; // Extrae los datos de la respuesta de Axios
-  });
+export const useVolunteerRequests = (pageNumber: number, pageSize: number) => {
+  return useQuery<VolunteerData, Error>(
+    ['formVoluntaries', pageNumber, pageSize],
+    async () => {
+      const response = await volunteeringService.getAllVolunteerPages(pageNumber, pageSize);
+      console.log(response.data);
+      return response.data;
+      
+    },
+    {
+      keepPreviousData: true, // Mantiene datos previos mientras se cargan los nuevos
+    }
+  );
 };

@@ -1,20 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEmployee } from '../../hooks/useEmployee';
 import { useNavigate } from 'react-router-dom';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const EmployeeList: React.FC = () => {
-  const { data: employees = [], isLoading, error } = useEmployee();
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5; // Número de empleados por página
+  const { data, isLoading, error } = useEmployee(pageNumber, pageSize);
   const navigate = useNavigate();
-
   const { isDarkMode } = useThemeDark();
 
-  if (error) return <p>Error al cargar los empleados: {`${error}`}</p>;
+  if (error) return <p>Error al cargar los empleados: {`${error.message}`}</p>;
 
   const handleGenerateReceipt = (employee: any) => {
     navigate(`/dashboard/comprobante-pago`, { state: { employeeDni: employee.dni } });
+  };
+
+  // Funciones para manejar la paginación
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
   };
 
   return (
@@ -92,7 +107,7 @@ const EmployeeList: React.FC = () => {
                 </tr>
               ))
             ) : (
-              employees.map((employee) => (
+              data?.employees.map((employee) => (
                 <tr key={employee.dni} className={`${isDarkMode ? 'bg-gray-600 hover:bg-gray-700' : 'bg-white hover:bg-gray-200'}`}>
                   <td className="p-4">{employee.firstName} {employee.lastName1}</td>
                   <td className="p-4">{employee.dni}</td>
@@ -113,6 +128,29 @@ const EmployeeList: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+  <button
+    onClick={handlePreviousPage}
+    disabled={pageNumber === 1}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowLeft />
+  </button>
+
+  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+    Página {pageNumber} de {data?.totalPages}
+  </span>
+
+  <button
+    onClick={handleNextPage}
+    disabled={pageNumber === data?.totalPages}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowRight />
+  </button>
+</div>
     </div>
   );
 };

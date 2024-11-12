@@ -29,13 +29,13 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   const [guardians, setGuardians] = useState<Guardian[]>([]);
   const [filteredGuardians, setFilteredGuardians] = useState<Guardian[]>([]);
   const [isNewGuardian, setIsNewGuardian] = useState(false);
-  const [selectedGuardian, setSelectedGuardian] = useState<Guardian | null>(null); // Estado para el guardián seleccionado
+  const [, setSelectedGuardian] = useState<Guardian | null>(null); // Estado para el guardián seleccionado
 
   // Cargar guardianes al montar el componente
   useEffect(() => {
     const fetchGuardians = async () => {
       try {
-        const response = await fetch('https://localhost:7066/api/Guardian');
+        const response = await fetch('https://nuestra-senora-del-rosario-backend-2.onrender.com/api/Guardian');
         const data = await response.json();
         setGuardians(data);
       } catch (error) {
@@ -57,18 +57,22 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
     setFilteredGuardians(filtered);
   };
 
-  // Seleccionar un guardián y mostrar su información
   const handleSelectGuardian = (guardian: Guardian) => {
     const fullName = `${guardian.name_GD} ${guardian.lastname1_GD} ${guardian.lastname2_GD || ''}`;
+    
     setValue('name_GD', fullName);
     setSelectedGuardian(guardian);
     setGuardianId(guardian.id_Guardian);
-
+  
     // Limpiar sugerencias y cerrar la pantalla
     setFilteredGuardians([]);
-    showToast('Encargado seleccionado y guardado', 'success');
+    
+    // Mostrar toast con el nombre del encargado seleccionado
+    showToast(`Encargado seleccionado: ${fullName}`, 'info');
+    
     setIsGuardianAdded(true); // Cerrar la pantalla
   };
+  
 
   // Manejo del envío del formulario (creación)
   const onSubmit: SubmitHandler<GuardianFormInputs> = (data) => {
@@ -133,7 +137,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
                   onClick={() => handleSelectGuardian(guardian)}
                   className="p-2 text-black hover:bg-gray-100 cursor-pointer"
                 >
-                  {guardian.name_GD} {guardian.lastname1_GD} {guardian.lastname2_GD}
+                  {guardian.name_GD} {guardian.lastname1_GD} {guardian.lastname2_GD} {guardian.cedula_GD}
                 </li>
               ))}
             </ul>

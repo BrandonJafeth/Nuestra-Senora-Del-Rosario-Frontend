@@ -4,13 +4,16 @@ import { useStatuses } from '../../hooks/useStatuses';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Skeleton from 'react-loading-skeleton';
 import { ApplicationRequest } from '../../types/ApplicationType';
-import { useApplicationRequests } from '../../hooks/useApplication';
 import '../../styles/Style.css';
 import { useUpdateApplicationStatus } from '../../hooks/useUpdateApplicationStatus';
+import { useAplicationRequests } from '../../hooks/useApplication';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 function ApplicationRequests() {
-  const { data: applicationRequests = [], isLoading, error } = useApplicationRequests();
   const { isDarkMode } = useThemeDark();
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5; // Número de solicitudes por página
+  const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
 
@@ -21,16 +24,15 @@ function ApplicationRequests() {
     Todas: 'Todas'
   };
 
-  // Hook para actualizar el estado de una solicitud de ingreso
   const { mutate: updateApplicationStatus } = useUpdateApplicationStatus();
   
-  // Convertir el filtro al inglés para la comparación
-  const filteredRequests = applicationRequests.filter((request) => {
-    return (
-      filterStatus === 'Todas' || 
-      request.status_Name === statusMapping[filterStatus]
-    );
-  });
+  // Filtros para las solicitudes
+  const filteredRequests = Array.isArray(data?.forms)
+  ? data.forms.filter((request) => {
+      return filterStatus === 'Todas' || request.status_Name === statusMapping[filterStatus];
+    })
+  : [];
+
   
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
 
@@ -51,6 +53,19 @@ function ApplicationRequests() {
     setSelectedApplication(null);
   };
 
+  // Paginación
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -61,7 +76,6 @@ function ApplicationRequests() {
       <div className="flex justify-between mb-4">
         <div className="flex space-x-4">
           {isStatusesLoading ? (
-            // Skeleton para los botones de estado
             [...Array(4)].map((_, i) => (
               <Skeleton 
                 key={i} 
@@ -114,7 +128,6 @@ function ApplicationRequests() {
           </thead>
           <tbody className="text-center">
             {isLoading ? (
-              // Mostrar Skeleton manteniendo la estructura de la tabla
               [...Array(5)].map((_, i) => (
                 <tr key={i}>
                   <td className="p-4">
@@ -141,7 +154,7 @@ function ApplicationRequests() {
                 </tr>
               ))
             ) : (
-              filteredRequests.map((request: any) => (
+              filteredRequests.map((request: ApplicationRequest) => (
                 <tr
                   key={request.id_ApplicationForm}
                   className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
@@ -152,7 +165,15 @@ function ApplicationRequests() {
                   <td className="p-4">{request.location}</td>
                   <td className="p-4">{new Date(request.applicationDate).toLocaleDateString()}</td>
                   <td className="p-4">
-                    <span className={"px-3 py-2 rounded-xl "}>
+                    <span
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        request.status_Name === 'Aprobado'
+                          ? 'bg-green-500'
+                          : request.status_Name === 'Rechazado'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`}
+                    >
                       {request.status_Name}
                     </span>
                   </td>
@@ -171,24 +192,42 @@ function ApplicationRequests() {
         </table>
       </div>
 
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+  <button
+    onClick={handlePreviousPage}
+    disabled={pageNumber === 1}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowLeft />
+  </button>
+
+  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+    Página {pageNumber} de {data?.totalPages}
+  </span>
+
+  <button
+    onClick={handleNextPage}
+    disabled={pageNumber === data?.totalPages}
+    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+  >
+    <FaArrowRight />
+  </button>
+</div>
+
       {/* Modal de detalles */}
       {selectedApplication && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
-            {/* Botón de cerrar */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-3xl font-bold"
               onClick={() => setSelectedApplication(null)}
             >
               &times;
             </button>
-            
-            {/* Título del modal */}
             <h3 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
               {selectedApplication.name_AP} {selectedApplication.lastname1_AP}
             </h3>
-            
-            {/* Información del solicitante */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6 text-lg text-gray-700 dark:text-gray-300">
               <div>
                 <p><strong>Cédula:</strong> {selectedApplication.cedula_AP}</p>
@@ -203,7 +242,19 @@ function ApplicationRequests() {
                 <p><strong>Fecha de Solicitud:</strong> {new Date(selectedApplication.applicationDate).toLocaleDateString()}</p>
               </div>
               <div>
-                <p><strong>Estatus:</strong> {selectedApplication.status_Name}</p>
+                <p><strong>Estatus:</strong>
+                  <span
+                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                      selectedApplication.status_Name === 'Aprobado'
+                        ? 'bg-green-500'
+                        : selectedApplication.status_Name === 'Rechazado'
+                        ? 'bg-red-500'
+                        : 'bg-yellow-500'
+                    }`}
+                  >
+                    {selectedApplication.status_Name}
+                  </span>
+                </p>
               </div>
               <div>
                 <p><strong>Encargado:</strong> {selectedApplication.name_GD}</p>
@@ -212,8 +263,6 @@ function ApplicationRequests() {
                 <p><strong>Teléfono Encargado:</strong> {selectedApplication.phone_GD}</p>
               </div>
             </div>
-
-            {/* Botones de acción */}
             <div className="flex justify-center space-x-4 mt-8">
               <button
                 className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"

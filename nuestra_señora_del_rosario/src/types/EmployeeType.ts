@@ -1,6 +1,5 @@
  
  export interface EmployeeType {
-    professionId(professionId: any): string;
     dni: number;
     firstName: string;
     lastName1: string;
@@ -9,7 +8,9 @@
     address: string;
     email: string;
     emergencyPhone: string;
-    professionName: string;
-    typeOfSalaryName: string;
+    professionId: number;
+    professionName?: string;
+    typeOfSalaryName?: string;
+    fullName?: string;
   }
   

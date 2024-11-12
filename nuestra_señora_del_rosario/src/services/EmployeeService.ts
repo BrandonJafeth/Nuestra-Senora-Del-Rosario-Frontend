@@ -10,6 +10,10 @@ class EmployeeService extends ApiService<EmployeeType> {
     return this.getOne('/Employee', id);
   }
 
+  public getAllEmployeePages(page: number, pageSize: number) {
+    return this.getAllPages('/Employee', page, pageSize);
+  }
+
   public createEmployee(data: EmployeeType) {
     return this.create('/Employee', data);
   }
@@ -17,6 +21,11 @@ class EmployeeService extends ApiService<EmployeeType> {
   public updateEmployee(id: number, data: Partial<EmployeeType>) {
     return this.update('/Employee', id, data);
   }
+
+  public getEmployeesByRole(role: string) {
+    return this.getAll(`/Employee/by-role/${role}`); // Llamada con el rol como parámetro
+  }
+
 
   public deleteEmployee(id: number) {
     return this.delete('/Employee', id);

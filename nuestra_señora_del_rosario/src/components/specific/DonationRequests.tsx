@@ -1,4 +1,3 @@
-// FILE: components/DonationRequests.tsx
 import { useState } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useStatuses } from '../../hooks/useStatuses';
@@ -6,50 +5,61 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { DonationRequest } from '../../types/DonationType';
 import { useUpdateDonationStatus } from '../../hooks/useUpdateDonationStatus';
-import { useDonationRequests } from '../../hooks/useDonation';
-import { useDonationTypes } from '../../hooks/useDonationTypes'; // Importar el hook para obtener los tipos de donación
+import { useDonationTypes } from '../../hooks/useDonationTypes';
 import '../../styles/Style.css';
+import { useDonationRequests } from '../../hooks/useDonation';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 function DonationRequests() {
-  const { data: donationRequests = [], isLoading, error } = useDonationRequests();
   const { isDarkMode } = useThemeDark();
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5; // Número de donaciones por página
+  const { data, isLoading, error } = useDonationRequests(pageNumber, pageSize);
+  const { data: donationTypes, isLoading: isDonationTypesLoading } = useDonationTypes();
+  const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
+  const { mutate: updateDonationStatus } = useUpdateDonationStatus();
+
   const [selectedDonation, setSelectedDonation] = useState<DonationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
-  const [filterType, setFilterType] = useState<string>('Todas'); // Filtro para el tipo de donación
+  const [filterType, setFilterType] = useState<string>('Todas');
 
-  const { mutate: updateDonationStatus } = useUpdateDonationStatus();
-  const { data: donationTypes, isLoading: isDonationTypesLoading } = useDonationTypes(); // Obtener los tipos de donación
-
-  const filteredRequests = donationRequests.filter((request) => {
+  const filteredRequests = Array.isArray(data?.donations) 
+  ? data?.donations.filter((request) => {
     return (
       (filterStatus === 'Todas' || request.status_Name === filterStatus) &&
-      (filterType === 'Todas' || request.donationType === filterType) // Aplicar el filtro por tipo de donación
+      (filterType === 'Todas' || request.donationType === filterType)
     );
-  });
+  }) : [];
 
-  const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
-
-  // Si hay un error al cargar las solicitudes
-  if (error) {
-    return <div>Error loading donation requests</div>;
-  }
-
-  // Función para aceptar una solicitud
   const handleAccept = (donation: DonationRequest) => {
-    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 }); // Id del estado "Aceptada"
+    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });
     setSelectedDonation(null);
   };
 
-  // Función para rechazar una solicitud
   const handleReject = (donation: DonationRequest) => {
-    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 3 }); // Id del estado "Rechazada"
+    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 3 });
     setSelectedDonation(null);
   };
 
-  // Función para ver más información
   const handleViewDetails = (donation: DonationRequest) => {
     setSelectedDonation(donation);
   };
+
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
+  if (error) {
+    return <div>Error loading donation requests</div>;
+  }
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
@@ -61,7 +71,6 @@ function DonationRequests() {
       <div className="flex justify-between mb-4">
         <div className="flex space-x-4">
           {isStatusesLoading ? (
-            // Skeleton para los botones de estado
             [...Array(4)].map((_, i) => (
               <Skeleton key={i} width={100} height={40} className="rounded-full" />
             ))
@@ -86,7 +95,6 @@ function DonationRequests() {
         </div>
         <div>
           {isDonationTypesLoading ? (
-            // Skeleton para el dropdown de tipos de donaciones
             <Skeleton width={200} height={40} className="rounded-full" />
           ) : (
             <select
@@ -119,27 +127,14 @@ function DonationRequests() {
           </thead>
           <tbody className="text-center">
             {isLoading ? (
-              // Mostrar Skeleton manteniendo la estructura de la tabla
               [...Array(5)].map((_, i) => (
                 <tr key={i}>
-                  <td className="p-4">
-                    <Skeleton height={20} width="80%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="70%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="60%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="60%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="70%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={40} width={100} className="rounded-full" />
-                  </td>
+                  <td className="p-4"><Skeleton height={20} width="80%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="70%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="60%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="60%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="70%" /></td>
+                  <td className="p-4"><Skeleton height={40} width={100} className="rounded-full" /></td>
                 </tr>
               ))
             ) : (
@@ -153,7 +148,15 @@ function DonationRequests() {
                   <td className="p-4">{request.methodDonation}</td>
                   <td className="p-4">{new Date(request.delivery_date).toLocaleDateString()}</td>
                   <td className="p-4">
-                    <span className={"px-3 py-2 rounded-xl "}>
+                    <span
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        request.status_Name === 'Aprobado'
+                          ? 'bg-green-500'
+                          : request.status_Name === 'Rechazado'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`}
+                    >
                       {request.status_Name}
                     </span>
                   </td>
@@ -172,49 +175,65 @@ function DonationRequests() {
         </table>
       </div>
 
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
+
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {data?.totalPages}
+        </span>
+
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === data?.totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
+
       {/* Modal de detalles */}
       {selectedDonation && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
-            {/* Botón de cerrar */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-3xl font-bold"
               onClick={() => setSelectedDonation(null)}
             >
               &times;
             </button>
-
-            {/* Título del modal */}
             <h3 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
               {selectedDonation.dn_Name} {selectedDonation.dn_Lastname1} {selectedDonation.dn_Lastname2}
             </h3>
-
-            {/* Información del donante */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6 text-lg text-gray-700 dark:text-gray-300">
+              <div><p><strong>Cédula:</strong> {selectedDonation.dn_Cedula}</p></div>
+              <div><p><strong>Email:</strong> {selectedDonation.dn_Email}</p></div>
+              <div><p><strong>Teléfono:</strong> {selectedDonation.dn_Phone}</p></div>
+              <div><p><strong>Fecha de Donación:</strong> {new Date(selectedDonation.delivery_date).toLocaleDateString()}</p></div>
+              <div><p><strong>Tipo de Donación:</strong> {selectedDonation.donationType}</p></div>
+              <div><p><strong>Método:</strong> {selectedDonation.methodDonation}</p></div>
               <div>
-                <p><strong>Cédula:</strong> {selectedDonation.dn_Cedula}</p>
-              </div>
-              <div>
-                <p><strong>Email:</strong> {selectedDonation.dn_Email}</p>
-              </div>
-              <div>
-                <p><strong>Teléfono:</strong> {selectedDonation.dn_Phone}</p>
-              </div>
-              <div>
-                <p><strong>Fecha de Donación:</strong> {new Date(selectedDonation.delivery_date).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p><strong>Tipo de Donación:</strong> {selectedDonation.donationType}</p>
-              </div>
-              <div>
-                <p><strong>Método:</strong> {selectedDonation.methodDonation}</p>
-              </div>
-              <div>
-                <p><strong>Estatus:</strong> {selectedDonation.status_Name}</p>
+                <p><strong>Estatus:</strong>
+                  <span
+                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                      selectedDonation.status_Name === 'Aprobado'
+                        ? 'bg-green-500'
+                        : selectedDonation.status_Name === 'Rechazado'
+                        ? 'bg-red-500'
+                        : 'bg-yellow-500'
+                    }`}
+                  >
+                    {selectedDonation.status_Name}
+                  </span>
+                </p>
               </div>
             </div>
-
-            {/* Botones de acción */}
             <div className="flex justify-center space-x-4 mt-8">
               <button
                 className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"

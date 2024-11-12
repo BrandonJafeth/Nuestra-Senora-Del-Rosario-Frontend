@@ -37,11 +37,11 @@ import Toast from '../common/Toast';
     });
   
     const [generatedReceiptId, setGeneratedReceiptId] = useState<number | null>(null); // Estado para almacenar el ID del comprobante generado
-    const { mutate: createPaymentReceipt, isLoading} = useCreatePaymentReceipt();
+    const { mutate: createPaymentReceipt, isLoading } = useCreatePaymentReceipt();
   
     // Enlace para descargar el comprobante en formato PDF
     const downloadLink = generatedReceiptId
-      ? `https://localhost:7066/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
+      ? `https://nuestra-senora-del-rosario-backend-2.onrender.com/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
       : null;
   
     // Manejar cambios en el formulario

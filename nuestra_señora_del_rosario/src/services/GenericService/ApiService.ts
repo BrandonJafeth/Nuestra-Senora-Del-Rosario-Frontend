@@ -17,13 +17,21 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     private api: AxiosInstance;
 
     constructor() {
-        this.api = axios.create({ baseURL: 'https://localhost:7066/api' });
+        this.api = axios.create({ baseURL: 'https://nuestra-senora-del-rosario-backend-2.onrender.com/api' });
     }
+    //https://localhost:7066/api
+    //https://nuestra-senora-del-rosario-backend-2.onrender.com/api
 
     // Methods from IReadService
     public async getAll(endpoint: string): Promise<AxiosResponse<T[]>> {
         return this.api.get<T[]>(endpoint);
     }
+    
+   // En ApiService.ts
+public async getAllPages(endpoint: string, pageNumber: number, pageSize: number): Promise<AxiosResponse<any>> {
+    return this.api.get(endpoint, { params: { pageNumber, pageSize } });
+}
+
 
     public async getOne(endpoint: string, id: string | number): Promise<AxiosResponse<T>> {
         return this.api.get<T>(`${endpoint}/${id}`);

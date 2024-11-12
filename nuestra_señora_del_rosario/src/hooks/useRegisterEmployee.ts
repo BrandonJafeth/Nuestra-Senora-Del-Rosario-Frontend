@@ -32,9 +32,10 @@ export const useEmployeeForm = () => {
       address,
       email,
       emergencyPhone,
-      typeOfSalaryId,
-      professionId,
+      typeOfSalaryId: typeOfSalaryId.toString(), // Convertir a string
+      professionId
     };
+    
 
     try {
       await employeeService.createEmployee(empleadoData);

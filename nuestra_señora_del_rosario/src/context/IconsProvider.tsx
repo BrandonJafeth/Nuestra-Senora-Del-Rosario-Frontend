@@ -1,4 +1,16 @@
-import { FaUsers, FaClipboardList, FaCalendarAlt, FaDonate, FaHandsHelping, FaWarehouse, FaSignInAlt, FaIdCard, FaLock  } from 'react-icons/fa'; // Agrega FaSearch
+import { 
+  FaUsers, 
+  FaClipboardList, 
+  FaCalendarAlt, 
+  FaDonate, 
+  FaHandsHelping, 
+  FaWarehouse, 
+  FaSignInAlt, 
+  FaIdCard, 
+  FaLock,
+  FaListUl,       // Icono para "Lista de productos"
+  FaBoxOpen       // Icono para "Consumo de Productos"
+} from 'react-icons/fa'; 
 import IconContext from './IconsContext';
 
 export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -13,7 +25,8 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
     'Cronograma de Citas': <FaCalendarAlt />,
     Cedula: <FaIdCard />, 
     Contraseña: <FaLock />,
-   
+    'Lista de productos': <FaListUl />,     // Icono para "Lista de productos"
+    'Consumo de Productos': <FaBoxOpen />   // Icono para "Consumo de Productos"
   };
 
   const getIcon = (name: string) => iconMap[name] || null;

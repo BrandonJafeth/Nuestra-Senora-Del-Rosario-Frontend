@@ -1,128 +1,276 @@
 
+import { useEffect, useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { format, parse, startOfWeek, getDay, isToday } from 'date-fns';
-import { es } from 'date-fns/locale/es';
-import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para manejar el modo oscuro
+import { format, parseISO, startOfWeek, getDay } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { useThemeDark } from '../../hooks/useThemeDark';
+import { useAppointments } from '../../hooks/useAppointments';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
+import Modal from 'react-modal';
+import AddAppointmentModal from './AddAppointmentModal'; // Importa el modal de agregar cita
+import '../../styles/Calendar.css';
+import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion'; // Importamos framer-motion para animar el toast
+import { FiBell } from 'react-icons/fi'; // Icono para el toast
+import { useNotification } from '../../hooks/useNotification';
+import NoteForm from './NoteForm';
+import DailyAppointment from './DailyAppointment';
 
-const locales = {
-  es: es,
-};
-
+const locales = { es };
 const localizer = dateFnsLocalizer({
   format,
-  parse,
+  parse: (str: string) => parseISO(str),
   startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
   getDay,
   locales,
 });
 
-const AppointmentCalendar = () => {
-  const { isDarkMode } = useThemeDark(); // Usar el hook para detectar el modo
+Modal.setAppElement('#root');
 
-  // Función para aplicar estilo personalizado al día actual
-  const dayPropGetter = (date: string | number | Date) => {
-    if (isToday(date)) {
+const AppointmentCalendar = () => {
+  const Navigate = useNavigate();
+  const { isDarkMode } = useThemeDark();
+  const { data: appointments, isLoading, error, refetch } = useAppointments(); // `refetch` para actualizar datos
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [dailyAppointments, setDailyAppointments] = useState<any[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false); // Estado para abrir/cerrar modal de agregar cita
+  const { notifications } = useNotification();
+  const [newNotification, setNewNotification] = useState<any | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [unreadCount, setUnreadCount] = useState(0); 
+  const [notesModalIsOpen, setNotesModalIsOpen] = useState(false); // Estado para el modal de notas
+ 
+
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+
+      const unreadNotifications = notifications.filter((n) => !n.isRead);
+      setUnreadCount(unreadNotifications.length);
+
+      const latestNotification = notifications[0];
+      setNewNotification(latestNotification);
+      setShowPopup(true);
+
+      // Ocultar el popup después de 3 segundos
+      const timer = setTimeout(() => setShowPopup(false), 3000);
+      return () => clearTimeout(timer); // Limpiar el temporizador al desmontar
+    }
+  }, [notifications]);
+
+  const dayPropGetter = (date: Date) => {
+    if (new Date().toDateString() === date.toDateString()) {
       return {
-        className: 'bg-blue', // Fondo transparente
         style: {
-          color: isDarkMode ? '#000000' : '#ff0000', // Rojo oscuro en modo oscuro, rojo brillante en modo claro
-          fontWeight: 'bold', // Opción: resaltar el día
+          backgroundColor: isDarkMode ? '#3b82f6' : '#ff5722',
+          color: isDarkMode ? '#fff' : '#000',
         },
       };
     }
     return {};
   };
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <p>Error al cargar las citas.</p>;
+
+  const groupAppointmentsByDate = () => {
+    if (!appointments) return [];
+    const grouped = appointments.data.reduce((acc: any, appointment: any) => {
+      const date = format(parseISO(appointment.date), 'yyyy-MM-dd');
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(appointment);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped).map(([date, appts]) => ({
+      title: 'Citas programadas',
+      start: parseISO(date),
+      end: parseISO(date),
+      appointments: appts,
+    }));
+  };
+
+  const events = groupAppointmentsByDate();
+
+  const handleSelectEvent = (event: any) => {
+    setDailyAppointments(event.appointments);
+    setSelectedDate(event.start);
+    setModalIsOpen(true);
+  };
+
+
   
+  const handleAddAppointment = () => {
+    setShowAddModal(true); // Abrir el modal para agregar cita
+  };
+
+  const handleSaveAppointment = (newAppointment: any) => {
+    console.log('Nueva cita:', newAppointment); // Puedes enviar los datos a tu API aquí
+    refetch(); // Refrescar las citas después de agregar una nueva
+    setShowAddModal(false); // Cerrar el modal
+  };
+
+const goToNotifications = () => {
+Navigate('/dashboard/notifications');
+}
+
+const openNotesModal = () => setNotesModalIsOpen(true);
+  const closeNotesModal = () => setNotesModalIsOpen(false);
 
   return (
-    <div className={`h-[80vh] ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'} p-4 rounded-lg shadow-lg`}>
+    <div className={`h-[80vh] p-4 rounded-lg shadow-lg ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
       <Calendar
-        localizer={localizer}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '100%' }}
-        className={`${
-          isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'
-        }`} // Fondo y texto para modo claro y oscuro
-        views={['month']} // Limitar la vista únicamente a mensual
-        defaultView="month" // Vista por defecto
-        dayPropGetter={dayPropGetter} // Estilo personalizado para el día actual
-        messages={{
-          next: 'Siguiente',
-          previous: 'Anterior',
-          today: 'Hoy',
-          month: 'Mes',
-          week: 'Semana',
-          day: 'Día',
-          agenda: 'Agenda',
-          date: 'Fecha',
-          time: 'Hora',
-          event: 'Evento',
-          noEventsInRange: 'No hay eventos en este rango.',
-        }}
-        components={{
-          toolbar: (props) => {
-            const currentMonth = format(props.date, 'MMMM yyyy', { locale: es }); // Formatear el mes actual en español
-            return (
-              <div className="flex justify-between items-center mb-4">
-                {/* Botones de navegación (Hoy, Anterior, Siguiente) */}
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => props.onNavigate('TODAY')}
-                    className={`px-4 py-2 rounded ${
-                      isDarkMode
-                        ? 'text-white bg-blue-500 hover:bg-blue-600'
-                        : 'text-gray-800 bg-white border border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    Hoy
-                  </button>
-                  <button
-                    onClick={() => props.onNavigate('PREV')}
-                    className={`px-4 py-2 rounded ${
-                      isDarkMode
-                        ? 'text-white bg-blue-500 hover:bg-blue-600'
-                        : 'text-gray-800 bg-white border border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    onClick={() => props.onNavigate('NEXT')}
-                    className={`px-4 py-2 rounded ${
-                      isDarkMode
-                        ? 'text-white bg-blue-500 hover:bg-blue-600'
-                        : 'text-gray-800 bg-white border border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    Siguiente
-                  </button>
-                </div>
+  localizer={localizer}
+  events={events}
+  startAccessor="start"
+  endAccessor="end"
+  style={{ height: '100%' }}
+  dayPropGetter={dayPropGetter}
+  onSelectEvent={handleSelectEvent}
+  eventPropGetter={() => ({ className: 'custom-event-container' })}
+  messages={{
+    next: 'Siguiente',
+    previous: 'Anterior',
+    today: 'Hoy',
+    month: 'Mes',
+    noEventsInRange: 'No hay eventos en este rango.',
+  }}
+  className="rbc-calendar" /* Asegúrate de mantener esta clase */
+  components={{
+    toolbar: (props) => (
+      <div className="flex justify-between items-center mb-4">
+       <div className="flex justify-start items-center space-x-4 mb-4">
+  <button
+    onClick={handleAddAppointment}
+    className={`px-4 py-2 rounded ${
+      isDarkMode
+        ? 'bg-blue-600 text-white hover:bg-blue-700'
+        : 'bg-blue-500 text-white hover:bg-blue-600'
+    }`}
+  >
+    Agregar Cita
+  </button>
 
-                {/* Mostrar mes y año actual */}
-                <div className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                  {currentMonth}
-                </div>
+  <button
+    onClick={openNotesModal}
+    className={`px-4 py-2 rounded ${
+      isDarkMode
+        ? 'bg-blue-600 text-white hover:bg-blue-700'
+        : 'bg-blue-500 text-white hover:bg-blue-600'
+    }`}
+  >
+   Agregar Nota
+  </button>
+</div>
+        <div className="text-center flex-grow">
+          <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            {format(props.date, 'MMMM yyyy', { locale: es })}
+          </h2>
+        </div>
+        <div className="space-x-4">
+          <button
+            onClick={() => props.onNavigate('TODAY')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Hoy
+          </button>
+          <button
+            onClick={() => props.onNavigate('PREV')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => props.onNavigate('NEXT')}
+            className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          >
+            Siguiente
+          </button>
+          <button
+        onClick={goToNotifications}
+        className={`relative px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+      >
+        <FiBell />
 
-                {/* Solo la pestaña "Mes" ya que eliminamos las otras vistas */}
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => props.onView('month')}
-                    className={`px-4 py-2 rounded ${
-                      isDarkMode
-                        ? 'text-white bg-blue-500 hover:bg-blue-600'
-                        : 'text-gray-800 bg-white border border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    Mes
-                  </button>
-                </div>
-              </div>
-            );
-          },
-        }}
+        {/* Badge de notificaciones no leídas */}
+        {unreadCount > 0 && (
+          <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+            {unreadCount}
+          </span>
+        )}
+      </button>
+        </div>
+      </div>
+    ),
+  }}
+/>
+      
+      <DailyAppointment
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+        selectedDate={selectedDate}
+        dailyAppointments={dailyAppointments}
+        isDarkMode={isDarkMode}
+        setDailyAppointments={setDailyAppointments}
+        onSave={refetch}
+      />
+      {/* Modal para agregar nueva cita */}
+      <AddAppointmentModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        residents={[]} // Debes pasar los residentes aquí
+        healthcareCenters={[]} // Y los centros de salud aquí
+        specialties={[]} // Y especialidades aquí
+        companions={[]} // Y los acompañantes aquí
+        onSave={handleSaveAppointment}
       />
+     <AnimatePresence>
+  {showPopup && newNotification && (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }} // Aparece desde abajo
+      animate={{ opacity: 1, y: 0 }} // Subida suave al mostrarse
+      exit={{ opacity: 0, y: 30 }} // Desaparece bajando
+      transition={{ duration: 0.5 }}
+      className="fixed bg-blue-600 text-white p-6 rounded-lg shadow-lg flex items-center space-x-4"
+      style={{
+        bottom: '20px', // Posición desde el borde inferior
+        right: '20px',  // Posición desde el borde derecho
+        zIndex: 1050,   // Asegura que esté delante de otros elementos
+        pointerEvents: 'auto', // Permite interacción
+      }}
+    >
+      <h3 className="text-lg font-bold">{newNotification.title}</h3>
+      <p className="ml-4">{newNotification.message}</p>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+<Modal
+  isOpen={notesModalIsOpen}
+  onRequestClose={closeNotesModal}
+  contentLabel="Agregar Nota"
+  className={`relative p-6 rounded-lg shadow-lg max-w-md mx-auto bg-white dark:bg-gray-800`}
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+  style={{
+    content: {
+      zIndex: 1050, // Asegura que tenga prioridad
+      position: 'relative',
+    },
+  }}
+>
+  {/* Botón de cerrar en la esquina superior derecha */}
+  <button
+    onClick={closeNotesModal}
+    className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition"
+  >
+    ✕
+  </button>
+
+  {/* Formulario de Nota */}
+  <NoteForm />
+</Modal>
     </div>
   );
 };

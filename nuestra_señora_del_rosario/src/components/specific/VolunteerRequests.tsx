@@ -8,45 +8,52 @@ import { useVolunteerTypes } from '../../hooks/useVolunteerTypes';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import '../../styles/Style.css';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useUpdateVolunteerStatus } from '../../hooks/useVolunteerStatusUpdate ';
 
-
 function VolunteerRequests() {
-  const { data: volunteerRequests = [], isLoading, error } = useVolunteerRequests();
   const { isDarkMode } = useThemeDark();
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5; // Número de voluntarios por página
+  const { data, isLoading, error } = useVolunteerRequests(pageNumber, pageSize);
   const [selectedVolunteer, setSelectedVolunteer] = useState<VolunteerRequest | null>(null);
-  const [filterStatus, setFilterStatus] = useState<'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas'>('Todas');
+  const [filterStatus, setFilterStatus] = useState<'Todas' | 'Aceptada' | 'Rechazada' | 'Pendiente'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
 
-  // Hook para actualizar el estado de una solicitud
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
-
-  const filteredRequests = useFilteredRequests(volunteerRequests, filterStatus, filterType);
+  const filteredRequests = useFilteredRequests(data?.formVoluntaries || [], filterStatus, filterType);
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
 
-  // Si hay error
+  const handleAccept = (volunteer: VolunteerRequest) => {
+    updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 });
+    setSelectedVolunteer(null);
+  };
+
+  const handleReject = (volunteer: VolunteerRequest) => {
+    updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
+    setSelectedVolunteer(null);
+  };
+
+  const handleViewDetails = (volunteer: VolunteerRequest) => {
+    setSelectedVolunteer(volunteer);
+  };
+
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
   if (error) {
     return <div>Error loading volunteer requests</div>;
   }
-
-    // Función para aceptar una solicitud
-    const handleAccept = (volunteer: VolunteerRequest) => {
-      updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 });
-      setSelectedVolunteer(null);
-    };
-  
-    // Función para rechazar una solicitud
-    const handleReject = (volunteer: VolunteerRequest) => {
-      updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
-      setSelectedVolunteer(null);
-    };
-  
-    // Función para ver más información
-    const handleViewDetails = (volunteer: VolunteerRequest) => {
-      setSelectedVolunteer(volunteer);
-    };
-  
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
@@ -58,7 +65,6 @@ function VolunteerRequests() {
       <div className="flex justify-between mb-4">
         <div className="flex space-x-4">
           {isStatusesLoading ? (
-            // Skeletons para los botones de estado
             [...Array(4)].map((_, i) => (
               <Skeleton key={i} width={100} height={40} className="rounded-full" />
             ))
@@ -73,7 +79,6 @@ function VolunteerRequests() {
               </button>
             ))
           )}
-          {/* Botón de "Todas" */}
           {isStatusesLoading ? (
             <Skeleton width={100} height={40} className="rounded-full" />
           ) : (
@@ -84,7 +89,6 @@ function VolunteerRequests() {
         </div>
         <div>
           {isVolunteerTypesLoading ? (
-            // Skeleton para el dropdown de tipos de voluntariado
             <Skeleton width={200} height={40} className="rounded-full" />
           ) : (
             <select
@@ -117,27 +121,14 @@ function VolunteerRequests() {
           </thead>
           <tbody className="text-center">
             {isLoading ? (
-              // Mostrar Skeleton manteniendo la estructura de la tabla
               [...Array(5)].map((_, i) => (
                 <tr key={i}>
-                  <td className="p-4">
-                    <Skeleton height={20} width="80%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="70%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="60%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="60%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={20} width="70%" />
-                  </td>
-                  <td className="p-4">
-                    <Skeleton height={40} width={100} className="rounded-full" />
-                  </td>
+                  <td className="p-4"><Skeleton height={20} width="80%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="70%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="60%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="60%" /></td>
+                  <td className="p-4"><Skeleton height={20} width="70%" /></td>
+                  <td className="p-4"><Skeleton height={40} width={100} className="rounded-full" /></td>
                 </tr>
               ))
             ) : (
@@ -146,14 +137,22 @@ function VolunteerRequests() {
                   key={request.id_FormVoluntarie}
                   className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
                 >
-                  <td className={`p-4 ${request.status_Name === 'Rechazada' ? 'text-red-500' : isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <td className="p-4">
                     {`${request.vn_Name} ${request.vn_Lastname1} ${request.vn_Lastname2}`}
                   </td>
                   <td className="p-4">{request.name_voluntarieType}</td>
                   <td className="p-4">{new Date(request.delivery_Date).toLocaleDateString()}</td>
                   <td className="p-4">{new Date(request.end_Date).toLocaleDateString()}</td>
                   <td className="p-4">
-                    <span className={"px-3 py-2 rounded-xl "}>
+                    <span
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        request.status_Name === 'Aprobado'
+                          ? 'bg-green-500'
+                          : request.status_Name === 'Rechazado'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`}
+                    >
                       {request.status_Name}
                     </span>
                   </td>
@@ -172,60 +171,74 @@ function VolunteerRequests() {
         </table>
       </div>
 
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
+
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {data?.totalPages}
+        </span>
+
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === data?.totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
+
       {/* Modal de detalles */}
       {selectedVolunteer && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
-            {/* Botón de cerrar */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-3xl font-bold"
               onClick={() => setSelectedVolunteer(null)}
             >
               &times;
             </button>
-
-            {/* Título del modal */}
             <h3 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
               {selectedVolunteer.vn_Name} {selectedVolunteer.vn_Lastname1} {selectedVolunteer.vn_Lastname2}
             </h3>
-
-            {/* Información del voluntario en dos columnas y tres filas */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6 text-lg text-gray-700 dark:text-gray-300">
-              <div>
-                <p><strong>Email:</strong> {selectedVolunteer.vn_Email}</p>
-              </div>
-              <div>
-                <p><strong>Teléfono:</strong> {selectedVolunteer.vn_Phone}</p>
-              </div>
-              <div>
-                <p><strong>Fecha de Inicio:</strong> {new Date(selectedVolunteer.delivery_Date).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p><strong>Fecha de Fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}</p>
-              </div>
+              <div><p><strong>Email:</strong> {selectedVolunteer.vn_Email}</p></div>
+              <div><p><strong>Teléfono:</strong> {selectedVolunteer.vn_Phone}</p></div>
+              <div><p><strong>Fecha de Inicio:</strong> {new Date(selectedVolunteer.delivery_Date).toLocaleDateString()}</p></div>
+              <div><p><strong>Fecha de Fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}</p></div>
               <div>
                 <p><strong>Estatus:</strong>
-                  <span className={"px-3 py-1 ml-2 "}>
+                  <span
+                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                      selectedVolunteer.status_Name === 'Aprobado'
+                        ? 'bg-green-500'
+                        : selectedVolunteer.status_Name === 'Rechazado'
+                        ? 'bg-red-500'
+                        : 'bg-yellow-500'
+                    }`}
+                  >
                     {selectedVolunteer.status_Name}
                   </span>
                 </p>
               </div>
-              <div>
-                <p><strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}</p>
-              </div>
+              <div><p><strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}</p></div>
             </div>
-
-            {/* Botones de acción */}
             <div className="flex justify-center space-x-4 mt-8">
               <button
-                className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
                 onClick={() => handleReject(selectedVolunteer)}
                 tabIndex={-1}
               >
                 Rechazar
               </button>
               <button
-                className="px-7 py-4 bg-blue-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+                className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
                 onClick={() => handleAccept(selectedVolunteer)}
                 tabIndex={0}
               >

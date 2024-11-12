@@ -5,14 +5,22 @@ import { useApprovedRequests } from '../../hooks/useApprovedRequests';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
 import { useRoom } from '../../hooks/useRoom';
 import { ApplicationRequest } from '../../types/ApplicationType';
-import residentsService from '../../services/ResidentsService'; // Servicio para manejar residentes desde solicitudes
-import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para modo oscuro
+import residentsService from '../../services/ResidentsService';
+import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast';
 import { useToast } from '../../hooks/useToast';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 function ApprovedRequests() {
-  const {showToast, message, type} = useToast();
-  const { approvedRequests = [], isLoading, error } = useApprovedRequests();
+  const { showToast, message, type } = useToast();
+  const { isDarkMode } = useThemeDark();
+  const navigate = useNavigate();
+
+  // Paginación
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5;
+  const { approvedRequests = [], isLoading, error, totalPages } = useApprovedRequests({ page: pageNumber, pageSize });
+  
   const { data: rooms = [] } = useRoom();
   const { data: dependencyLevels = [] } = useDependencyLevel();
 
@@ -21,12 +29,21 @@ function ApprovedRequests() {
   const [roomNumber, setRoomNumber] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [sexo, setSexo] = useState('Masculino');
-  const [isUpdating, setIsUpdating] = useState(false); // Estado para manejar el proceso de guardado
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const { isDarkMode } = useThemeDark(); // Usamos el hook de modo oscuro
-  const navigate = useNavigate();
+  // Paginación: manejar las páginas
+  const handleNextPage = () => {
+    if (pageNumber < totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
 
-  // Función para crear un nuevo residente basado en la solicitud aprobada
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
   const handleSave = async () => {
     if (selectedRequest) {
       if (!dependencyLevel || !roomNumber || !entryDate || !sexo) {
@@ -40,7 +57,7 @@ function ApprovedRequests() {
         entryDate,
         sexo,
         id_DependencyLevel: parseInt(dependencyLevel),
-        guardianName: `${selectedRequest.name_GD} ${selectedRequest.lastname1_GD} ${selectedRequest.lastname2_GD}`, // Nombre del guardián
+        guardianName: `${selectedRequest.name_GD} ${selectedRequest.lastname1_GD} ${selectedRequest.lastname2_GD}`,
         status: 'Activo',
       };
 
@@ -100,6 +117,29 @@ function ApprovedRequests() {
         </tbody>
       </table>
 
+      {/* Paginación */}
+      <div className="flex justify-center items-center mt-4 space-x-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
+
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {totalPages}
+        </span>
+
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
+
       {/* Formulario para completar la información */}
       {selectedRequest && (
         <form className="mt-8" onSubmit={(e) => {
@@ -108,7 +148,6 @@ function ApprovedRequests() {
         }}>
           <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Completar Información para {selectedRequest.name_AP}</h3>
           <div className="grid grid-cols-2 gap-4">
-            {/* Campos a completar */}
             <div>
               <label className="block mb-2 font-bold">Sexo</label>
               <select value={sexo} onChange={(e) => setSexo(e.target.value)} className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}>
