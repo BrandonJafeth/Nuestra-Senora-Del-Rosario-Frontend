@@ -22,19 +22,23 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
 }) => {
   const [productData, setProductData] = useState<Partial<Product>>(initialProductData);
   const [errors, setErrors] = useState<{ categoryID?: string; unitOfMeasureID?: string }>({});
+  const [isEditing, setIsEditing] = useState(false);
   const updateProduct = useUpdateProduct();
   const { showToast, message, type } = useToast();
   const { data: categories } = useCategories();
   const { data: unitsOfMeasure } = useUnitsOfMeasure();
 
   useEffect(() => {
-    setProductData(initialProductData);
-    setErrors({}); // Reset errors when initial data changes
+    console.log('Initial product data:', initialProductData); // Verifica los datos iniciales
+    setProductData(initialProductData); // Actualiza los datos iniciales del producto
   }, [initialProductData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setProductData((prev) => ({ ...prev, [name]: name === "categoryID" || name === "unitOfMeasureID" ? Number(value) : value }));
+    setProductData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSave = () => {
@@ -57,7 +61,10 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
       {
         onSuccess: () => {
           showToast('Producto actualizado exitosamente.', 'success');
-          setTimeout(onRequestClose, 2000);
+          setTimeout(() => {
+            onRequestClose();
+            setIsEditing(false);
+          }, 2000);
         },
         onError: () => {
           showToast('Hubo un error al actualizar el producto.', 'error');
@@ -66,11 +73,18 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
     );
   };
 
+  const toggleEditMode = () => {
+    setIsEditing((prev) => !prev);
+  };
+
   return (
     <>
       <Modal
         isOpen={isOpen}
-        onRequestClose={onRequestClose}
+        onRequestClose={() => {
+          setIsEditing(false);
+          onRequestClose();
+        }}
         contentLabel="Editar Producto"
         className="flex items-center justify-center min-h-screen"
         overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
@@ -90,36 +104,62 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
             </label>
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Categoría:</span>
-              <select
-                name="categoryID"
-                value={productData.categoryID || ''}
-                onChange={handleChange}
-                className={`mt-1 block w-full px-4 py-2 border ${errors.categoryID ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
-              >
-                <option value="">Selecciona una categoría</option>
-                {categories?.map((category) => (
-                  <option key={category.categoryID} value={category.categoryID}>
-                    {category.categoryName}
-                  </option>
-                ))}
-              </select>
+              {isEditing ? (
+                <select
+                  name="categoryID"
+                  value={productData.categoryID || ''}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 border ${
+                    errors.categoryID ? 'border-red-500' : 'border-gray-300'
+                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categories?.map((category) => (
+                    <option key={category.categoryID} value={category.categoryID}>
+                      {category.categoryName}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={
+                  productData?.categoryName  
+                  }
+                  readOnly
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              )}
               {errors.categoryID && <p className="text-red-500 text-sm mt-1">{errors.categoryID}</p>}
             </label>
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Unidad de Medida:</span>
-              <select
-                name="unitOfMeasureID"
-                value={productData.unitOfMeasureID || ''}
-                onChange={handleChange}
-                className={`mt-1 block w-full px-4 py-2 border ${errors.unitOfMeasureID ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
-              >
-                <option value="">Selecciona una unidad</option>
-                {unitsOfMeasure?.map((unit) => (
-                  <option key={unit.unitOfMeasureID} value={unit.unitOfMeasureID}>
-                    {unit.nombreUnidad}
-                  </option>
-                ))}
-              </select>
+              {isEditing ? (
+                <select
+                  name="unitOfMeasureID"
+                  value={productData.unitOfMeasureID || ''}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full px-4 py-2 border ${
+                    errors.unitOfMeasureID ? 'border-red-500' : 'border-gray-300'
+                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
+                >
+                  <option value="">Selecciona una unidad</option>
+                  {unitsOfMeasure?.map((unit) => (
+                    <option key={unit.unitOfMeasureID} value={unit.unitOfMeasureID}>
+                      {unit.nombreUnidad}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={
+                  productData?.unitOfMeasure
+                  }
+                  readOnly
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              )}
               {errors.unitOfMeasureID && <p className="text-red-500 text-sm mt-1">{errors.unitOfMeasureID}</p>}
             </label>
             <label className="block">
@@ -134,18 +174,29 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
             </label>
           </form>
           <div className="flex justify-center mt-4">
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
-            >
-              Guardar
-            </button>
-            <button
-              onClick={onRequestClose}
-              className="ml-4 px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
-            >
-              Cancelar
-            </button>
+            {isEditing ? (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={toggleEditMode}
+                  className="ml-4 px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={toggleEditMode}
+                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+              >
+                Editar
+              </button>
+            )}
           </div>
         </div>
       </Modal>
@@ -153,5 +204,4 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
     </>
   );
 };
-
-export default ProductEditModal;
+  export default ProductEditModal;
