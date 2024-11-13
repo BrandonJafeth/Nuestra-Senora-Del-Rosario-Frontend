@@ -2,21 +2,24 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useCreateNote } from '../../hooks/useNotes';
 import { NoteRequest } from '../../types/NoteTypes';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 const NoteForm: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<NoteRequest>();
   const createNoteMutation = useCreateNote();
+const {showToast, message, type} = useToast();
 
   // Manejador del envío del formulario
   const onSubmit: SubmitHandler<NoteRequest> = (data) => {
     createNoteMutation.mutate(data, {
       onSuccess: () => {
         reset(); // Limpiar formulario tras éxito
-        alert('Nota creada exitosamente.');
+      showToast('Nota creada exitosamente', 'success');
       },
       onError: (error: any) => {
         console.error('Error al crear la nota:', error);
-        alert('Hubo un error al crear la nota.');
+        showToast('Error al crear la nota.', 'error');
       },
     });
   };
@@ -95,6 +98,7 @@ const NoteForm: React.FC = () => {
           </button>
         </div>
       </form>
+      <Toast message={message} type={type} />
     </div>
   );
 };

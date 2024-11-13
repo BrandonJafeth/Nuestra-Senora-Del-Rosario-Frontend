@@ -59,18 +59,19 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
 
   const handleSelectGuardian = (guardian: Guardian) => {
     const fullName = `${guardian.name_GD} ${guardian.lastname1_GD} ${guardian.lastname2_GD || ''}`;
-    
+  
     setValue('name_GD', fullName);
     setSelectedGuardian(guardian);
     setGuardianId(guardian.id_Guardian);
   
     // Limpiar sugerencias y cerrar la pantalla
     setFilteredGuardians([]);
-    
+  
     // Mostrar toast con el nombre del encargado seleccionado
-    showToast(`Encargado seleccionado: ${fullName}`, 'info');
-    
-    setIsGuardianAdded(true); // Cerrar la pantalla
+    showToast(`Encargado seleccionado: ${fullName}`, 'success');
+  
+    // Mostrar el toast por 2 segundos y luego continuar
+    setTimeout(() => setIsGuardianAdded(true), 3000);
   };
   
 
@@ -83,6 +84,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           setGuardianId(id);
           setIsGuardianAdded(true);
           showToast('Guardián añadido exitosamente', 'success');
+          setTimeout(() => setIsGuardianAdded(true), 3000);
         }
       },
       onError: (error) => {
