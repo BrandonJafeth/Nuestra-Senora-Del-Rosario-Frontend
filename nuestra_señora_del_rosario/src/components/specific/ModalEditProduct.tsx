@@ -175,20 +175,23 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
           </form>
           <div className="flex justify-center mt-4">
             {isEditing ? (
-              <>
-                <button
-                  onClick={handleSave}
-                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
-                >
-                  Guardar
-                </button>
+              <div className='flex justify-center space-x-2'>
                 <button
                   onClick={toggleEditMode}
                   className="ml-4 px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
-                >
+                  tabIndex={1}
+                  >
                   Cancelar
                 </button>
-              </>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+                  tabIndex={0}
+                  >
+                  Guardar
+                </button>
+                  </div>
+              
             ) : (
               <button
                 onClick={toggleEditMode}

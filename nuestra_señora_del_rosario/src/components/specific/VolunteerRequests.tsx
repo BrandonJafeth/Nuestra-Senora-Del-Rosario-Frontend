@@ -10,6 +10,8 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import '../../styles/Style.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useUpdateVolunteerStatus } from '../../hooks/useVolunteerStatusUpdate ';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 function VolunteerRequests() {
   const { isDarkMode } = useThemeDark();
@@ -24,15 +26,22 @@ function VolunteerRequests() {
   const filteredRequests = useFilteredRequests(data?.formVoluntaries || [], filterStatus, filterType);
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
+  const {showToast, message, type} = useToast();
 
   const handleAccept = (volunteer: VolunteerRequest) => {
     updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 });
+    showToast('Solicitud de voluntario aceptada', 'success');
+    setTimeout(() => {  
     setSelectedVolunteer(null);
+    }, 2000);
   };
 
   const handleReject = (volunteer: VolunteerRequest) => {
-    updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
+  updateVolunteerStatus({ id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 });
+  showToast('Solicitud de voluntario rechazada', 'error');
+  setTimeout(() => {
     setSelectedVolunteer(null);
+  }, 2000);
   };
 
   const handleViewDetails = (volunteer: VolunteerRequest) => {
@@ -248,6 +257,7 @@ function VolunteerRequests() {
           </div>
         </div>
       )}
+      <Toast message={message} type={type}/>
     </div>
   );
 }

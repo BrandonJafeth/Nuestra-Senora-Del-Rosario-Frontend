@@ -9,6 +9,8 @@ import { useDonationTypes } from '../../hooks/useDonationTypes';
 import '../../styles/Style.css';
 import { useDonationRequests } from '../../hooks/useDonation';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 function DonationRequests() {
   const { isDarkMode } = useThemeDark();
@@ -22,6 +24,7 @@ function DonationRequests() {
   const [selectedDonation, setSelectedDonation] = useState<DonationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
+  const {showToast, message, type} = useToast();
 
   const filteredRequests = Array.isArray(data?.donations) 
   ? data?.donations.filter((request) => {
@@ -33,12 +36,18 @@ function DonationRequests() {
 
   const handleAccept = (donation: DonationRequest) => {
     updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });
-    setSelectedDonation(null);
+    showToast('Donación aceptada exitosamente', 'success');
+    setTimeout(() => {
+      setSelectedDonation(null);
+    }, 2000);
   };
 
   const handleReject = (donation: DonationRequest) => {
     updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 3 });
-    setSelectedDonation(null);
+    showToast('Donación rechazada exitosamente', 'error');
+    setTimeout(() => {  
+      setSelectedDonation(null);
+    }, 2000);
   };
 
   const handleViewDetails = (donation: DonationRequest) => {
@@ -253,6 +262,7 @@ function DonationRequests() {
           </div>
         </div>
       )}
+      <Toast  message={message} type={type} />
     </div>
   );
 }

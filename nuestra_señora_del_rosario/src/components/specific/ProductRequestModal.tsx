@@ -17,7 +17,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
   const { isDarkMode } = useThemeDark();
   const [selectedProductID, setSelectedProductID] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageNumber,] = useState<number>(1);
   const pageSize = 10; // Número de productos por página
 
   const { data, isLoading } = useProducts(pageNumber, pageSize);
@@ -36,7 +36,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
       createInventoryMovement.mutate(movement, {
         onSuccess: () => {
           showToast('Egreso registrado exitosamente.', 'success');
-          setTimeout(onRequestClose, 3000);
+          setTimeout(onRequestClose, 2000);
         },
         onError: () => {
           showToast('Hubo un error al registrar el egreso.', 'error');
@@ -44,18 +44,6 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
       });
     } else {
       showToast('Por favor, completa todos los campos.', 'error');
-    }
-  };
-
-  const handleNextPage = () => {
-    if (data?.totalPages && pageNumber < data.totalPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
     }
   };
 
@@ -112,23 +100,8 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
             />
           </div>
           <div className="flex justify-between mt-4">
-            <button
-              type="button"
-              onClick={handlePreviousPage}
-              disabled={pageNumber === 1}
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-            >
-              Anterior
-            </button>
-            <span>Página {pageNumber} de {data?.totalPages}</span>
-            <button
-              type="button"
-              onClick={handleNextPage}
-              disabled={data && pageNumber === data.totalPages}
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-            >
-              Siguiente
-            </button>
+           
+           
           </div>
           <div className="flex justify-center mt-4">
             <button
