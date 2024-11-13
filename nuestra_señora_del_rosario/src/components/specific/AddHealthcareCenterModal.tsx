@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useCreateHealthcareCenter } from '../../hooks/useHealthcareCenter';
 import { useThemeDark } from '../../hooks/useThemeDark'; // Importar el hook de tema
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 interface AddHealthcareCenterModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
   const [name_HC, setName_HC] = useState('');
   const [location_HC, setLocation_HC] = useState('');
   const [type_HC, setType_HC] = useState('Public'); // Valor inicial: 'Public'
+  const {showToast, message, type} = useToast();
 
   const { mutate, isLoading } = useCreateHealthcareCenter();
 
@@ -27,8 +30,14 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
       { id_HC: 0, name_HC, location_HC, type_HC },
       {
         onSuccess: () => {
-          onClose(); // Cierra el modal al guardar con éxito
+          showToast('Centro de atención creado exitosamente', 'success');
+          setTimeout(() => {
+            onClose();
+          }, 2000);
         },
+        onError: () => {
+        showToast('Error al crear el centro de atención.', 'error');
+        }
       }
     );
   };
@@ -45,6 +54,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
   }`;
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
@@ -89,7 +99,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             onChange={(e) => setType_HC(e.target.value)}
             required
             className={`${inputStyles}`}
-          >
+            >
             <option value="" disabled>Seleccione un tipo</option>
            <option value="Público">Público</option>
             <option value="Privado">Privado</option>
@@ -110,12 +120,14 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             className={`px-4 py-2 rounded-lg ${
               isLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
             } text-white`}
-          >
+            >
             {isLoading ? <LoadingSpinner /> : 'Guardar'}
           </button>
         </div>
       </form>
     </Modal>
+      <Toast message={message} type={type} />
+            </>
   );
 };
 

@@ -8,6 +8,8 @@ import AddHealthcareCenterModal from './AddHealthcareCenterModal';
 import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
 import ResidentDropdown from '../microcomponents/ResidentDropdown';
 import { useAllResidents } from '../../hooks/useAllResidents';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -29,6 +31,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');
+  const {showToast, message, type} = useToast();
   
   const [loading, setLoading] = useState(false);
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
@@ -85,9 +88,10 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       // Llamar a onSave con los datos de la cita
       await appointmentService.createAppointment(appointmentData);
       onSave(appointmentData); // Pasar el objeto de cita a onSave
-      onClose();
+      showToast('Cita creada exitosamente', 'success');
+    setTimeout(() => onClose(), 3000);
     } catch (error) {
-      console.error('Error al crear la cita:', error);
+      showToast('Error al crear la cita.', 'error');
     } finally {
       setLoading(false);
     }
@@ -255,6 +259,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         isOpen={healthcareCenterModalOpen}
         onClose={closeHealthcareCenterModal}
       />
+      <Toast message={message} type={type} />
     </>
   );
 };

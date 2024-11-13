@@ -67,26 +67,35 @@ function ResidentList() {
       id_DependencyLevel: idDependencyLevel || undefined,
       status,
     };
-
-    await handleSubmit(updatedResidentData);
-    await refetch();
-
-    const updatedResident = data?.residents.find(
-      (resident) => resident.id_Resident === selectedResident?.id_Resident
-    );
-
-    if (updatedResident) {
-      setSelectedResident(updatedResident);
-      setIdRoom(updatedResident.id_Room ?? '');
-      setIdDependencyLevel(updatedResident.id_DependencyLevel ?? '');
-      setStatus(updatedResident.status ?? 'Activo');
+  
+    try {
+      await handleSubmit(updatedResidentData);
+      await refetch();
+  
+      const updatedResident = data?.residents.find(
+        (resident) => resident.id_Resident === selectedResident?.id_Resident
+      );
+  
+      if (updatedResident) {
+        setSelectedResident(updatedResident);
+        setIdRoom(updatedResident.id_Room ?? '');
+        setIdDependencyLevel(updatedResident.id_DependencyLevel ?? '');
+        setStatus(updatedResident.status ?? 'Activo');
+        showToast('Residente actualizado correctamente', 'success');
+  
+        // Mostrar el toast por 2 segundos y luego cerrar el modal
+        setTimeout(() => {
+          setShowModal(false);
+        }, 2000);
+      }
+    } catch (error) {
+      showToast('Error al actualizar el residente', 'error');
+    } finally {
+      setIsUpdating(false);
+      setIsEditing(false);
     }
-
-    showToast('Error al actualizar el residente', 'error');
-    setIsUpdating(false);
-    setIsEditing(false);
-    setShowModal(false);
   };
+  
 
   const handleNextPage = () => {
     if (data && pageNumber < data.totalPages) {
