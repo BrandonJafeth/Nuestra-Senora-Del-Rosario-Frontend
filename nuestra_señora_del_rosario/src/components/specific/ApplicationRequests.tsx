@@ -8,6 +8,8 @@ import '../../styles/Style.css';
 import { useUpdateApplicationStatus } from '../../hooks/useUpdateApplicationStatus';
 import { useAplicationRequests } from '../../hooks/useApplication';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 function ApplicationRequests() {
   const { isDarkMode } = useThemeDark();
@@ -16,6 +18,7 @@ function ApplicationRequests() {
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
+  const {showToast, message, type} = useToast();
 
   const statusMapping = {
     Pendiente: 'Pendiente',
@@ -44,13 +47,19 @@ function ApplicationRequests() {
   // Función para aceptar una solicitud
   const handleAccept = (application: ApplicationRequest) => {
     updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 }); // Id del estado "Aprobado"
+    showToast('Solicitud de ingreso aceptada', 'success');
+    setTimeout(() => {
     setSelectedApplication(null);
+    }, 2000);
   };
 
   // Función para rechazar una solicitud
   const handleReject = (application: ApplicationRequest) => {
     updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 }); // Id del estado "Rechazado"
+    showToast('Solicitud de ingreso rechazada', 'error');
+    setTimeout(() => {
     setSelectedApplication(null);
+    }, 2000);
   };
 
   // Paginación
@@ -282,6 +291,7 @@ function ApplicationRequests() {
           </div>
         </div>
       )}
+      <Toast message={message} type={type} />
     </div>
   );
 }

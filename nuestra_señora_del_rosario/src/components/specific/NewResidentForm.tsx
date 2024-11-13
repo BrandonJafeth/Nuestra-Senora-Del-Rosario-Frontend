@@ -90,7 +90,7 @@ function NewResidentForm() {
         <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-6">
           {/* Campos del residente */}
           <div>
-            <label className="block mb-2 text-lg">Nombre</label>
+            <label className="block mb-2 text-lg">Nombre Residente</label>
             <input
               type="text"
               value={residentData.name_AP}
@@ -101,7 +101,7 @@ function NewResidentForm() {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Primer Apellido</label>
+            <label className="block mb-2 text-lg">Primer Apellido Residente</label>
             <input
               type="text"
               value={residentData.lastname1_AP}
@@ -112,7 +112,7 @@ function NewResidentForm() {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Segundo Apellido</label>
+            <label className="block mb-2 text-lg">Segundo Apellido Residente</label>
             <input
               type="text"
               value={residentData.lastname2_AP}
@@ -123,7 +123,7 @@ function NewResidentForm() {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Cédula</label>
+            <label className="block mb-2 text-lg">Cédula Residente</label>
             <input
               type="text"
               value={residentData.cedula_AP}
@@ -134,7 +134,7 @@ function NewResidentForm() {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Sexo</label>
+            <label className="block mb-2 text-lg">Sexo Residente</label>
             <select
               value={residentData.sexo}
               onChange={(e) => setResidentData({ ...residentData, sexo: e.target.value })}
@@ -147,7 +147,7 @@ function NewResidentForm() {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Fecha de Nacimiento</label>
+            <label className="block mb-2 text-lg">Fecha de Nacimiento Residente</label>
             <input
               type="date"
               value={residentData.fechaNacimiento}
@@ -203,7 +203,7 @@ function NewResidentForm() {
           </div>
 
           <div className="col-span-2">
-            <label className="block mb-2 text-lg">Ubicación</label>
+            <label className="block mb-2 text-lg">Domicilio del Residente</label>
             <input
               type="text"
               value={residentData.location}
