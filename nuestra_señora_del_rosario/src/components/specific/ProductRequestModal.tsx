@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import Select, { SingleValue } from 'react-select';
 import { InventoryMovement } from '../../types/InventoryMovement';
 import { useProducts } from '../../hooks/useProducts';
 import { useThemeDark } from '../../hooks/useThemeDark';
@@ -13,13 +14,34 @@ interface ProductRequestModalProps {
   onSave: (movement: InventoryMovement) => void;
 }
 
+interface ProductOption {
+  value: number;
+  label: string;
+}
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    padding: '2px',
+    borderRadius: '0.375rem',
+    borderColor: '#D1D5DB',
+    backgroundColor: 'white',
+    '&:hover': { borderColor: '#A3A3A3' },
+  }),
+  option: (base: any, { isFocused }: { isFocused: boolean }) => ({
+    ...base,
+    backgroundColor: isFocused ? '#E5E7EB' : 'white',
+    color: 'black',
+  }),
+};
+
 const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onRequestClose }) => {
   const { isDarkMode } = useThemeDark();
   const [selectedProductID, setSelectedProductID] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const [pageNumber,] = useState<number>(1);
-  const pageSize = 10; // Número de productos por página
-
+  const [pageNumber] = useState<number>(1);
+  const pageSize = 10;
+  
   const { data, isLoading } = useProducts(pageNumber, pageSize);
   const createInventoryMovement = useCreateInventoryMovement();
   const { showToast, message, type } = useToast();
@@ -47,6 +69,15 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
     }
   };
 
+  // Map products to the options format for react-select
+  const options: ProductOption[] = data?.products.map((product) => ({
+    value: product.productID,
+    label: `${product.name} (${product.unitOfMeasure})`,
+  })) || [];
+
+  // Find selected product option
+  const selectedOption = options.find((option) => option.value === selectedProductID) || null;
+
   return (
     <>
       <Modal
@@ -60,29 +91,23 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Registrar Egreso de Producto</h2>
         <form className="space-y-4">
+          {/* Dropdown para seleccionar el producto */}
           <div>
             <label htmlFor="product" className="block text-sm font-medium">
               Producto
             </label>
-            <select
+            <Select
               id="product"
-              value={selectedProductID ?? ''}
-              onChange={(e) => setSelectedProductID(Number(e.target.value))}
-              className={`mt-1 block w-full border rounded-md shadow-sm p-2 ${
-                isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-300'
-              }`}
-              required
-            >
-              <option value="" disabled>
-                {isLoading ? 'Cargando productos...' : 'Selecciona un producto'}
-              </option>
-              {data?.products.map((product) => (
-                <option key={product.productID} value={product.productID}>
-                  {product.name} ({product.unitOfMeasure})
-                </option>
-              ))}
-            </select>
+              options={options}
+              value={selectedOption}
+              onChange={(selected: SingleValue<ProductOption>) => setSelectedProductID(selected?.value ?? null)}
+              styles={customStyles}
+              placeholder="Selecciona un producto"
+              isSearchable
+              isLoading={isLoading}
+            />
           </div>
+          {/* Input para cantidad */}
           <div>
             <label htmlFor="quantity" className="block text-sm font-medium">
               Cantidad
@@ -98,10 +123,6 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({ isOpen, onReq
               }`}
               required
             />
-          </div>
-          <div className="flex justify-between mt-4">
-           
-           
           </div>
           <div className="flex justify-center mt-4">
             <button
