@@ -13,6 +13,8 @@ import ProductRequestModal from './ProductRequestModal';
 import { useDailyMovements } from '../../hooks/useDailyMovement';
 import DailyMovementsModal from './DailyMovementModal';
 import { useCreateInventoryMovement } from '../../hooks/useInventoryMovement';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 moment.locale('es');
 const localizer = momentLocalizer(moment);
 
@@ -41,6 +43,7 @@ const ProductCalendar: React.FC = () => {
   const { isDarkMode } = useThemeDark();
   const formattedDate = selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '';
   const { data: dailyMovements, isLoading } = useDailyMovements(formattedDate);
+  const {showToast, message, type} = useToast(); 
 
   // Hook para crear un movimiento de inventario
   const createInventoryMovement = useCreateInventoryMovement();
@@ -61,7 +64,7 @@ const ProductCalendar: React.FC = () => {
   const handleSaveMovement = async (movement: InventoryMovement) => {
     createInventoryMovement.mutate(movement, {
       onSuccess: () => {
-        alert('Producto egresado correctamente');
+      showToast('Egreso registrado correctamente', 'success');
         setEvents([
           ...events,
           {
@@ -73,9 +76,8 @@ const ProductCalendar: React.FC = () => {
           },
         ]);
       },
-      onError: (error) => {
-        console.error('Error al registrar el egreso:', error);
-        alert('Error al registrar el egreso');
+      onError: (error : any) => {
+        showToast(error, 'error');
       },
     });
   };
@@ -137,6 +139,7 @@ const ProductCalendar: React.FC = () => {
           ),
         }}
       />
+        <Toast message={message} type={type} />
 
       <ProductRequestModal
         isOpen={isProductRequestModalOpen}
