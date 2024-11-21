@@ -185,7 +185,7 @@ function ApprovedRequests() {
           </div>
 
           <div className="mt-6 flex justify-end space-x-4">
-            <button onClick={Navigate} className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-gray-500 hover:bg-gray-600' : 'bg-gray-600 hover:bg-gray-700'} text-white`}>
+            <button onClick={Navigate} className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white`}>
               Cancelar
             </button>
             <button type="submit" disabled={isUpdating} className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}>

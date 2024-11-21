@@ -34,17 +34,17 @@ class NotificationService {
 private registerConnectionEvents() {
   if (!this.connection) return;
 
-  this.connection.onreconnecting((error: Error | undefined) => {
-    console.warn(`🔄 Reconectando con SignalR... Intento #${this.reconnectAttempts}`, error);
+  this.connection.onreconnecting(() => {
+    //console.warn(`🔄 Reconectando con SignalR... Intento #${this.reconnectAttempts}`, error);
   });
 
   this.connection.onreconnected(() => {
-    console.log('✅ Reconexión exitosa con SignalR.');
+  
     this.reconnectAttempts = 0; // Reiniciar contador de intentos
   });
 
-  this.connection.onclose(async (error: Error | undefined) => {
-    console.error('❌ Conexión cerrada. Intentando reconectar...', error);
+  this.connection.onclose(async () => {
+    //console.error('❌ Conexión cerrada. Intentando reconectar...', error);
     await this.reconnectWithBackoff(); // Intentar reconexión controlada
   });
 }
@@ -54,7 +54,7 @@ private registerConnectionEvents() {
     try {
       if (this.connection?.state === HubConnectionState.Disconnected) {
         await this.connection.start();
-        console.log('🔗 Conectado a SignalR');
+        //console.log('🔗 Conectado a SignalR');
       }
     } catch (err) {
       console.error('⚠️ Error al conectar con SignalR:', err);
@@ -77,7 +77,7 @@ private registerConnectionEvents() {
     if (!this.connection) return;
 
     this.connection.on('ReceiveNotification', (notification: NotificationGetDto) => {
-      console.log('📩 Notificación recibida:', notification);
+    //  console.log('📩 Notificación recibida:', notification);
       callback(notification);
     });
   }
@@ -97,7 +97,7 @@ private registerConnectionEvents() {
   public async markAsRead(notificationId: number): Promise<void> {
     try {
       await axios.put(`${this.apiUrl}/${notificationId}`, null, this.getAuthHeaders());
-      console.log(`✅ Notificación ${notificationId} marcada como leída.`);
+     // console.log(`✅ Notificación ${notificationId} marcada como leída.`);
     } catch (error) {
       console.error('❌ Error al marcar la notificación como leída:', error);
       throw error;

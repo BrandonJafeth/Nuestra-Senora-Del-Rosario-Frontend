@@ -10,7 +10,7 @@ export const useUpdateApplicationStatus = () => {
 
   return useMutation(
     async ({ id_ApplicationForm, id_Status }: { id_ApplicationForm: ApplicationRequest['id_ApplicationForm'], id_Status: StatusData['id_Status'] }) => {
-      console.log('Enviando:', { id_ApplicationForm, id_Status });
+    
       await applicationStatusService.updateStatus(id_ApplicationForm, id_Status);
     },
     {
