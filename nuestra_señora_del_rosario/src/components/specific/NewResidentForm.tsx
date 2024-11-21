@@ -69,7 +69,7 @@ function NewResidentForm() {
         {/* Botón de regresar */}
         <button
           onClick={navigateBack}
-          className="flex items-center space-x-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          className="flex items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
         >
           <FaArrowLeft size={20} />
           <span className="text-lg font-semibold">Regresar</span>
@@ -77,7 +77,7 @@ function NewResidentForm() {
 
         {/* Título */}
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mr-64">
-  Añadir Informacion
+  Añadir Información
 </h1>
 
       </div>

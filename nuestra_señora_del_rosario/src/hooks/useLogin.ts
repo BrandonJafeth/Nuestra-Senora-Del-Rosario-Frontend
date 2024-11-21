@@ -24,7 +24,6 @@ const useLogin = () => {
         const token = response.data?.token;
 
         if (token) {
-          console.log('Token recibido:', token);
           login(token);
 
           showToast('Inicio de sesión exitoso', 'success');
