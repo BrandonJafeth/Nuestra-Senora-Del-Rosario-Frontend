@@ -9,7 +9,8 @@ import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast';
 import { useToast } from '../../hooks/useToast';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
+import ResidentDetailsModal from '../microcomponents/ResidentDetailsModal';
 
 // Helper para formatear las fechas (YYYY-MM-DD)
 const formatDate = (dateString: string) => {
@@ -147,218 +148,63 @@ function ResidentList() {
         />
       </div>
 
-      {filteredResidents.length > 0 ? (
-        <div className="flex justify-center">
-          <table className={`min-w-full max-w-5xl rounded-lg shadow-md ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
-            <thead>
-              <tr className={`text-center ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-800'}`}>
-                <th className="p-4">Nombre</th>
-                <th className="p-4">Primer Apellido</th>
-                <th className="p-4">Segundo Apellido</th>
-                <th className="p-4">Cédula</th>
-                <th className="p-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredResidents.map((resident: Resident) => (
-                <tr key={resident.id_Resident} className={`text-center ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'}`}>
-                  <td className="p-4">{resident.name_AP}</td>
-                  <td className="p-4">{resident.lastname1_AP}</td>
-                  <td className="p-4">{resident.lastname2_AP}</td>
-                  <td className="p-4">{resident.cedula_AP}</td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleShowDetails(resident)}
-                      className={`px-4 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
-                    >
-                      Ver Más Detalles
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="text-center text-gray-500">No se encontraron residentes.</div>
-      )}
-
-      {/* Controles de paginación */}
-      <div className="flex justify-center items-center mt-4 space-x-4">
-  <button
-    onClick={handlePreviousPage}
-    disabled={pageNumber === 1}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowLeft />
-  </button>
-
-  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-    Página {pageNumber} de {data?.totalPages}
-  </span>
-
-  <button
-    onClick={handleNextPage}
-    disabled={pageNumber === data?.totalPages}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowRight />
-  </button>
-</div>
-
-      {showModal && selectedResident && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className={`rounded-lg shadow-lg p-8 w-full max-w-4xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-            <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
-
-            <div className="grid grid-cols-2 gap-4">
-            <div>
-                <label className="block font-bold">Habitación:</label>
-                {isEditing ? (
-                  <select
-                    value={idRoom ?? selectedResident.roomNumber}
-                    onChange={(e) => setIdRoom(Number(e.target.value))}
-                    className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
-                  >
-                    <option value="">Selecciona una habitación</option>
-                    {rooms.map((room) => (
-                      <option key={room.id_Room} value={room.id_Room}>
-                        {room.roomNumber}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{selectedResident.roomNumber}</p>
-                )}
-              </div>
-
-              {/* Grado de Dependencia */}
-              <div>
-                <label className="block font-bold">Grado de Dependencia:</label>
-                {isEditing ? (
-                  <select
-                    value={idDependencyLevel ?? selectedResident.dependencyLevel}
-                    onChange={(e) => setIdDependencyLevel(Number(e.target.value))}
-                    className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
-                  >
-                    <option value="">Selecciona un grado de dependencia</option>
-                    {dependencyLevels.map((level) => (
-                      <option key={level.id_DependencyLevel} value={level.id_DependencyLevel}>
-                        {level.levelName}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{selectedResident.dependencyLevel}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block font-bold">Estado:</label>
-                <input
-                  type="text"
-                  value={status}
-                  readOnly={!isEditing}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className={`w-full p-2 mt-1 border rounded-md ${isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'}`}
-                />
-              </div>
-              
-              <div>
-                <label className="block font-bold">Sexo:</label>
-                <input
-                  type="text"
-                  value={selectedResident.sexo || 'No especificado'}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold">Fecha de Nacimiento:</label>
-                <input
-                  type="text"
-                  value={formatDate(selectedResident.fechaNacimiento)}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-
-
-              <div>
-                <label className="block font-bold">Fecha de Entrada:</label>
-                <input
-                  type="text"
-                  value={formatDate(selectedResident.entryDate)}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold">Edad:</label>
-                <input
-                  type="text"
-                  value={selectedResident.edad.toString()}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold">Nombre del Encargado:</label>
-                <input
-                  type="text"
-                  value={selectedResident.guardianName}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold">Teléfono del Encargado:</label>
-                <input
-                  type="text"
-                  value={selectedResident.guardianPhone}
-                  readOnly
-                  className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end">
+      <ReusableTableRequests<Resident>
+        data={filteredResidents}
+        headers={['Nombre', 'Primer Apellido', 'Segundo Apellido', 'Cédula', 'Acciones']}
+        isLoading={isLoading}
+        skeletonRows={5}
+        isDarkMode={isDarkMode}
+        pageNumber={pageNumber}
+        totalPages={data?.totalPages}
+        onNextPage={handleNextPage}
+        onPreviousPage={handlePreviousPage}
+        renderRow={(resident) => (
+          <tr
+            key={resident.id_Resident}
+            className={`text-center ${
+              isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            <td className="px-6 py-4">{resident.name_AP}</td>
+            <td className="px-6 py-4">{resident.lastname1_AP}</td>
+            <td className="px-6 py-4">{resident.lastname2_AP}</td>
+            <td className="px-6 py-4">{resident.cedula_AP}</td>
+            <td className="px-6 py-4">
               <button
-                onClick={handleCloseDetails}
-                className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white`}
-              tabIndex={1}
+                onClick={() => handleShowDetails(resident)}
+                className={`px-4 py-2 rounded-lg transition duration-200 ${
+                  isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
               >
-                {isEditing ? 'Cancelar' : 'Cerrar'}
+                Ver Más Detalles
               </button>
-              {!isEditing ? (
-                <button
-                  onClick={handleEditClick}
-                  className={`ml-4 px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
-               tabIndex={0}
-               >
-                  Editar
-                </button>
-              ) : (
-                <button
-                  onClick={handleUpdateClick}
-                  disabled={isUpdating}
-                  className={`ml-4 px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
-                tabIndex={0}
-                >
-                  {isUpdating ? 'Guardando...' : 'Guardar'}
-                </button>
-              )}
+            </td>
+          </tr>
+        )}
+      />
+
+<ResidentDetailsModal
+  isOpen={showModal}
+  resident={selectedResident}
+  isEditing={isEditing}
+  isUpdating={isUpdating}
+  idRoom={idRoom}
+  idDependencyLevel={idDependencyLevel}
+  status={status}
+  rooms={rooms}
+  dependencyLevels={dependencyLevels}
+  formatDate={formatDate}
+  onClose={handleCloseDetails}
+  onEdit={handleEditClick}
+  onUpdate={handleUpdateClick}
+  setIdRoom={setIdRoom}
+  setIdDependencyLevel={setIdDependencyLevel}
+  setStatus={setStatus}
+  isDarkMode={isDarkMode}
+/>
               <Toast message={message} type={type}/>
             </div>
-          </div>
-        </div>
-      )}
-      
-    </div>
+         
   );
 }
 
