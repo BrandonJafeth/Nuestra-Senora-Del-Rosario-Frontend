@@ -124,6 +124,15 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           </div>
 
           <div>
+            <label className='block font-bold'>Edad:</label>
+            <input type="text" 
+            value={resident.edad}
+            readOnly
+            className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
+            />
+          </div>
+
+          <div>
             <label className='block font-bold'>Fecha de entrada</label>
             <input type="text" 
             value={formatDate(resident.entryDate)}
