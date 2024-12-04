@@ -14,8 +14,8 @@ import ReusableModalRequests from '../microcomponents/ReusableModalRequests';
 
 function ApplicationRequests() {
   const { isDarkMode } = useThemeDark();
-  const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 5; // Número de solicitudes por página
+  const [pageNumber, setPageNumber] = useState(1); 
+  const [pageSize, setPageSize] = useState(5);
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
@@ -60,6 +60,11 @@ function ApplicationRequests() {
     }
   };
 
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setPageSize(Number(event.target.value));
+    setPageNumber(1); // Reinicia la paginación al cambiar el tamaño de página
+  };
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -89,6 +94,22 @@ function ApplicationRequests() {
             Todas
           </button>
         </div>
+        <div className=" flex justify-end">
+        <label htmlFor="pageSize" className={`mr-2 my-1 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Mostrar:
+        </label>
+        <select
+          id="pageSize"
+          value={pageSize}
+          onChange={handlePageSizeChange}
+          className={`p-2 border rounded-lg ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
+        >
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
       </div>
 
       {/* Tabla */}
