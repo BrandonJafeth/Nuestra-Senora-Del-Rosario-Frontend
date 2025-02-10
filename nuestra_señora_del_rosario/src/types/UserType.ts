@@ -1,16 +1,3 @@
-
-
-
-{/*export type UserType = {
-    id: number
-    name: string
-    email: string
-    password: string
-    role: string
-    created_at: string
-    updated_at: string
-    }*/}
-
 export interface UserData {
     [x: string]: any;
     dniEmployee: number;
@@ -21,5 +8,29 @@ export interface UserResponse {
     token: string;  
     userId: number; 
     // Otros campos de la respuesta del backend
+  }
+  export interface User {
+    id_User: number;
+    dni: number;
+    email: string;
+    password: string;
+    is_Active: boolean;
+    roles: string[];
+  }
+  
+  export interface UserResponsePages {
+    count: number; // Total de usuarios devueltos
+    users: User[]; // Lista de usuarios
+  }
+  
+  export interface AssignRoleRequest {
+    message: string;
+    id_User: number;
+    id_Role: number;
+  }
+  
+  export interface AssignRoleResponse {
+    success: boolean;
+    message: string;
   }
   

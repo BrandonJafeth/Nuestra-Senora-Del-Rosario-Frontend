@@ -16,6 +16,9 @@ import AppointmentCalendar from '../components/specific/AppointmentCalendar';
 import NotificationMailbox from '../components/specific/NotificationMailbox';
 import InventoryTable from '../components/specific/InventoryTable';
 import ProductCalendar from '../components/specific/ProductCalendar';
+import UserList from '../components/specific/UsersList';
+import CreateUserForm from '../components/specific/CreateUserForm';
+import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmployee';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,6 +41,9 @@ function Dashboard() {
             <Routes>
               <Route path="/" element={<HomeDashboard />} />
               <Route path="personal/registro" element={<EmployeeForm />} />
+              <Route path="usuarios" element={<UserList />} />
+              <Route path="usuarios/crear" element={<CreateUserForm />} />
+              <Route path="usuarios/crear-por-empleado" element={<CreateUserFromEmployeeForm />} />
               <Route path="personal/lista" element={<EmployeeList />} />
               <Route path="comprobante-pago" element={<PaymentReceiptForm />} />
               <Route path="cronograma-citas" element={<AppointmentCalendar />} />

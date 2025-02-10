@@ -1,10 +1,10 @@
  
  export interface EmployeeType {
     dni: number;
-    firstName: string;
-    lastName1: string;
-    lastName2: string;
-    phoneNumber: string;
+    first_Name: string;
+    last_Name1: string;
+    last_Name2: string;
+    phone_Number: string;
     address: string;
     email: string;
     emergencyPhone: string;
