@@ -12,9 +12,11 @@ class UserManagmentService extends ApiService<User> {
           return this.getOne('/users', id);
         }
 
-        public createUser(data: User) {
-            return this.create('/users/create', data);
-          }
+        public async createUser(data: User) {
+          const response = await this.create('/users/create', data);
+          return response.data; 
+        }
+        
 }
 
 const userManagmentService = new UserManagmentService();

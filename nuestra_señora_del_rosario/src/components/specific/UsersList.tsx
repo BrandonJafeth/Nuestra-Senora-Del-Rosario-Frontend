@@ -14,7 +14,7 @@ const UserList: React.FC = () => {
   const navigate = useNavigate();
 
   // Estado para manejar el modal de asignación de roles
-  const [selectedUser, setSelectedUser] = useState<{ id_User: number; email: string } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{ id_User: number; fullName: string } | null>(null);
 
   if (isError) return <p>Error al cargar los usuarios: {error?.message}</p>;
 
@@ -39,8 +39,8 @@ const UserList: React.FC = () => {
   };
 
   // Abre el modal de asignación de roles
-  const handleOpenAssignRoleModal = (id_User: number, email: string) => {
-    setSelectedUser({ id_User, email });
+  const handleOpenAssignRoleModal = (id_User: number, fullName: string) => {
+    setSelectedUser({ id_User, fullName });
   };
 
   return (
@@ -70,7 +70,7 @@ const UserList: React.FC = () => {
 
       <ReusableTableRequests<User>
         data={data?.users || []}
-        headers={['Cédula', 'Correo', 'Activo', 'Roles', 'Acciones']}
+        headers={['Cédula', 'Nombre de Usuario', 'Correo', 'Activo', 'Roles', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -84,12 +84,13 @@ const UserList: React.FC = () => {
             className={`${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
           >
             <td className="p-4">{user.dni}</td>
+            <td className="p-4">{user.fullName}</td>
             <td className="p-4">{user.email}</td>
             <td className="p-4">{user.is_Active ? 'Sí' : 'No'}</td>
             <td className="p-4">{user.roles.join(', ')}</td>
             <td className="p-4">
               <button
-                onClick={() => handleOpenAssignRoleModal(user.id_User, user.email)}
+                onClick={() => handleOpenAssignRoleModal(user.id_User, user.fullName)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
               >
                 Asignar Rol
@@ -105,7 +106,7 @@ const UserList: React.FC = () => {
           isOpen={!!selectedUser}
           onClose={() => setSelectedUser(null)}
           userId={selectedUser.id_User}
-          userName={selectedUser.email}
+          userName={selectedUser.fullName}
         />
       )}
     </div>

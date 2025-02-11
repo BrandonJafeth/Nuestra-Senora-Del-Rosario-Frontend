@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCreateUser } from '../../hooks/useCreateUser';
 import { useNavigate } from 'react-router-dom';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
+import Toast from '../common/Toast';
 
 const CreateUserForm: React.FC = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark(); // Hook para detectar el modo oscuro
 
+  // Estado para los datos del formulario
   const [formData, setFormData] = useState({
     dni: '',
     email: '',
     password: '',
+    fullName: '', // 📌 Nuevo campo para el nombre completo
     isActive: true,
   });
 
-  const { mutate: createUser, isLoading, isError, isSuccess, error, data } = useCreateUser();
+  // Estado para mensajes de Toast
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
+
+  // Hook de creación de usuario
+  const { mutate: createUser, isLoading, isError, error } = useCreateUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -34,35 +42,59 @@ const CreateUserForm: React.FC = () => {
         dni: Number(formData.dni),
         email: formData.email,
         password: formData.password,
+        fullName: formData.fullName, // 📌 Agregando fullName a la solicitud
         is_Active: formData.isActive,
       },
       {
         onSuccess: () => {
-          alert('Usuario creado exitosamente');
-          navigate('/dashboard/usuarios'); // Redirige a la lista de usuarios
+          setToastMessage('Usuario creado con éxito');
+          setToastType('success');
+
+          setTimeout(() => {
+            navigate('/dashboard/usuarios'); // Redirige después de 3 segundos
+          }, 3000);
+        },
+        onError: (err: any) => {
+          setToastMessage(err.response?.data?.message || 'Error al crear usuario');
+          setToastType('error');
         },
       }
     );
   };
 
+  useEffect(() => {
+    if (isError && error) {
+      setToastMessage(error.message || 'Error al crear usuario');
+      setToastType('error');
+    }
+  }, [isError, error]);
+
   return (
-    <div className={`w-full max-w-3xl mx-auto p-10 rounded-xl shadow-xl transition-all duration-300 ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-900'}`}>
+    <div
+      className={`w-full max-w-3xl mx-auto p-10 rounded-xl shadow-xl transition-all duration-300 ${
+        isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-900'
+      }`}
+    >
       <h2 className="text-3xl font-bold text-center mb-6">Registro de Usuario</h2>
 
-      {isSuccess && <p className="text-green-400 text-center">Usuario creado con éxito: {data?.email}</p>}
-      {isError && <p className="text-red-400 text-center">Error: {error?.message}</p>}
+      {/* Mostrar el Toast */}
+      {toastMessage && <Toast message={toastMessage} type={toastType || 'error'} />}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
         {/* DNI */}
         <div>
-          <label htmlFor="dni" className="block text-lg font-medium">DNI</label>
+          <label htmlFor="dni" className="block text-lg font-medium">
+            DNI
+          </label>
           <input
             type="text"
             id="dni"
             name="dni"
             value={formData.dni}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+            }`}
             placeholder="Ingrese la cédula"
             required
           />
@@ -70,14 +102,18 @@ const CreateUserForm: React.FC = () => {
 
         {/* Correo Electrónico */}
         <div>
-          <label htmlFor="email" className="block text-lg font-medium">Correo Electrónico</label>
+          <label htmlFor="email" className="block text-lg font-medium">
+            Correo Electrónico
+          </label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+            }`}
             placeholder="Ingrese su correo"
             required
           />
@@ -85,28 +121,55 @@ const CreateUserForm: React.FC = () => {
 
         {/* Contraseña */}
         <div>
-          <label htmlFor="password" className="block text-lg font-medium">Contraseña</label>
+          <label htmlFor="password" className="block text-lg font-medium">
+            Contraseña
+          </label>
           <input
             type="password"
             id="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+            }`}
             placeholder="Ingrese una contraseña"
+            required
+          />
+        </div>
+
+        {/* 📌 Nombre Completo */}
+        <div>
+          <label htmlFor="fullName" className="block text-lg font-medium">
+            Nombre de Usuario
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+            }`}
+            placeholder="Ingrese su nombre completo"
             required
           />
         </div>
 
         {/* Estado Activo */}
         <div>
-          <label htmlFor="isActive" className="block text-lg font-medium">Estado</label>
+          <label htmlFor="isActive" className="block text-lg font-medium">
+            Estado
+          </label>
           <select
             id="isActive"
             name="isActive"
             value={String(formData.isActive)}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+            }`}
           >
             <option value="true">Activo</option>
             <option value="false">Inactivo</option>

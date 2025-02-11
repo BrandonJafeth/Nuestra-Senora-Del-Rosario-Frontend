@@ -13,6 +13,7 @@ export interface UserResponse {
     id_User: number;
     dni: number;
     email: string;
+    fullName: string;
     password: string;
     is_Active: boolean;
     roles: string[];
