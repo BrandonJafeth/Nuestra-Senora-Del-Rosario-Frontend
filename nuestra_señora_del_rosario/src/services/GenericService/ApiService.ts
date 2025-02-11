@@ -42,9 +42,14 @@ public async getAllPages(endpoint: string, pageNumber: number, pageSize: number)
         return this.api.post<T>(endpoint, data);
     }
 
-    public async update(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>> {
+    public async update(endpoint: string, id?: string | number, data?: Partial<T>): Promise<AxiosResponse<T>> {
         return this.api.put<T>(`${endpoint}/${id}`, data);
     }
+
+    public async putWithoutId(endpoint: string, data: Partial<T>): Promise<AxiosResponse<T>> {
+        return this.api.put<T>(endpoint, data);
+    }
+    
 
     
 public async createWithParams<R>(endpoint: string, params: Record<string, any>): Promise<AxiosResponse<R>> {

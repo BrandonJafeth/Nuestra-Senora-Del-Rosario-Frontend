@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
 import RoleAssignment from './RoleAssignment'; // Modal de asignación de roles
 import { User } from '../../types/UserType';
+import UserStatusModal from '../microcomponents/UserStatusModal';
 
 const UserList: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -15,6 +16,9 @@ const UserList: React.FC = () => {
 
   // Estado para manejar el modal de asignación de roles
   const [selectedUser, setSelectedUser] = useState<{ id_User: number; fullName: string } | null>(null);
+
+  // Estado para manejar el modal de edición del estado del usuario
+  const [userStatusModal, setUserStatusModal] = useState<{ id_User: number; is_Active: boolean } | null>(null);
 
   if (isError) return <p>Error al cargar los usuarios: {error?.message}</p>;
 
@@ -43,6 +47,11 @@ const UserList: React.FC = () => {
     setSelectedUser({ id_User, fullName });
   };
 
+  // Abre el modal para editar el estado del usuario
+  const handleOpenStatusModal = (id_User: number, is_Active: boolean) => {
+    setUserStatusModal({ id_User, is_Active });
+  };
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
       <div className="flex justify-between items-center mb-6">
@@ -63,8 +72,6 @@ const UserList: React.FC = () => {
           >
             + Crear Usuario por Empleado
           </button>
-
-          
         </div>
       </div>
 
@@ -89,13 +96,21 @@ const UserList: React.FC = () => {
             <td className="p-4">{user.is_Active ? 'Sí' : 'No'}</td>
             <td className="p-4">{user.roles.join(', ')}</td>
             <td className="p-4">
-              <button
-                onClick={() => handleOpenAssignRoleModal(user.id_User, user.fullName)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
-              >
-                Asignar Rol
-              </button>
-            </td>
+  <div className="flex space-x-2">
+    <button
+      onClick={() => handleOpenAssignRoleModal(user.id_User, user.fullName)}
+      className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+    >
+      Asignar Rol
+    </button>
+    <button
+      onClick={() => handleOpenStatusModal(user.id_User, user.is_Active)}
+      className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 transition duration-200"
+    >
+      Editar Estado
+    </button>
+  </div>
+</td>
           </tr>
         )}
       />
@@ -107,6 +122,15 @@ const UserList: React.FC = () => {
           onClose={() => setSelectedUser(null)}
           userId={selectedUser.id_User}
           userName={selectedUser.fullName}
+        />
+      )}
+
+      {/* Modal para editar estado del usuario */}
+      {userStatusModal && (
+        <UserStatusModal
+          userId={userStatusModal.id_User}
+          currentStatus={userStatusModal.is_Active}
+          onClose={() => setUserStatusModal(null)}
         />
       )}
     </div>
