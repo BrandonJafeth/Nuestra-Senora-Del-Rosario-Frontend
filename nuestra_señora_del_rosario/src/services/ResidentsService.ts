@@ -1,7 +1,7 @@
 // services/ResidentsService.ts
 import axios, { AxiosResponse } from 'axios'; // Importamos axios para usar en la solicitud directa
 import ApiService from './GenericService/ApiService';
-import { Resident, ResidentPatchDto } from '../types/ResidentsType';
+import { Resident, ResidentPatchDto, ResidentPostFromApplicantForm } from '../types/ResidentsType';
 
 class ResidentsService extends ApiService<Resident> {
   constructor() {
@@ -30,15 +30,20 @@ class ResidentsService extends ApiService<Resident> {
       },
     });
   }
+
+  public createResidentFromApplicant(data: ResidentPostFromApplicantForm): Promise<AxiosResponse<Resident>> {
+    return axios.post<Resident>('https://localhost:7066/api/Residents/fromApplicant', data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   // Eliminar un residente
   public deleteResident(id: number) {
     return this.delete('/Residents', id);
   }
 
-  // Crear residente desde solicitud aprobada
-  public createResidentFromApplicant(data: any) {
-    return this.create('/Residents/fromApplicant', data);
-  }
 }
 
 const residentsService = new ResidentsService();

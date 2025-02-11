@@ -68,7 +68,7 @@ function ApprovedRequests() {
             }`}
           >
             <td className="p-4">{request.name_AP}</td>
-            <td className="p-4">{request.lastname1_AP}</td>
+            <td className="p-4">{request.lastName1_AP}</td>
             <td className="p-4">{request.cedula_AP}</td>
             <td className="p-4">
               <button

@@ -9,28 +9,31 @@ import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para modo oscur
 import { useCreateResident } from '../../hooks/useCreateResident ';
 import Toast from '../common/Toast';
 import { FaArrowLeft } from 'react-icons/fa';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 function NewResidentForm() {
   const { data: rooms } = useRoom();
   const { data: dependencyLevels } = useDependencyLevel();
-  const { showToast, message, type } = useToast();
+  const { showToast} = useToast();
+const [toastMessage, setToastMessage] = useState<string | null>(null);
+const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
   const { isDarkMode } = useThemeDark(); // Detectar el modo oscuro
   const navigate = useNavigate();
   const { mutate: createResident, isLoading } = useCreateResident();
 
   // Estado para manejar los datos del formulario de residente
   const [residentData, setResidentData] = useState<ResidentPostType>({
-    name_AP: '',
-    lastname1_AP: '',
-    lastname2_AP: '',
-    cedula_AP: '',
+    name_RD: '',
+    lastname1_RD: '',
+    lastname2_RD: '',
+    cedula_RD: '',
     sexo: 'Masculino',
     fechaNacimiento: '',
     id_Guardian: 0,
     id_Room: 0,
     entryDate: '',
     id_DependencyLevel: 0,
-    location: '',
+    location_RD: '',
   });
 
   const [isGuardianAdded, setIsGuardianAdded] = useState(false); // Verificar si se añadió guardián
@@ -49,12 +52,13 @@ function NewResidentForm() {
 
     createResident(residentPayload, {
       onSuccess: () => {
-        showToast('Residente registrado exitosamente', 'success');
-        navigate('/dashboard/residentes');
+        setToastMessage('Residente registrado exitosamente');
+    setToastType('success');
+    setTimeout(() => navigate('/dashboard/residentes'), 2000);
       },
       onError: (error: any) => {
-        console.error('Error al crear el residente:', error);
-        showToast('Error al crear el residente. Revisa los datos ingresados', 'error');
+        setToastMessage(error.message || 'Error al registrar el residente.');
+        setToastType('error');
       },
     });
   };
@@ -93,8 +97,8 @@ function NewResidentForm() {
             <label className="block mb-2 text-lg">Nombre Residente</label>
             <input
               type="text"
-              value={residentData.name_AP}
-              onChange={(e) => setResidentData({ ...residentData, name_AP: e.target.value })}
+              value={residentData.name_RD}
+              onChange={(e) => setResidentData({ ...residentData, name_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
@@ -104,8 +108,8 @@ function NewResidentForm() {
             <label className="block mb-2 text-lg">Primer Apellido Residente</label>
             <input
               type="text"
-              value={residentData.lastname1_AP}
-              onChange={(e) => setResidentData({ ...residentData, lastname1_AP: e.target.value })}
+              value={residentData.lastname1_RD}
+              onChange={(e) => setResidentData({ ...residentData, lastname1_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
@@ -115,8 +119,8 @@ function NewResidentForm() {
             <label className="block mb-2 text-lg">Segundo Apellido Residente</label>
             <input
               type="text"
-              value={residentData.lastname2_AP}
-              onChange={(e) => setResidentData({ ...residentData, lastname2_AP: e.target.value })}
+              value={residentData.lastname2_RD}
+              onChange={(e) => setResidentData({ ...residentData, lastname2_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
@@ -126,8 +130,8 @@ function NewResidentForm() {
             <label className="block mb-2 text-lg">Cédula Residente</label>
             <input
               type="text"
-              value={residentData.cedula_AP}
-              onChange={(e) => setResidentData({ ...residentData, cedula_AP: e.target.value })}
+              value={residentData.cedula_RD}
+              onChange={(e) => setResidentData({ ...residentData, cedula_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
@@ -206,8 +210,8 @@ function NewResidentForm() {
             <label className="block mb-2 text-lg">Domicilio del Residente</label>
             <input
               type="text"
-              value={residentData.location}
-              onChange={(e) => setResidentData({ ...residentData, location: e.target.value })}
+              value={residentData.location_RD}
+              onChange={(e) => setResidentData({ ...residentData, location_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               required
             />
@@ -220,7 +224,7 @@ function NewResidentForm() {
               className={`px-7 py-4 rounded-lg shadow-lg transition duration-200 ${isLoading ? 'bg-gray-400' : isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
               disabled={isLoading}
             >
-              {isLoading ? 'Guardando...' : 'Registrar Residente'}
+              {isLoading ? <LoadingSpinner/> : 'Registrar Residente'}
             </button>
 
             {/* Botón de Volver */}
@@ -234,7 +238,7 @@ function NewResidentForm() {
           </div>
         </form>
       )}
-      <Toast message={message} type={type} />
+      <Toast message={toastMessage} type={toastType || 'error'} />
     </div>
   );
 }
