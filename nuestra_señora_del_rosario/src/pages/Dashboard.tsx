@@ -9,7 +9,6 @@ import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
 import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
-import ResidentList from '../components/specific/ResidentList';
 import ApprovedRequests from '../components/specific/ApprovedRequests';
 import NewResidentForm from '../components/specific/NewResidentForm';
 import AppointmentCalendar from '../components/specific/AppointmentCalendar';
@@ -19,6 +18,7 @@ import ProductCalendar from '../components/specific/ProductCalendar';
 import UserList from '../components/specific/UsersList';
 import CreateUserForm from '../components/specific/CreateUserForm';
 import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmployee';
+import ResidentList from '../components/specific/ResidentList';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

@@ -47,11 +47,12 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
         <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
+         {/* 📌 Habitación */}
+         <div>
             <label className="block font-bold">Habitación:</label>
             {isEditing ? (
               <select
-                value={idRoom}
+                value={idRoom || ''}
                 onChange={(e) => setIdRoom(Number(e.target.value))}
                 className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               >
@@ -63,15 +64,17 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
                 ))}
               </select>
             ) : (
-              <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{resident.roomNumber}</p>
+              <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white">{resident.roomNumber || 'Sin habitación'}</p>
             )}
           </div>
 
+
+          {/* 📌 Grado de Dependencia */}
           <div>
             <label className="block font-bold">Grado de Dependencia:</label>
             {isEditing ? (
               <select
-                value={idDependencyLevel}
+                value={idDependencyLevel || ''}
                 onChange={(e) => setIdDependencyLevel(Number(e.target.value))}
                 className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
               >
@@ -83,23 +86,19 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
                 ))}
               </select>
             ) : (
-              <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white cursor-not-allowed">{resident.dependencyLevel}</p>
+              <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white">{resident.dependencyLevel || 'No especificado'}</p>
             )}
           </div>
-
-          <div>
+ {/* 📌 Estado */}
+ <div>
             <label className="block font-bold">Estado:</label>
             <input
               type="text"
-              value={status}
+              value={status || ''}
+              onChange={isEditing ? (e) => setStatus(e.target.value) : undefined}
               readOnly={!isEditing}
-              onChange={(e) => setStatus(e.target.value)}
               className={`w-full p-2 mt-1 border rounded-md ${
-                isEditing
-                  ? isDarkMode
-                    ? 'bg-gray-700 text-white'
-                    : 'bg-gray-200'
-                  : 'bg-gray-500 text-white cursor-not-allowed'
+                isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'
               }`}
             />
           </div>
@@ -144,7 +143,7 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           <div>
             <label className="block font-bold">Cédula:</label>
             <input type="text" 
-            value={resident.cedula_AP}
+            value={resident.cedula_RD}
             className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
             />
           </div>

@@ -3,26 +3,25 @@
 // types/ResidentsType.ts
 
 export interface Resident {
-    id_Guardian: number;
-    isGuardian: unknown;
-    id_Room: number;
-    id_Resident: number;
-    name_AP: string;
-    lastname1_AP: string;
-    lastname2_AP: string;
-    cedula_AP: string;
-    sexo: string;
-    fechaNacimiento: string; // Formato de fecha
-    guardianName: string;
-    roomNumber: string;
-    status: string; // Activo o Inactivo
-    entryDate: string; // Formato de fecha
-    dependencyLevel: string; // Nivel de dependencia (Alto, Medio, Bajo)
-    edad : number;
-    guardianPhone: string;
-    id_DependencyLevel: number;
-  }
-  
+  id_Resident: number;
+  name_RD: string;
+  lastname1_RD: string;
+  lastname2_RD: string;
+  cedula_RD: string;
+  sexo: string;
+  fechaNacimiento: string; // Formato de fecha
+  guardianName: string;
+  guardianPhone: string;
+  roomNumber: string;
+  status: string; // Activo o Inactivo
+  entryDate: string; // Formato de fecha
+  dependencyLevel: string; // Nivel de dependencia (Alto, Medio, Bajo)
+  location_RD: string; // Ubicación del residente
+  edad: number;
+  id_DependencyLevel: number;
+  id_Room: number;
+}
+
 
 
 
@@ -38,6 +37,7 @@ export interface Resident {
     entryDate: string;          // Fecha de entrada (Formato ISO)
     id_DependencyLevel: number; // ID del nivel de dependencia
     location: string;           // Ubicación del residente
+    
   }
   
   // types/ResidentPatchDto.ts

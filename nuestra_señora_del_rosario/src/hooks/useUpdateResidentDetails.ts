@@ -9,6 +9,7 @@ export const useUpdateResidentDetails = (residentId: number) => {
   const [idRoom, setIdRoom] = useState<number | ''>('');
   const [status, setStatus] = useState<string>('Activo');
   const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
+  const [fechaNacimiento, setFechaNacimiento] = useState<string>(''); // 📌 Nueva variable para la fecha de nacimiento
 
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -32,10 +33,16 @@ export const useUpdateResidentDetails = (residentId: number) => {
 
   // Función para manejar el envío con datos como argumento
   const handleSubmit = async (updatedResidentData: Partial<ResidentPatchDto>) => {
-    if (!updatedResidentData.id_Room && !updatedResidentData.status && !updatedResidentData.id_DependencyLevel) {
+    if (
+      !updatedResidentData.id_Room &&
+      !updatedResidentData.status &&
+      !updatedResidentData.id_DependencyLevel &&
+      !updatedResidentData.fechaNacimiento
+    ) {
       showToast('Por favor completa los campos a actualizar', 'error');
       return;
     }
+
     await mutation.mutateAsync(updatedResidentData);
   };
 
@@ -43,9 +50,11 @@ export const useUpdateResidentDetails = (residentId: number) => {
     idRoom,
     status,
     idDependencyLevel,
+    fechaNacimiento,
     setIdRoom,
     setStatus,
     setIdDependencyLevel,
+    setFechaNacimiento,
     handleSubmit,
     isLoading: mutation.isLoading,
     error: mutation.error,
