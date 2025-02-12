@@ -19,6 +19,7 @@ import UserList from '../components/specific/UsersList';
 import CreateUserForm from '../components/specific/CreateUserForm';
 import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmployee';
 import ResidentList from '../components/specific/ResidentList';
+import UserSettings from '../components/specific/UserSettings';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,6 +56,7 @@ function Dashboard() {
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
               <Route path="notifications"  element={<NotificationMailbox />} />
+              <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
