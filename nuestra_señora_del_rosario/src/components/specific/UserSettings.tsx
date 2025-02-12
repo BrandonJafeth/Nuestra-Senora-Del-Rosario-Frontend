@@ -4,11 +4,13 @@ import { Icon } from "@iconify/react";
 import UserProfileModal from "../microcomponents/UserProfileModal";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { useThemeDark } from "../../hooks/useThemeDark";
+import ChangePasswordModal from "../microcomponents/ChangePasswordModal";
 
 const UserSettings: React.FC = () => {
   const { user, isLoading, error } = useUserProfile();
   const { isDarkMode } = useThemeDark();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const handleOpenModal = () => {
     if (user) setIsModalOpen(true); // Evita abrir si `user` es null
@@ -88,7 +90,7 @@ const UserSettings: React.FC = () => {
             </div>
             <p className="mb-4"><span className="font-semibold">Contraseña:</span> ********</p>
             <button
-              onClick={() => console.log("Abrir modal para cambiar contraseña")}
+              onClick={() => setIsPasswordModalOpen(true)}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
             >
               Cambiar Contraseña
@@ -96,7 +98,10 @@ const UserSettings: React.FC = () => {
           </div>
         </div>
       </div>
-
+      <ChangePasswordModal
+      isOpen={isPasswordModalOpen}
+      onClose={() => setIsPasswordModalOpen(false)}
+    />
       {/* Renderizar el modal solo si user no es undefined */}
       {user && <UserProfileModal isOpen={isModalOpen} onClose={handleCloseModal} user={user} />}
     </div>

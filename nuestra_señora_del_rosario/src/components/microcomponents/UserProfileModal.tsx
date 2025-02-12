@@ -30,7 +30,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
       await updateUserProfile({ fullName, email });
 
       if (success) {
-        setToastMessage("Perfil actualizado correctamente");
+        setToastMessage("✅ Perfil actualizado correctamente");
         setToastType("success");
       }
     } catch (err) {

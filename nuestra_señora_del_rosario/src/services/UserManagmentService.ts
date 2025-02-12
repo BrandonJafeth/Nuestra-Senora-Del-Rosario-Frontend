@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { User } from '../types/UserType';
 import ApiService from './GenericService/ApiService';
 import Cookies from 'js-cookie';
@@ -26,6 +27,15 @@ class UserManagmentService extends ApiService<User> {
     if (!token) throw new Error("No se encontró un token de autenticación");
 
     return this.updateWithHeaders("/users/update-profile", data, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  public async changePassword(data: User): Promise<AxiosResponse<void>> {
+    const token = Cookies.get("authToken"); // Obtener el token desde cookies
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<void>("/users/change-password-authenticated", data, {
       Authorization: `Bearer ${token}`,
     });
   }
