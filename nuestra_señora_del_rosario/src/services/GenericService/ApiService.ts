@@ -65,6 +65,13 @@ public async createWithParams<R>(endpoint: string, params: Record<string, any>):
         return this.api.delete<void>(`${endpoint}/${id}`);
     }
 
+    public async getWithHeaders<R>(endpoint: string, headers: Record<string, string>): Promise<AxiosResponse<R>> {
+        return axios.get<R>(`${this.api.defaults.baseURL}${endpoint}`, { headers });
+      }
+      public  async updateWithHeaders(url: string, data: Partial<T>, headers: Record<string, string>) {
+        return this.api.put(url, data, { headers });
+      }
+
 }
 
 export default ApiService;

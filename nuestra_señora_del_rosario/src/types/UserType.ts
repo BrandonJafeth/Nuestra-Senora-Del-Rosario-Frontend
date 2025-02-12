@@ -16,6 +16,7 @@ export interface UserResponse {
     fullName: string;
     password: string;
     is_Active: boolean;
+    isActive: boolean;
     roles: string[];
   }
   
