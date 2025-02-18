@@ -6,12 +6,12 @@ export const useUsers = (pageNumber: number, pageSize: number) => {
   return useQuery<UserResponsePages, Error>(
     ['users', pageNumber, pageSize],
     async () => {
-      // Llama al servicio para obtener los datos paginados
+      // Supongamos que el servicio devuelve un array de usuarios directamente
       const response = await userManagmentService.getAllUsersPages(pageNumber, pageSize);
       return {
-        count: response.data.count,
-        users: response.data.users
-      }; // Asegura que la respuesta coincide con el tipo UserResponsePages
+        count: response.data.length,
+        users: response.data.users,
+      }; // Ahora se retorna un objeto con count y users
     },
     {
       keepPreviousData: true, // Mantiene los datos de la página anterior mientras carga

@@ -6,14 +6,14 @@ import { ApplicationRequest } from '../types/ApplicationType';
 
 export const useInsertRequestForm = () => {
   const [name_AP, setName_AP] = useState('');
-  const [lastname1_AP, setLastname1_AP] = useState('');
-  const [lastname2_AP, setLastname2_AP] = useState('');
+  const [lastName1_AP, setLastname1_AP] = useState('');
+  const [lastName2_AP, setLastname2_AP] = useState('');
   const [age_AP, setAge_AP] = useState(0);
   const [cedula_AP, setCedula_AP] = useState('');
-  const [location, setLocation] = useState('');
-  const [name_GD, setName_GD] = useState('');
-  const [cedula_GD, setCedula_GD] = useState('');
-  const [phone_GD, setPhone_GD] = useState('');
+  const [location_AP, setLocation] = useState('');
+  const [guardianName, setName_GD] = useState('');
+  const [guardianCedula, setCedula_GD] = useState('');
+  const [guardianPhone, setPhone_GD] = useState('');
 
   const { showToast } = useToast();
 
@@ -32,21 +32,20 @@ export const useInsertRequestForm = () => {
           id_ApplicationForm: 0,
           id_Applicant: 0,
           name_AP,
-          lastname1_AP,
-          lastname2_AP,
+          lastName1_AP,
+          lastName2_AP,
           age_AP,
           cedula_AP,
-          location,
+          location_AP,
           id_Guardian: 0,
-          name_GD,
-          lastname1_GD: '',
-          lastname2_GD: '',
-          cedula_GD,
-          email_GD: '',
-          phone_GD,
+          guardianName,
+          guardianLastName1: '',
+          guardianLastName2: '',
+          guardianCedula: '',
+          guardianEmail: '',
+          guardianPhone: '',
           applicationDate: new Date().toISOString(),
-          status_Name: 'Approved',
-          status: ''
+          status_Name: 'Approved'
         },
         {
           onSuccess: () => {
@@ -64,14 +63,14 @@ export const useInsertRequestForm = () => {
 
   return {
     name_AP,
-    lastname1_AP,
-    lastname2_AP,
+    lastName1_AP,
+    lastName2_AP,
     age_AP,
     cedula_AP,
     location,
-    name_GD,
-    cedula_GD,
-    phone_GD,
+    guardianName,
+    guardianCedula,
+    guardianPhone,
     setName_AP,
     setLastname1_AP,
     setLastname2_AP,

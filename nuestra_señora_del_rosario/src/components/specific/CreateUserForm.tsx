@@ -44,6 +44,10 @@ const CreateUserForm: React.FC = () => {
         password: formData.password,
         fullName: formData.fullName, // 📌 Agregando fullName a la solicitud
         is_Active: formData.isActive,
+        isActive: false,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
       },
       {
         onSuccess: () => {

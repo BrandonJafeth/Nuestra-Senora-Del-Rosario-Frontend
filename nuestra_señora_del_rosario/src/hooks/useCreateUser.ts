@@ -7,7 +7,7 @@ export const useCreateUser = () => {
   return useMutation<User, Error, User>(
     async (newUser) => {
       const response = await userManagmentService.createUser(newUser);
-      return response.data; 
+      return response; 
     }
   );
 };

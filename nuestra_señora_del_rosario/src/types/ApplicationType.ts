@@ -1,6 +1,8 @@
 // types/ApplicationType.ts
 export interface ApplicationRequest {
   id_ApplicationForm: number;
+  id_Applicant: number;
+  id_Guardian: number;
   applicationDate: string;
   guardianName: string;
   guardianLastName1: string;

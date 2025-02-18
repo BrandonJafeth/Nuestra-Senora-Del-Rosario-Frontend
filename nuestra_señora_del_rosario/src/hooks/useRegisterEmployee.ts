@@ -25,10 +25,10 @@ export const useEmployeeForm = () => {
 
     const empleadoData = {
       dni: parseInt(dni),
-      firstName,
-      lastName1,
-      lastName2,
-      phoneNumber,
+      first_Name: firstName,
+      last_Name1: lastName1,
+      last_Name2: lastName2,
+      phone_Number: phoneNumber,
       address,
       email,
       emergencyPhone,
