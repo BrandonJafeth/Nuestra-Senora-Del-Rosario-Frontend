@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastProps } from '../../types/CommonType';
 
 const Toast: React.FC<ToastProps> = ({ message, type }) => {
-  if (!message) return null;
+  const [visible, setVisible] = useState(true);
 
-  // Definir los estilos según el tipo de mensaje (success, error, etc.)
+  useEffect(() => {
+    if (message) {
+      setVisible(true);
+      const timer = setTimeout(() => setVisible(false), 3000); // Se oculta después de 3 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  if (!message || !visible) return null;
+
+  // Estilos según el tipo de mensaje
   const getToastStyles = () => {
     switch (type) {
       case 'success':
@@ -21,15 +31,8 @@ const Toast: React.FC<ToastProps> = ({ message, type }) => {
 
   return (
     <div
-      className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg transition-transform transform ${
-        getToastStyles()
-      }`}
-      style={{
-        zIndex: 50, // Asegura que el Toast esté sobre otros elementos
-        minWidth: '250px',
-        maxWidth: '300px',
-        opacity: 0.95, // Pequeña transparencia para hacerlo más amigable visualmente
-      }}
+      className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 opacity-95 ${getToastStyles()}`}
+      style={{ minWidth: '300px', maxWidth: '350px', textAlign: 'center' }}
     >
       {message}
     </div>

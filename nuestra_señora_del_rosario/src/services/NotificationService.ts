@@ -4,8 +4,8 @@ import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportT
 import { NotificationGetDto } from '../types/NotificationType';
 
 class NotificationService {
-  private apiUrl = 'https://nuestra-senora-del-rosario-backend-2.onrender.com/api/Notification'; // URL del backend
-  private hubUrl = 'https://nuestra-senora-del-rosario-backend-2.onrender.com/notificationHub'; // Hub de SignalR
+  private apiUrl = 'https://nuestra-senora-del-rosario-backend.onrender.com/api/Notification'; // URL del backend
+  private hubUrl = 'https://nuestra-senora-del-rosario-backend.onrender.com/notificationHub'; // Hub de SignalR
   private connection: HubConnection | null = null; // Conexión de SignalR
   private reconnectAttempts: number = 0; // Contador de reintentos
 

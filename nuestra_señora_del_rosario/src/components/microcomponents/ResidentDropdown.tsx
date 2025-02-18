@@ -33,7 +33,7 @@ const ResidentDropdown: React.FC<ResidentDropdownProps> = ({ value, onChange }) 
   // Convertimos los residentes en opciones de react-select
   const options = Array.isArray(residents?.data) ? residents?.data?.map((resident : any) => ({
     value: resident.id_Resident,
-    label: `${resident.name_AP} ${resident.lastname1_AP} ${resident.lastname2_AP}`,
+    label: `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}`,
   })) : [];
 
   // Buscamos la opción seleccionada actualmente

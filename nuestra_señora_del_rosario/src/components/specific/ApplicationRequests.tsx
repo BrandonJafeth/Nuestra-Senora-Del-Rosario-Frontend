@@ -131,9 +131,9 @@ function ApplicationRequests() {
             }`}
           >
             <td className="px-6 py-4">{request.name_AP}</td>
-            <td className="px-6 py-4">{request.lastname1_AP}</td>
+            <td className="px-6 py-4">{request.lastName1_AP}</td>
             <td className="px-6 py-4">{request.age_AP}</td>
-            <td className="px-6 py-4">{request.location}</td>
+            <td className="px-6 py-4">{request.location_AP}</td>
             <td className="px-6 py-4">{new Date(request.applicationDate).toLocaleDateString()}</td>
             <td className="px-6 py-4">
               <span
@@ -191,7 +191,7 @@ function ApplicationRequests() {
               <strong>Edad:</strong> {selectedApplication.age_AP}
             </p>
             <p>
-              <strong>Domicilio:</strong> {selectedApplication.location}
+              <strong>Domicilio:</strong> {selectedApplication.location_AP}
             </p>
             <p>
               <strong>Fecha de Solicitud:</strong>{' '}
@@ -211,10 +211,10 @@ function ApplicationRequests() {
                   </span>
             </p>
             <p>
-              <strong>Encargado:</strong> {selectedApplication.name_GD}
+              <strong>Encargado:</strong> {selectedApplication.guardianName}
             </p>
             <p>
-              <strong>Teléfono Encargado:</strong> {selectedApplication.phone_GD}
+              <strong>Teléfono Encargado:</strong> {selectedApplication.guardianPhone}
             </p>
             </>
         )}

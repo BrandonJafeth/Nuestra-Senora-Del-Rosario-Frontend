@@ -52,7 +52,7 @@ function ResidentList() {
   };
 
   const filteredResidents = Array.isArray(data?.residents) ? data?.residents.filter((resident) =>
-    `${resident.name_AP} ${resident.lastname1_AP} ${resident.cedula_AP}`
+    `${resident.name_RD} ${resident.lastname1_RD} ${resident.cedula_RD}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   ) : [];
@@ -165,10 +165,10 @@ function ResidentList() {
               isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
             }`}
           >
-            <td className="px-6 py-4">{resident.name_AP}</td>
-            <td className="px-6 py-4">{resident.lastname1_AP}</td>
-            <td className="px-6 py-4">{resident.lastname2_AP}</td>
-            <td className="px-6 py-4">{resident.cedula_AP}</td>
+            <td className="px-6 py-4">{resident.name_RD}</td>
+            <td className="px-6 py-4">{resident.lastname1_RD}</td>
+            <td className="px-6 py-4">{resident.lastname2_RD}</td>
+            <td className="px-6 py-4">{resident.cedula_RD}</td>
             <td className="px-6 py-4">
               <button
                 onClick={() => handleShowDetails(resident)}

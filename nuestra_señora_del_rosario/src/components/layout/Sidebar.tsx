@@ -2,7 +2,6 @@ import { useIcon } from "../../hooks/useIcons";
 import useToggle from '../../hooks/useToggle';
 import { Link } from 'react-router-dom';
 import { useThemeDark } from '../../hooks/useThemeDark';
-import { decodeTokenRole } from '../../utils/decodedToken'; 
 import { useAuth } from '../../hooks/useAuth';
 import { SidebarProps } from "../../types/SidebarType";
 import { useState } from 'react';
@@ -11,9 +10,9 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const { isDropdownOpen, toggleDropdown } = useToggle();
   const { getIcon } = useIcon();
   const { isDarkMode } = useThemeDark();
-  const { logout } = useAuth();
-  const token = localStorage.getItem('authToken');
-  const userRole = token ? decodeTokenRole(token) : ''; 
+  const { logout, payload } = useAuth();
+
+  const rol = payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
   
   // Estado para el dropdown de "Personal"
   const [isPersonalDropdownOpen, setPersonalDropdownOpen] = useState(false);
@@ -25,8 +24,10 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
 
   // Definimos los ítems de menú con condiciones basadas en el rol
   const menuItems = [
-    { name: 'Residentes', link: '/dashboard/residentes'},
-    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Manager', 'Admin', 'HR'] }, 
+    { name: 'Residentes', link: '/dashboard/residentes', roles: ['Admin'] },
+    { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['Admin'] },
+    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Enfermeria', 'Admin', 'Fisioterapia'] },
+    { name: 'Cardex', link: '/dashboard/cardex', roles: ['Enfermeria'] }, 
   ];
 
   return (
@@ -42,7 +43,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
         {/* Parte superior con los enlaces */}
         <ul className="space-y-2 font-medium">
           {menuItems
-            .filter(item => !item.roles || item.roles.includes(userRole)) 
+            .filter(item => !item.roles || item.roles.includes(rol)) 
             .map((item) => (
               <li key={item.name}>
                 <Link
@@ -123,7 +124,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
           </li>
 
           {/* Dropdown de Solicitudes, solo visible para Admin */}
-          {userRole === 'Admin' && (
+          {rol === 'Admin' && (
             <li className="relative">
               <button
                 onClick={toggleDropdown}
@@ -201,7 +202,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
           )}
 
           {/* Dropdown de Personal, solo visible para Admin */}
-          {userRole === 'Admin' && (
+          {rol === 'Admin' && (
             <li className="relative">
               <button
                 onClick={togglePersonalDropdown}

@@ -9,13 +9,18 @@ import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
 import PaymentReceiptForm from '../components/specific/VoucherPaymentForm';
-import ResidentList from '../components/specific/ResidentList';
 import ApprovedRequests from '../components/specific/ApprovedRequests';
 import NewResidentForm from '../components/specific/NewResidentForm';
 import AppointmentCalendar from '../components/specific/AppointmentCalendar';
 import NotificationMailbox from '../components/specific/NotificationMailbox';
 import InventoryTable from '../components/specific/InventoryTable';
 import ProductCalendar from '../components/specific/ProductCalendar';
+import UserList from '../components/specific/UsersList';
+import CreateUserForm from '../components/specific/CreateUserForm';
+import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmployee';
+import ResidentList from '../components/specific/ResidentList';
+import UserSettings from '../components/specific/UserSettings';
+import ResidentTableMedical from '../components/specific/ResidentsTableMedical';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,6 +43,9 @@ function Dashboard() {
             <Routes>
               <Route path="/" element={<HomeDashboard />} />
               <Route path="personal/registro" element={<EmployeeForm />} />
+              <Route path="usuarios" element={<UserList />} />
+              <Route path="usuarios/crear" element={<CreateUserForm />} />
+              <Route path="usuarios/crear-por-empleado" element={<CreateUserFromEmployeeForm />} />
               <Route path="personal/lista" element={<EmployeeList />} />
               <Route path="comprobante-pago" element={<PaymentReceiptForm />} />
               <Route path="cronograma-citas" element={<AppointmentCalendar />} />
@@ -48,7 +56,9 @@ function Dashboard() {
               <Route path='inventario/lista-productos' element={<InventoryTable />} />
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
+              <Route path="cardex" element={<ResidentTableMedical />} />
               <Route path="notifications"  element={<NotificationMailbox />} />
+              <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>

@@ -1,14 +1,10 @@
-import { useState } from 'react';
 import Toast from '../common/Toast';
 import { useEmployeeForm } from '../../hooks/useRegisterEmployee';
 import { useTypeSalary } from '../../hooks/useTypeSalary';
 import { useProfession } from '../../hooks/useProfession';
-import RoleAssignment from './RoleAssignment'; // Componente de asignación de roles
 import { useToast } from '../../hooks/useToast';
 
 function EmployeeForm() {
-  const [isEmployeeRegistered, setIsEmployeeRegistered] = useState(false); // Estado para alternar entre formulario y asignación de rol
-  const [employeeDni, setEmployeeDni] = useState<number | null>(null); // Almacenar el DNI del empleado registrado
 
   // Obtener valores y funciones del hook personalizado `useEmployeeForm`
   const {
@@ -29,22 +25,10 @@ function EmployeeForm() {
     const success = await handleSubmit(e); // Verificar si el registro fue exitoso
     
     if (success) {
-      setEmployeeDni(parseInt(dni)); // Almacenar el DNI si el registro fue exitoso
-      setIsEmployeeRegistered(true); // Mostrar el componente de asignación de roles
       showToast('Empleado registrado exitosamente. Asigna un rol.', 'success');
     }
   };
 
-  // Callback cuando se completa o cancela la asignación de rol
-  const handleRoleAssignmentComplete = () => {
-    // Volver a mostrar el formulario de empleados
-    setIsEmployeeRegistered(false);
-  };
-
-  if (isEmployeeRegistered && employeeDni !== null) {
-    // Si el empleado está registrado y tenemos un DNI, mostrar el componente de asignación de roles
-    return <RoleAssignment employeeDni={employeeDni} onCancel={handleRoleAssignmentComplete} />
-  }
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>

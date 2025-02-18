@@ -1,20 +1,21 @@
-import { ReactNode, useState, useEffect } from 'react';
-import AuthContext from './AuthContext';
+import { ReactNode, useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import AuthContext from "./AuthContext";
 
 // Función para decodificar el JWT
 const decodeJWT = (token: string) => {
   try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error al decodificar el token:', error);
+    console.error("Error al decodificar el token:", error);
     return null;
   }
 };
@@ -24,7 +25,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
+  const [token, setToken] = useState<string | null>(Cookies.get("authToken") || null);
   const [payload, setPayload] = useState<any | null>(token ? decodeJWT(token) : null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
 
@@ -32,16 +33,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setToken(newToken);
     setPayload(decodeJWT(newToken));
     setIsAuthenticated(true);
-    localStorage.setItem('authToken', newToken);
-    localStorage.setItem('isAuthenticated', 'true');
+    Cookies.set("authToken", newToken, { expires: 7, secure: true, sameSite: "Strict" }); // Guardar por 7 días
   };
 
   const logout = () => {
     setToken(null);
     setPayload(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('isAuthenticated');
+    Cookies.remove("authToken");
   };
 
   useEffect(() => {

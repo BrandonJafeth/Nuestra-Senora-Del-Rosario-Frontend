@@ -85,11 +85,11 @@ const EmployeeList: React.FC = () => {
             key={employee.dni}
             className={`${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
           >
-            <td className="p-4">{employee.firstName} {employee.lastName1}</td>
+            <td className="p-4">{employee.first_Name} {employee.last_Name1}</td>
             <td className="p-4">{employee.dni}</td>
             <td className="p-4">{employee.email}</td>
             <td className="p-4">{employee.professionName}</td>
-            <td className="p-4">{employee.phoneNumber}</td>
+            <td className="p-4">{employee.phone_Number}</td>
             <td className="p-4 text-center">
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"

@@ -14,6 +14,10 @@ class AppointmentService extends ApiService<Appointment> {
     return this.getOne('/Appointment', id);
   }
 
+  public getAppointmentsByResident(residentId: number) {
+    return this.getOne(`/Appointment/resident`, residentId);
+  }
+
   public createAppointment(data: Appointment) {
     return this.create('/Appointment', data);
   }

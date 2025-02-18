@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useAuth } from '../../hooks/useAuth';
-import { Icon } from '@iconify/react'; // Import Icon component from iconify
+import { Icon } from '@iconify/react';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -11,9 +12,15 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
   const { isDarkMode, toggleDarkMode } = useThemeDark();
   const { payload } = useAuth(); // Obtener los datos del usuario del contexto de autenticación
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate(); // Hook para redirección
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleUserSettings = () => {
+    navigate('/dashboard/Configuracion-usuario'); // Redirige a la configuración del usuario
+    setIsDropdownOpen(false); // Cierra el dropdown
   };
 
   return (
@@ -74,15 +81,13 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                 >
                   <span className="sr-only">Open user menu</span>
                   <svg
-  xmlns="http://www.w3.org/2000/svg"
-  fill="currentColor"
-  viewBox="0 0 24 24"
-  className="w-8 h-8 bg-gray-200 dark:bg-gray-600 dark:text-white rounded-full p-1"
->
-  <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-</svg>
-
-
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    className="w-8 h-8 bg-gray-200 dark:bg-gray-600 dark:text-white rounded-full p-1"
+                  >
+                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
                 </button>
               </div>
 
@@ -91,12 +96,19 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                 <div className="absolute right-0 top-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg">
                   <div className="py-2 px-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {payload?.id || 'Cedula'}
+                      Cedula: {payload?.dni || 'Cédula'}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Rol'}
+                      Rol: {payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Rol'}
                     </p>
                   </div>
+                  <div className="border-t border-gray-300 dark:border-gray-600"></div>
+                  <button
+                    onClick={handleUserSettings}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    ⚙️ Configuración
+                  </button>
                 </div>
               )}
             </div>
