@@ -6,15 +6,21 @@ export const useUsers = (pageNumber: number, pageSize: number) => {
   return useQuery<UserResponsePages, Error>(
     ['users', pageNumber, pageSize],
     async () => {
-      // Supongamos que el servicio devuelve un array de usuarios directamente
       const response = await userManagmentService.getAllUsersPages(pageNumber, pageSize);
-      return {
-        count: response.data.length,
-        users: response.data.users,
-      }; // Ahora se retorna un objeto con count y users
+      const data = response.data;
+      
+      // Si data es un arreglo, lo transformamos:
+      if (Array.isArray(data)) {
+        return {
+          count: data.length,
+          users: data,
+        };
+      }
+      // Sino, asumimos que ya tiene la estructura { count, users }
+      return data;
     },
     {
-      keepPreviousData: true, // Mantiene los datos de la página anterior mientras carga
+      keepPreviousData: true,
     }
   );
 };
