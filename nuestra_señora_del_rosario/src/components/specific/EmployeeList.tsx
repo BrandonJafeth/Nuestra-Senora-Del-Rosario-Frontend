@@ -15,7 +15,7 @@ const EmployeeList: React.FC = () => {
   if (error) return <p>Error al cargar los empleados: {`${error.message}`}</p>;
 
   const handleGenerateReceipt = (employee: any) => {
-    navigate(`/dashboard/comprobante-pago`, { state: { employeeDni: employee.dni } });
+    navigate(`/dashboard/comprobante-pago`, { state: { id_Employee: employee.id_Employee } });
   };
 
   // Funciones para manejar la paginación
@@ -82,7 +82,7 @@ const EmployeeList: React.FC = () => {
         onPreviousPage={handlePreviousPage}
         renderRow={(employee) => (
           <tr
-            key={employee.dni}
+            key={employee.id_Employee}
             className={`${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
           >
             <td className="p-4">{employee.first_Name} {employee.last_Name1}</td>

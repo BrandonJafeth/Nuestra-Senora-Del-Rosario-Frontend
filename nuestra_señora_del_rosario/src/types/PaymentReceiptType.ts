@@ -6,6 +6,7 @@ export interface Deduction {
   
   export interface PaymentReceiptType {
     id: number;
+    id_Employee : number;
     employeeDni: number;
     paymentDate: string; // ISO string format
     salary: number;
