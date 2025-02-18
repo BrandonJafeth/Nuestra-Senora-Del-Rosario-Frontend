@@ -9,6 +9,7 @@ export const useEmployeeForm = () => {
   const { isDarkMode } = useThemeDark(); 
   const { showToast, message, type } = useToast(); 
 
+  // Estados para los campos del formulario
   const [dni, setDni] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName1, setLastName1] = useState('');
@@ -17,26 +18,26 @@ export const useEmployeeForm = () => {
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
-  const [typeOfSalaryId, setTypeOfSalaryId] = useState(0); 
-  const [professionId, setProfession] = useState(0); 
+  const [id_TypeOfSalary, setTypeOfSalaryId] = useState(0); // Corregido
+  const [id_Profession, setProfession] = useState(0); // Corregido
 
+  // Manejo de envío del formulario
   const handleSubmit = async (e: { preventDefault: () => void; }): Promise<boolean> => {
     e.preventDefault();
 
     const empleadoData = {
-      dni: parseInt(dni),
+      dni: parseInt(dni) || 0, // Asegura que es un número válido
       first_Name: firstName,
       last_Name1: lastName1,
       last_Name2: lastName2,
       phone_Number: phoneNumber,
       address,
       email,
-      emergencyPhone,
-      typeOfSalaryId: typeOfSalaryId.toString(), // Convertir a string
-      professionId
+      emergency_Phone: emergencyPhone, // Corregido
+      id_TypeOfSalary, // Corregido
+      id_Profession // Corregido
     };
     
-
     try {
       await employeeService.createEmployee(empleadoData);
       showToast('Empleado creado exitosamente', 'success');
@@ -51,16 +52,18 @@ export const useEmployeeForm = () => {
       setEmail('');
       setEmergencyPhone('');
       
-      return true; // Devolvemos true si todo sale bien
-    } catch (error) {
-      showToast('Error al crear el empleado. Por favor, intente de nuevo.', 'error');
-      return false; // Devolvemos false si hay un error
+      return true; // Indicar que el registro fue exitoso
+    } catch (error: any) {
+      // Manejar errores del backend
+      const errorMessage = error.response?.data?.message || 'Error al crear el empleado. Intente de nuevo.';
+      showToast(`❌ ${errorMessage}`, 'error');
+      return false; // Indicar que hubo un error
     }
   };
 
   return {
     dni, setDni, firstName, setFirstName, lastName1, setLastName1, lastName2, setLastName2, phoneNumber, setPhoneNumber,
-    address, setAddress, email, setEmail, emergencyPhone, setEmergencyPhone, typeOfSalaryId, setTypeOfSalaryId, professionId,
+    address, setAddress, email, setEmail, emergencyPhone, setEmergencyPhone, id_TypeOfSalary, setTypeOfSalaryId, id_Profession,
     handleSubmit, getIcon, isDarkMode, showToast, message, type, setProfession
   };
 };

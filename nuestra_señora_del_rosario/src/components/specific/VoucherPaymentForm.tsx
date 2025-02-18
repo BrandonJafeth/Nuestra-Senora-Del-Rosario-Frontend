@@ -12,11 +12,13 @@ import Toast from '../common/Toast';
       type, } = useToast();
     const location = useLocation(); 
     const { state } = location; 
-    const employeeDniFromState = state?.employeeDni || 0; 
+    const id_EmployeeFromState = state?.id_Employee  || 0; 
+    const employeeDniFromState = state?.employeeDni  || 0; 
     const { isDarkMode } = useThemeDark(); 
   
     const [formData, setFormData] = useState<PaymentReceiptType>({
       id: 0,
+      id_Employee: id_EmployeeFromState,
       employeeDni: employeeDniFromState,
       paymentDate: new Date().toISOString().split('T')[0],
       salary: 0,
@@ -41,7 +43,7 @@ import Toast from '../common/Toast';
   
     // Enlace para descargar el comprobante en formato PDF
     const downloadLink = generatedReceiptId
-      ? `https://nuestra-senora-del-rosario-backend-2.onrender.com/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
+      ? `https://nuestra-senora-del-rosario-backend.onrender.com/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
       : null;
   
     // Manejar cambios en el formulario
@@ -106,17 +108,18 @@ import Toast from '../common/Toast';
           <div className="space-y-6">
             <div>
               <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Cédula del Empleado
+                Id del Empleado
               </label>
               <input
                 type="number"
-                name="employeeDni"
-                value={formData.employeeDni}
+                name="id_Employee"
+                value={formData.id_Employee}
                 onChange={handleChange}
                 className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#D2D7DD] text-gray-900'}`}
                 disabled
               />
             </div>
+           
             <div>
               <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Fecha de Pago</label>
               <input
