@@ -17,6 +17,7 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const iconMap: { [key: string]: JSX.Element } = {
     Residentes: <FaUsers />,
     Usuarios: <FaUsers />,
+    Cardex: <FaClipboardList />,
     Personal: <FaUsers />,
     Inventario: <FaWarehouse />,
     'Solicitudes de ingreso': <FaClipboardList />,

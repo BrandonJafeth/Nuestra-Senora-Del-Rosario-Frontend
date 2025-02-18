@@ -6,7 +6,7 @@ class DonationStatusService {
   private api: AxiosInstance;
 
   constructor() {
-    this.api = axios.create({ baseURL: 'https://nuestra-senora-del-rosario-backend-2.onrender.com/api' });
+    this.api = axios.create({ baseURL: 'https://nuestra-senora-del-rosario-backend.onrender.com/api' });
   }
 
   // Método para actualizar el estado de una solicitud de donación

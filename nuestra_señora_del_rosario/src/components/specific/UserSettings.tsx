@@ -45,7 +45,7 @@ const UserSettings: React.FC = () => {
         {/* Tarjeta de Información Personal */}
         <div className={`shadow-md rounded-lg p-6 mb-6 transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Información Personal del Empleado</h2>
+            <h2 className="text-xl font-semibold">Información Personal del Usuario</h2>
             <Icon icon="mdi:account-circle-outline" className="text-4xl text-blue-500" />
           </div>
 
