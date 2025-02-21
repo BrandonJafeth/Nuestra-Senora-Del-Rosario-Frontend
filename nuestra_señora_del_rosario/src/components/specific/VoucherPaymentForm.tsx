@@ -107,20 +107,6 @@ import Toast from '../common/Toast';
           {/* Columna izquierda */}
           <div className="space-y-6">
             <div>
-              <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Id del Empleado
-              </label>
-              <input
-                type="number"
-                name="id_Employee"
-                value={formData.id_Employee}
-                onChange={handleChange}
-                className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#D2D7DD] text-gray-900'}`}
-                disabled
-              />
-            </div>
-           
-            <div>
               <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Fecha de Pago</label>
               <input
                 type="date"
