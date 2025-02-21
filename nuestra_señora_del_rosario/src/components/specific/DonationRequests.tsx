@@ -43,7 +43,7 @@ function DonationRequests() {
 
   const handleReject = (donation: DonationRequest) => {
     updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 3 });
-    showToast('Donación rechazada exitosamente', 'error');
+    showToast('Donación rechazada exitosamente', 'success');
     setTimeout(() => setSelectedDonation(null), 2000);
   };
 

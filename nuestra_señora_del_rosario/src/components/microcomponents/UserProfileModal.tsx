@@ -118,16 +118,18 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         </div>
       </form>
 
-      {/* Modal de confirmación */}
-      <ConfirmationModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        onConfirm={handleConfirm}
-        title="Confirmar actualización"
-        message="¿Estás seguro de que deseas actualizar tu información de perfil?"
-        confirmText="Confirmar"
-        isLoading={isLoading}
-      />
+      {isConfirmOpen && (
+        <ConfirmationModal
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirm}
+          title="Confirmar Cambio de Contraseña"
+          message="¿Estás seguro de que quieres cambiar tu contraseña?"
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+          isLoading={isLoading}
+        />
+      )}
     </Modal>
   );
 };

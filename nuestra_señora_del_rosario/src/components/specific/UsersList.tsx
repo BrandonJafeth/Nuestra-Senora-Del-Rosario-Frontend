@@ -63,15 +63,15 @@ const UserList: React.FC = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={handleCreateUser}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all"
           >
-            + Crear Usuario
+          Crear Usuario
           </button>
           <button
             onClick={handleCreateUserFromEmployee}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all"
           >
-            + Crear Usuario por Empleado
+            Crear Usuario por Empleado
           </button>
         </div>
       </div>
@@ -102,13 +102,13 @@ const UserList: React.FC = () => {
       onClick={() => handleOpenAssignRoleModal(user.id_User, user.fullName)}
       className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
     >
-      Asignar Rol
+      Asignar
     </button>
     <button
       onClick={() => handleOpenStatusModal(user.id_User, user.is_Active)}
       className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 transition duration-200"
     >
-      Editar Estado
+      Editar
     </button>
   </div>
 </td>

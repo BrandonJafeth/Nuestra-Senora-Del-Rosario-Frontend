@@ -40,7 +40,7 @@ function VolunteerRequests() {
         { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 },
         {
           onSuccess: () => {
-            showToast("Solicitud de voluntario rechazada", "error");
+            showToast("Solicitud de voluntario rechazada", "success");
             setTimeout(() => setSelectedVolunteer(null), 2000);
           },
           onError: () => {

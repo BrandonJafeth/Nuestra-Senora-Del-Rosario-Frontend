@@ -43,7 +43,7 @@ function ApplicationRequests() {
   // Función para rechazar una solicitud
   const handleReject = (application: ApplicationRequest) => {
     updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 }); // Estado "Rechazado"
-    showToast('Solicitud de ingreso rechazada', 'error');
+    showToast('Solicitud de ingreso rechazada', 'success');
     setTimeout(() => setSelectedApplication(null), 2000);
   };
 
