@@ -11,6 +11,8 @@ import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
 import ReusableModalRequests from '../microcomponents/ReusableModalRequests';
+import { useDeleteDonationRequest } from '../../hooks/useDeleteDonation';
+import ConfirmationModal from '../microcomponents/ConfirmationModal';
 
 function DonationRequests() {
   const { isDarkMode } = useThemeDark();
@@ -24,7 +26,9 @@ function DonationRequests() {
   const [selectedDonation, setSelectedDonation] = useState<DonationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
+  const [confirmDelete, setConfirmDelete] = useState<DonationRequest | null>(null);
   const { showToast, message, type } = useToast();
+  const { mutate: deleteDonation, isLoading: isDeleting } = useDeleteDonationRequest();
 
   const filteredRequests = Array.isArray(data?.donations)
     ? data.donations.filter((request) => {
@@ -62,6 +66,18 @@ function DonationRequests() {
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setPageSize(Number(event.target.value));
     setPageNumber(1); // Reinicia la paginación al cambiar el tamaño de página
+  };
+
+  const handleDelete = () => {
+    if (!confirmDelete) return;
+
+    deleteDonation(confirmDelete.id_FormDonation, {
+      onSuccess: () => {
+        showToast("Donación eliminada correctamente", "success");
+        setSelectedDonation(null);
+        setConfirmDelete(null);
+      },
+    });
   };
 
   return (
@@ -181,48 +197,89 @@ function DonationRequests() {
 
       {/* Modal */}
       <ReusableModalRequests
-        isOpen={!!selectedDonation}
-        title="Detalles de la Donación"
-        onClose={() => setSelectedDonation(null)}
-        actions={
-          <>
+      isOpen={!!selectedDonation}
+      title="Detalles de la Donación"
+      onClose={() => setSelectedDonation(null)}
+      actions={
+        <>
+          {/* Si está "Rechazado", muestra "Eliminar" y "Aceptar" */}
+          {selectedDonation?.status_Name !== "Rechazado" && (
             <button
               className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
               onClick={() => handleReject(selectedDonation!)}
             >
               Rechazar
             </button>
+          )}
+          {selectedDonation?.status_Name === "Rechazado" && (
             <button
-              className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
-              onClick={() => handleAccept(selectedDonation!)}
+              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+              onClick={() => setConfirmDelete(selectedDonation)}
+              disabled={isLoading}
             >
-              Aceptar
+              {isLoading ? "Eliminando..." : "Eliminar"}
             </button>
-          </>
-        }
-      >
-        {selectedDonation && (
-          <>
-            <p><strong>Cédula:</strong> {selectedDonation.dn_Cedula}</p>
-            <p><strong>Teléfono:</strong> {selectedDonation.dn_Phone}</p>
-            <p><strong>Fecha de Donación:</strong> {new Date(selectedDonation.delivery_date).toLocaleDateString()}</p>
-            <p><strong>Email:</strong> {selectedDonation.dn_Email}</p>
-            <p><strong>Tipo de Donación:</strong> {selectedDonation.donationType}</p>
-            <p><strong>Estatus:</strong> <span
-                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
-                      selectedDonation.status_Name === 'Aprobado'
-                        ? 'bg-green-500'
-                        : selectedDonation.status_Name === 'Rechazado'
-                        ? 'bg-red-500'
-                        : 'bg-yellow-500'
-                    }`}
-                  >
-                    {selectedDonation.status_Name}
-                  </span></p>
-            <p><strong>Método:</strong> {selectedDonation.methodDonation}</p>
-            </>
-        )}
-      </ReusableModalRequests>
+          )}
+          
+          {/* Botón de Aceptar SIEMPRE visible */}
+          <button
+            className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+            onClick={() => handleAccept(selectedDonation!)}
+          >
+            Aceptar
+          </button>
+
+          {/* Botón de Rechazar solo si no está rechazado */}
+        </>
+      }
+    >
+      {selectedDonation && (
+        <>
+          <p>
+            <strong>Cédula:</strong> {selectedDonation.dn_Cedula}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {selectedDonation.dn_Phone}
+          </p>
+          <p>
+            <strong>Fecha de Donación:</strong>{" "}
+            {new Date(selectedDonation.delivery_date).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedDonation.dn_Email}
+          </p>
+          <p>
+            <strong>Tipo de Donación:</strong> {selectedDonation.donationType}
+          </p>
+          <p>
+            <strong>Estatus:</strong>{" "}
+            <span
+              className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                selectedDonation.status_Name === "Aprobado"
+                  ? "bg-green-500"
+                  : selectedDonation.status_Name === "Rechazado"
+                  ? "bg-red-500"
+                  : "bg-yellow-500"
+              }`}
+            >
+              {selectedDonation.status_Name}
+            </span>
+          </p>
+          <p>
+            <strong>Método:</strong> {selectedDonation.methodDonation}
+          </p>
+        </>
+      )}
+      <ConfirmationModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
+        confirmText="Eliminar"
+        isLoading={isDeleting}
+      />
+    </ReusableModalRequests>
 
       <Toast message={message} type={type} />
     </div>

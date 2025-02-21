@@ -11,6 +11,8 @@ import { useUpdateVolunteerStatus } from "../../hooks/useVolunteerStatusUpdate "
 import Skeleton from "react-loading-skeleton";
 import { useVolunteerTypes } from "../../hooks/useVolunteerTypes";
 import { useFilteredRequests } from "../../hooks/useFilteredRequests";
+import { useDeleteVoluntarieRequest } from "../../hooks/useDeleteVoluntarie";
+import ConfirmationModal from "../microcomponents/ConfirmationModal";
 
 function VolunteerRequests() {
   const [pageNumber, setPageNumber] = useState(1);
@@ -22,6 +24,8 @@ function VolunteerRequests() {
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
+  const [confirmDelete, setConfirmDelete] = useState<VolunteerRequest | null>(null);
+  const {mutate: deleteVolunteering, isLoading : isDeleting} = useDeleteVoluntarieRequest();
   const { showToast, message, type } = useToast();
   const { isDarkMode } = useThemeDark();
   
@@ -71,6 +75,18 @@ function VolunteerRequests() {
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setPageSize(Number(event.target.value));
     setPageNumber(1); // Reinicia la paginación al cambiar el tamaño de página
+  };
+
+  const handleDelete = () => {
+    if (!confirmDelete) return;
+
+    deleteVolunteering(confirmDelete.id_FormVoluntarie, {
+      onSuccess: () => {
+        showToast("Donación eliminada correctamente", "success");
+        setSelectedVolunteer(null);
+        setConfirmDelete(null);
+      },
+    });
   };
 
   return (
@@ -207,18 +223,31 @@ function VolunteerRequests() {
         onClose={() => setSelectedVolunteer(null)}
         actions={
           <>
+            {selectedVolunteer?.status_Name !== "Rechazado" && (
             <button
               className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
               onClick={() => handleReject(selectedVolunteer!)}
             >
               Rechazar
             </button>
+          )}
+          {selectedVolunteer?.status_Name === "Rechazado" && (
             <button
-              className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
-              onClick={() => handleAccept(selectedVolunteer!)}
+              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+              onClick={() => setConfirmDelete(selectedVolunteer)}
+              disabled={isLoading}
             >
-              Aceptar
+              {isLoading ? "Eliminando..." : "Eliminar"}
             </button>
+          )}
+          
+          {/* Botón de Aceptar SIEMPRE visible */}
+          <button
+            className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+            onClick={() => handleAccept(selectedVolunteer!)}
+          >
+            Aceptar
+          </button>
           </>
         }
       >
@@ -254,6 +283,15 @@ function VolunteerRequests() {
             </p>
           </>
         )}
+        <ConfirmationModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
+        confirmText="Eliminar"
+        isLoading={isDeleting}
+      />
       </ReusableModalRequests>
 
       <Toast message={message} type={type} />

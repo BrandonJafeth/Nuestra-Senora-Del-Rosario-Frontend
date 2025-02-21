@@ -11,12 +11,17 @@ import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
 import ReusableModalRequests from '../microcomponents/ReusableModalRequests';
+import { useDeleteApplicationRequest } from '../../hooks/useDeleteApplication';
+import ConfirmationModal from '../microcomponents/ConfirmationModal';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 function ApplicationRequests() {
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1); 
   const [pageSize, setPageSize] = useState(5);
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
+  const [confirmDelete, setConfirmDelete] = useState<ApplicationRequest | null>(null);
+  const { mutate: deleteApplication, isLoading: isDeleting } = useDeleteApplicationRequest();
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const { showToast, message, type } = useToast();
@@ -63,6 +68,18 @@ function ApplicationRequests() {
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setPageSize(Number(event.target.value));
     setPageNumber(1); // Reinicia la paginación al cambiar el tamaño de página
+  };
+
+  const handleDelete = () => {
+    if (!confirmDelete) return;
+
+    deleteApplication(confirmDelete.id_ApplicationForm, {
+      onSuccess: () => {
+        showToast("Solicitud eliminada correctamente", "success");
+        setSelectedApplication(null);
+        setConfirmDelete(null);
+      },
+    });
   };
 
   return (
@@ -167,14 +184,27 @@ function ApplicationRequests() {
         onClose={() => setSelectedApplication(null)}
         actions={
           <>
+              {selectedApplication?.status_Name !== "Rechazado" && (
+                <button
+                  className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                  onClick={() => handleReject(selectedApplication!)}
+                >
+                  Rechazar
+                </button>
+              )}
+            {selectedApplication?.status_Name === "Rechazado" && (
+              <button
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => setConfirmDelete(selectedApplication)}
+                disabled={isDeleting}
+              >
+                {isDeleting ? <LoadingSpinner/> : "Eliminar"}
+              </button>
+            )}
+
+            {/* Botón de Aceptar SIEMPRE visible */}
             <button
-              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition"
-              onClick={() => handleReject(selectedApplication!)}
-            >
-              Rechazar
-            </button>
-            <button
-              className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition"
+              className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
               onClick={() => handleAccept(selectedApplication!)}
             >
               Aceptar
@@ -218,8 +248,16 @@ function ApplicationRequests() {
             </p>
             </>
         )}
+      <ConfirmationModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar esta solicitud?"
+        confirmText="Eliminar"
+        isLoading={isDeleting}
+      />
       </ReusableModalRequests>
-
       <Toast message={message} type={type} />
     </div>
   );
