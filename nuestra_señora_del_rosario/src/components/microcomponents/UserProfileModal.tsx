@@ -15,7 +15,7 @@ interface UserProfileModalProps {
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, user }) => {
   const { isDarkMode } = useThemeDark();
-  const { updateUserProfile, isLoading, success } = useUpdateUserProfile();
+  const { mutate: updateUserProfile, isLoading, isSuccess } = useUpdateUserProfile();
   const [fullName, setFullName] = useState(user.fullName);
   const [email, setEmail] = useState(user.email);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -24,19 +24,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | null>(null);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setIsConfirmOpen(false); // Cerrar modal de confirmación
-    try {
-      await updateUserProfile({ fullName, email });
-
-      if (success) {
-        setToastMessage("✅ Perfil actualizado correctamente");
-        setToastType("success");
+    updateUserProfile(
+      { fullName, email },
+      {
+        onSuccess: () => {
+          setToastMessage("✅ Perfil actualizado correctamente");
+          setToastType("success");
+        },
+        onError: () => {
+          setToastMessage("❌ Error al actualizar el perfil");
+          setToastType("error");
+        },
       }
-    } catch (err) {
-      setToastMessage("Error al actualizar el perfil");
-      setToastType("error");
-    }
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,8 +48,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
   // Cierra el modal automáticamente después de mostrar el Toast
   useEffect(() => {
-    if (success) {
-      setToastMessage("Perfil actualizado correctamente");
+    if (isSuccess) {
+      setToastMessage("✅ Perfil actualizado correctamente");
       setToastType("success");
 
       // Espera 2 segundos antes de cerrar el modal
@@ -56,7 +58,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         window.location.reload();
       }, 2000);
     }
-  }, [success, onClose]);
+  }, [isSuccess, onClose]);
 
   return (
     <Modal
@@ -118,16 +120,18 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         </div>
       </form>
 
-      {/* Modal de confirmación */}
-      <ConfirmationModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        onConfirm={handleConfirm}
-        title="Confirmar actualización"
-        message="¿Estás seguro de que deseas actualizar tu información de perfil?"
-        confirmText="Confirmar"
-        isLoading={isLoading}
-      />
+      {isConfirmOpen && (
+        <ConfirmationModal
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirm}
+          title="Confirmar Cambio de Perfil"
+          message="¿Estás seguro de que quieres actualizar tu perfil?"
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+          isLoading={isLoading}
+        />
+      )}
     </Modal>
   );
 };

@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import { useChangePassword } from "../../hooks/useChangePassword";
 import LoadingSpinner from "./LoadingSpinner";
 import Toast from "../common/Toast";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "./ConfirmationModal"; // 🔹 Se importa el modal de confirmación
 import { useThemeDark } from "../../hooks/useThemeDark";
 
 interface ChangePasswordModalProps {
@@ -32,12 +32,12 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
       return;
     }
 
-    setIsConfirmOpen(true); // Abre el modal de confirmación antes de proceder
+    setIsConfirmOpen(true); // 🔹 Se abre el modal de confirmación antes de cambiar la contraseña
   };
 
   // Confirmar el cambio de contraseña
   const handleConfirm = async () => {
-    setIsConfirmOpen(false); // Cerrar modal de confirmación
+    setIsConfirmOpen(false); // Cerrar modal de confirmación antes de ejecutar acción
 
     await changePassword({
       currentPassword, newPassword, confirmPassword,
@@ -100,10 +100,10 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
       <Modal
         isOpen={isOpen}
         onRequestClose={handleClose}
-        className={`p-6 rounded-xl shadow-xl w-[500px] mx-auto mt-20 ${
+        className={`p-6 rounded-xl shadow-xl w-[500px] mx-auto mt-20 relative z-40 ${
           isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"
         }`}
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
       >
         <h2 className="text-2xl font-bold text-center mb-4">Cambiar Contraseña</h2>
 
@@ -167,16 +167,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             </button>
           </div>
         </form>
-      <ConfirmationModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        onConfirm={handleConfirm}
-        title="Confirmar cambio de contraseña"
-        message="¿Estás seguro de que deseas cambiar tu contraseña?"
-        confirmText="Sí, cambiar"
-        isLoading={isLoading}
-      />
+      {/* 🔹 Modal de Confirmación con un z-index superior */}
+      {isConfirmOpen && (
+        <ConfirmationModal
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirm}
+          title="Confirmar Cambio de Contraseña"
+          message="¿Estás seguro de que quieres cambiar tu contraseña?"
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+          isLoading={isLoading}
+        />
+      )}
       </Modal>
+
     </>
   );
 };
