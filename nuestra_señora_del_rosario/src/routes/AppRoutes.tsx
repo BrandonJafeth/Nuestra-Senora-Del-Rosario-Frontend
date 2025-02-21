@@ -11,7 +11,7 @@ const AppRoutes = () => (
       <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/" element={<Login />} />
       <Route path="/solicitar-restablecimiento" element={<RequestPassword />} />
-      <Route path="/restablecer-contraseña" element={<ResetPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/cambio-contraseña" element={<ChangePassword/>}/>
     </Routes>
 );
