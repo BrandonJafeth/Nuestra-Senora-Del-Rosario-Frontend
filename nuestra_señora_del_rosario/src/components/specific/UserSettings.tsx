@@ -7,7 +7,7 @@ import { useThemeDark } from "../../hooks/useThemeDark";
 import ChangePasswordModal from "../microcomponents/ChangePasswordModal";
 
 const UserSettings: React.FC = () => {
-  const { user, isLoading, error } = useUserProfile();
+  const { data: user, isLoading, error } = useUserProfile();
   const { isDarkMode } = useThemeDark();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);

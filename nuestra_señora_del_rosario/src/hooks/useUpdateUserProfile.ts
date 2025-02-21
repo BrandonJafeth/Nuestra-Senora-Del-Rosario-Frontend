@@ -1,27 +1,21 @@
-import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import userManagmentService from "../services/UserManagmentService";
 import { User } from "../types/UserType";
 import { AxiosError } from "axios";
 
+// Hook para actualizar el perfil del usuario con React Query
 export const useUpdateUserProfile = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<AxiosError | null>(null);
-  const [success, setSuccess] = useState(false);
+  const queryClient = useQueryClient();
 
-  const updateUserProfile = async (data: Partial<User>) => {
-    setIsLoading(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      await userManagmentService.updateUserProfile(data);
-      setSuccess(true);
-    } catch (err) {
-      setError(err as AxiosError);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return { updateUserProfile, isLoading, error, success };
+  return useMutation({
+    mutationFn: async (data: Partial<User>) => {
+      return await userManagmentService.updateUserProfile(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userUpdateProfile"] }); // ✅ Invalida la cache para refrescar datos
+    },
+    onError: (error: AxiosError) => {
+      console.error("❌ Error al actualizar el perfil:", error.response?.data || error.message);
+    },
+  });
 };
