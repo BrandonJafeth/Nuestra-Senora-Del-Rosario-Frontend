@@ -2,6 +2,8 @@
 
 // types/ResidentsType.ts
 
+import { Appointment } from "./AppointmentType";
+
 export interface Resident {
   id_Resident: number;
   name_RD: string;
@@ -20,6 +22,9 @@ export interface Resident {
   edad: number;
   id_DependencyLevel: number;
   id_Room: number;
+  medicationNames : string[]
+pathologyNames : string[]
+appointments : Appointment[]
 }
 
 export interface ResidentPostFromApplicantForm {

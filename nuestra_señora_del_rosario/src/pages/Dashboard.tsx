@@ -21,6 +21,8 @@ import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmp
 import ResidentList from '../components/specific/ResidentList';
 import UserSettings from '../components/specific/UserSettings';
 import ResidentTableMedical from '../components/specific/ResidentsTableMedical';
+import ResidentDetail from '../components/specific/ResidentInfo';
+import AddMedicationPage from '../components/specific/AddMedication';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -56,7 +58,9 @@ function Dashboard() {
               <Route path='inventario/lista-productos' element={<InventoryTable />} />
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
-              <Route path="cardex" element={<ResidentTableMedical />} />
+              <Route path="cardex" element={<ResidentTableMedical/>} />
+              <Route path="residente-info/:id" element={<ResidentDetail/>}/>
+              <Route path="residente/:id/agregar-medicamento" element={<AddMedicationPage/>}/>
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />

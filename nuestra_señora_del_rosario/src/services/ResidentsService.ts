@@ -22,6 +22,10 @@ class ResidentsService extends ApiService<Resident> {
     return this.getOne('/Residents', id);
   }
 
+  public getResidentInfoById(id: number){
+    return this.getOne('/Residents/minimalinfo', id)
+  }
+
   // Actualizar residente (patch de campos específicos) - Este método usa axios directamente
   public updateResidentStatus(id: number, data: ResidentPatchDto): Promise<AxiosResponse<void>> {
     return axios.patch<void>(`https://nuestra-senora-del-rosario-backend.onrender.com/api/Residents/${id}`, data, {

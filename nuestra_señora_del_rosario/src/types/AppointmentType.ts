@@ -9,6 +9,7 @@ export interface Appointment {
   companionName: string;
   statusName: string;
   notes?: string;
+  appointmentManager? : string
 }
 
 
