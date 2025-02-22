@@ -86,7 +86,9 @@ const ResidentDetail: React.FC = () => {
           </>
         ) : (
           <div className="flex justify-center mt-3">
-            <button className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition">
+            <button className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
+             onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-patologia`)}
+            >
               Agregar Patologías
             </button>
           </div>

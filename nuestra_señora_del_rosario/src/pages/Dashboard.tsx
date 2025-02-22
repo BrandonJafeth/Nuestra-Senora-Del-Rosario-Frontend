@@ -22,7 +22,8 @@ import ResidentList from '../components/specific/ResidentList';
 import UserSettings from '../components/specific/UserSettings';
 import ResidentTableMedical from '../components/specific/ResidentsTableMedical';
 import ResidentDetail from '../components/specific/ResidentInfo';
-import AddMedicationPage from '../components/specific/AddMedication';
+import AddMedicationPage from '../components/specific/AddResidentMedication';
+import AddPathologyPage from '../components/specific/AddResidentPathology';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -61,6 +62,7 @@ function Dashboard() {
               <Route path="cardex" element={<ResidentTableMedical/>} />
               <Route path="residente-info/:id" element={<ResidentDetail/>}/>
               <Route path="residente/:id/agregar-medicamento" element={<AddMedicationPage/>}/>
+              <Route path="residente/:id/agregar-patologia" element={<AddPathologyPage/>}/>
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />

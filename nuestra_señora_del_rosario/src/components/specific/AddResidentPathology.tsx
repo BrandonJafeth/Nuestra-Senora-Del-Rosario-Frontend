@@ -1,76 +1,86 @@
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
-import { ResidentMedication } from "../../types/ResidentMedicationType";
-import { useMedicationSpecific } from "../../hooks/useMedicationSpecific";
+import { ResidentPathology } from "../../types/ResidentPathology";
+import { useCreateResidentPathology } from "../../hooks/useCreateResidentPathology";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
-import { useCreateResidentMedication } from "../../hooks/useCreateResidentMwedication";
+import { usePathologies } from "../../hooks/usePathology";
 
-const AddMedicationPage: React.FC = () => {
+const AddPathologyPage: React.FC = () => {
   const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, setValue, reset, watch } = useForm<ResidentMedication>();
-  const mutation = useCreateResidentMedication();
-  const selectedMedicament = watch("id_MedicamentSpecific"); // Captura el valor seleccionado del dropdown
+  const { register, handleSubmit, setValue, reset, watch } = useForm<ResidentPathology>();
+  const mutation = useCreateResidentPathology();
+  const selectedPathology = watch("id_Pathology");
 
-  const { data, isLoading, error } = useMedicationSpecific();
+  const { data, isLoading, error } = usePathologies();
 
-  const onSubmit = (data: ResidentMedication) => {
+  const onSubmit = (data: ResidentPathology) => {
     mutation.mutate({ ...data, id_Resident: residentId }, {
       onSuccess: () => {
-        alert("Medicamento agregado con éxito!");
+        alert("Patología agregada con éxito!");
         reset();
         navigate(`/dashboard/residente-info/${residentId}`);
       },
       onError: (error) => {
-        console.error("Error al agregar medicamento:", error);
+        console.error("Error al agregar patología:", error);
       },
     });
   };
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Agregar Medicación</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Agregar Patología</h2>
 
       {isLoading && <LoadingSpinner />}
       {error instanceof Error && <p className="text-red-500">❌ {error.message}</p>}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Dosis prescrita */}
+        {/* Resumen de la patología */}
         <div>
-          <label className="block text-gray-700">Dosis Prescrita</label>
+          <label className="block text-gray-700">Resumen</label>
           <input
-            type="number"
-            {...register("prescribedDose", { required: true })}
+            type="text"
+            {...register("resume_Pathology", { required: true })}
             className="w-full px-3 py-2 border rounded-md"
           />
         </div>
 
-        {/* Dropdown de medicamentos */}
+        {/* Dropdown de patologías */}
         <div>
-          <label className="block text-gray-700">Seleccionar Medicamento</label>
+          <label className="block text-gray-700">Seleccionar Patología</label>
           <select
-            {...register("id_MedicamentSpecific", { required: true })}
-            value={selectedMedicament ?? ""}
-            onChange={(e) => setValue("id_MedicamentSpecific", Number(e.target.value))}
+            {...register("id_Pathology", { required: true })}
+            value={selectedPathology ?? ""}
+            onChange={(e) => setValue("id_Pathology", Number(e.target.value))}
             className="w-full p-2 border rounded-md bg-white text-gray-900"
           >
-            <option value="">Seleccione un medicamento</option>
-            {data?.data?.map((med) => (
-              <option key={med.id_MedicamentSpecific} value={med.id_MedicamentSpecific}>
-                {med.name_MedicamentSpecific}
+            <option value="">Seleccione una patología</option>
+            {data?.data?.map((pathology) => (
+              <option key={pathology.id_Pathology} value={pathology.id_Pathology}>
+                {pathology.name_Pathology}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Fecha de inicio */}
+        {/* Fecha de diagnóstico */}
         <div>
-          <label className="block text-gray-700">Fecha de Inicio</label>
+          <label className="block text-gray-700">Fecha de Diagnóstico</label>
           <input
             type="date"
-            {...register("startDate", { required: true })}
+            {...register("diagnosisDate", { required: true })}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+        </div>
+
+        {/* Fecha de registro */}
+        <div>
+          <label className="block text-gray-700">Fecha de Registro</label>
+          <input
+            type="date"
+            {...register("registerDate", { required: true })}
             className="w-full px-3 py-2 border rounded-md"
           />
         </div>
@@ -106,4 +116,4 @@ const AddMedicationPage: React.FC = () => {
   );
 };
 
-export default AddMedicationPage;
+export default AddPathologyPage;
