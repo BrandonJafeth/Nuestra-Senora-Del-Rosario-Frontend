@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { AppointmentUpdateDto } from '../../types/AppointmentType';
 import { useUpdateAppointment } from '../../hooks/useUpdateAppointment';
-import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
 import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 import { EmployeeType } from '../../types/EmployeeType';
 import { useToast } from '../../hooks/useToast'; // Hook de Toast
 import { useAppointmentStatuses } from '../../hooks/useappointmentStatus';
 import Toast from '../common/Toast';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
 
 interface DailyAppointmentsModalProps {
   modalIsOpen: boolean;
@@ -36,10 +36,10 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
   const [originalData, setOriginalData] = useState<AppointmentUpdateDto | null>(null);
 
   const { data: statusesResponse, error: statusesError } = useAppointmentStatuses();
-  const { data: companionsResponse } = useEmployeesByRole('Encargado');
+  const { data: companionsResponse } = useEmployeesByProfession(5);
 
   const statuses = statusesResponse?.data || [];
-  const companions: EmployeeType[] = companionsResponse?.data || [];
+  const companions: EmployeeType[] = companionsResponse || [];
 
   const { mutate: updateAppointment, isLoading: updating } = useUpdateAppointment();
   const { showToast, message, type } = useToast(); // Hook de Toast

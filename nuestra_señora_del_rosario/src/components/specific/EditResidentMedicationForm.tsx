@@ -21,8 +21,9 @@ const EditResidentMedicationForm: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("info");
 
-  // Estado para almacenar el nombre del medicamento
+  // Estado para almacenar el nombre del medicamento y la fecha de inicio
   const [medicationName, setMedicationName] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
 
   useEffect(() => {
     if (resident && resident.medications) {
@@ -35,12 +36,19 @@ const EditResidentMedicationForm: React.FC = () => {
         setValue("id_Resident", residentId);
         setValue("id_MedicamentSpecific", medicationToEdit.id_MedicamentSpecific);
         setValue("prescribedDose", medicationToEdit.prescribedDose);
-        setValue("startDate", medicationToEdit.startDate?.split("T")[0] || ""); // Fecha registrada
         setValue("endDate", medicationToEdit.endDate ? medicationToEdit.endDate.split("T")[0] : "");
         setValue("notes", medicationToEdit.notes);
 
-        // Suponiendo que `medicationToEdit.id_MedicamentSpecific` es el ID del medicamento y tienes acceso a un array con los nombres
-        setMedicationName(medicationToEdit.name_MedicamentSpecific || "Desconocido"); // Asegurar que el nombre se carga
+        // Guardar el nombre del medicamento en el estado
+        setMedicationName(medicationToEdit.name_MedicamentSpecific || "Desconocido");
+
+        // Asegurar que la fecha de inicio no sea null ni undefined
+        const formattedStartDate = medicationToEdit.startDate 
+          ? medicationToEdit.startDate.split("T")[0] 
+          : new Date().toISOString().split("T")[0]; // Si es null, usar la fecha actual
+
+        setValue("startDate", formattedStartDate); // Se envía al backend
+        setStartDate(formattedStartDate); // Guardamos en el estado para mostrarlo en el input
       }
     }
   }, [resident, residentMedicationId, setValue]);
@@ -94,13 +102,16 @@ const EditResidentMedicationForm: React.FC = () => {
           />
         </div>
 
+        {/* Fecha de Inicio (No editable, usa la ya registrada) */}
         <div>
           <label className="block text-gray-700">Fecha de Inicio</label>
           <input
             type="date"
-            {...register("startDate")}
-            className="w-full px-3 py-2 border rounded-md"
+            value={startDate} // Muestra la fecha registrada
+            className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            disabled
           />
+          <input type="hidden" {...register("startDate")} value={startDate} /> {/* Se envía la fecha registrada */}
         </div>
 
         <div>
