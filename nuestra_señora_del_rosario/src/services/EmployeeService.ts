@@ -22,8 +22,9 @@ class EmployeeService extends ApiService<EmployeeType> {
     return this.update('/Employee', id, data);
   }
 
-  public getEmployeesByRole(role: string) {
-    return this.getAll(`/Employee/by-role/${role}`); // Llamada con el rol como parámetro
+  public getEmployeesByProfession(professionIds: number | number[]) {
+    const queryParam = Array.isArray(professionIds) ? professionIds.join(",") : professionIds;
+    return this.getAll(`/Employee/by-professions?professionIds=${queryParam}`);
   }
 
 

@@ -5,11 +5,11 @@ import { useSpeciality } from '../../hooks/useSpeciality';
 import appointmentService from '../../services/AppointmentService';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import AddHealthcareCenterModal from './AddHealthcareCenterModal';
-import { useEmployeesByRole } from '../../hooks/useEmployeeByRole';
 import ResidentDropdown from '../microcomponents/ResidentDropdown';
 import { useAllResidents } from '../../hooks/useAllResidents';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
+import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -30,7 +30,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const { isLoading: loadingResidents } = useAllResidents();
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
-  const { data: employees, isLoading: loadingEmployees } = useEmployeesByRole('Encargado');
+  const { data: employees, isLoading: loadingEmployees } = useEmployeesByProfession([5]);
   const {showToast, message, type} = useToast();
   
   const [loading, setLoading] = useState(false);
@@ -214,8 +214,8 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona un acompañante</option>
-              {employees?.data.map((employee) => (
-                <option key={employee.dni} value={employee.dni}>
+              {employees?.map((employee : any) => (
+                <option key={employee.id_Employee} value={employee.id_Employee}>
                   {employee.fullName}
                 </option>
               ))}

@@ -2,6 +2,10 @@
 
 // types/ResidentsType.ts
 
+import { Appointment } from "./AppointmentType";
+import { ResidentMedication } from "./ResidentMedicationType";
+import { ResidentPathology } from "./ResidentPathology";
+
 export interface Resident {
   id_Resident: number;
   name_RD: string;
@@ -18,8 +22,12 @@ export interface Resident {
   dependencyLevel: string; // Nivel de dependencia (Alto, Medio, Bajo)
   location_RD: string; // Ubicación del residente
   edad: number;
+  age: number;
   id_DependencyLevel: number;
   id_Room: number;
+  medications : ResidentMedication[]
+  pathologies : ResidentPathology[]
+  appointments : Appointment[]
 }
 
 export interface ResidentPostFromApplicantForm {
@@ -30,9 +38,6 @@ export interface ResidentPostFromApplicantForm {
   id_DependencyLevel: number; 
   fechaNacimiento: string; // Formato ISO
 }
-
-
-
 
   export interface ResidentPostType {
     name_RD: string;            // Nombre del residente

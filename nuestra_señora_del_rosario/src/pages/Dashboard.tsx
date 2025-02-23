@@ -21,6 +21,11 @@ import CreateUserFromEmployeeForm from '../components/specific/CreateUserFromEmp
 import ResidentList from '../components/specific/ResidentList';
 import UserSettings from '../components/specific/UserSettings';
 import ResidentTableMedical from '../components/specific/ResidentsTableMedical';
+import ResidentDetail from '../components/specific/ResidentInfo';
+import AddMedicationPage from '../components/specific/AddResidentMedication';
+import AddPathologyPage from '../components/specific/AddResidentPathology';
+import EditResidentPathology from '../components/specific/EditResidentPathologyForm';
+import EditResidentMedicationForm from '../components/specific/EditResidentMedicationForm';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -56,7 +61,12 @@ function Dashboard() {
               <Route path='inventario/lista-productos' element={<InventoryTable />} />
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
-              <Route path="cardex" element={<ResidentTableMedical />} />
+              <Route path="cardex" element={<ResidentTableMedical/>} />
+              <Route path="residente-info/:id" element={<ResidentDetail/>}/>
+              <Route path="residente/:id/agregar-medicamento" element={<AddMedicationPage/>}/>
+              <Route path="residente-info/:id/editar-medicamento/:id_ResidentMedication" element={<EditResidentMedicationForm/>}/>
+              <Route path="residente/:id/agregar-patologia" element={<AddPathologyPage/>}/>
+              <Route path="residente/:id/editar-patologia/:id_ResidentPathology" element={<EditResidentPathology/>}/>
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />

@@ -10,9 +10,9 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const { isDropdownOpen, toggleDropdown } = useToggle();
   const { getIcon } = useIcon();
   const { isDarkMode } = useThemeDark();
-  const { logout, payload } = useAuth();
+  const { logout, selectedRole } = useAuth();
 
-  const rol = payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+  const rol = selectedRole || "";
   
   // Estado para el dropdown de "Personal"
   const [isPersonalDropdownOpen, setPersonalDropdownOpen] = useState(false);
