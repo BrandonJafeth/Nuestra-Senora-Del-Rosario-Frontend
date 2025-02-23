@@ -29,7 +29,7 @@ class ResidentPathologyService extends ApiService<ResidentPathology> {
 
   // Actualizar una habitación existente
   public updateResidentPathology(id: number, data: Partial<ResidentPathology>) {
-    return this.patch(`/ResidentPathology/${id}`, id, data); // Cambia la ruta según tu API
+    return this.update(`/ResidentPathology/${id}`, id, data); // Cambia la ruta según tu API
   }
 
   // Eliminar una habitación

@@ -114,7 +114,7 @@ function ResidentTableMedical() {
             <td className="px-6 py-4">{new Date(resident.entryDate).toLocaleDateString()}</td>
             <td className="px-6 py-4">
               <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
+                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full text-center transition duration-200"
                 onClick={() => handleViewResidentDetail(resident.id_Resident)}
               >
                 Resumen

@@ -28,7 +28,7 @@ class ResidentMedicationService extends ApiService<ResidentMedication> {
 
   // Actualizar una habitación existente
   public updateResidentMedication(id: number, data: Partial<ResidentMedication>) {
-    return this.patch(`/ResidentMedication/${id}`, id, data); // Cambia la ruta según tu API
+    return this.putWithoutId(`/ResidentMedication/${id}`, data); // Cambia la ruta según tu API
   }
 
   // Eliminar una habitación
