@@ -30,7 +30,7 @@ const useLogin = () => {
 
           // Esperar 2 segundos antes de redirigir al dashboard
           setTimeout(() => {
-            navigate('/dashboard');
+            navigate('/seleccionar-rol');
           }, 2000);
         } else {
           showToast('Error: No se recibió el token.', 'error');

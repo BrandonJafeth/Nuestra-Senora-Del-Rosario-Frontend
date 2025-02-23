@@ -5,11 +5,13 @@ import RequestPassword from '../pages/RequestPassword';
 import ResetPassword from '../pages/ResetPassword';
 import Login from '../pages/Login';
 import ChangePassword from '../pages/ChangePassword';
+import RoleSelection from '../components/specific/RoleSelection';
 
 const AppRoutes = () => (
     <Routes>
       <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/" element={<Login />} />
+      <Route path="/seleccionar-rol" element={<PrivateRoute><RoleSelection/></PrivateRoute>} />
       <Route path="/solicitar-restablecimiento" element={<RequestPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/cambio-contraseña" element={<ChangePassword/>}/>
