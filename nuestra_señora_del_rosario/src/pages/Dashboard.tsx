@@ -26,6 +26,9 @@ import AddMedicationPage from '../components/specific/AddResidentMedication';
 import AddPathologyPage from '../components/specific/AddResidentPathology';
 import EditResidentPathology from '../components/specific/EditResidentPathologyForm';
 import EditResidentMedicationForm from '../components/specific/EditResidentMedicationForm';
+import MedicalHistory from '../components/specific/MedicalHistory';
+import UpdateMedicalHistory from '../components/specific/UpdateMedicalHistory';
+import AddMedicalHistoryForm from '../components/specific/AddMedicalHistory';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -67,6 +70,9 @@ function Dashboard() {
               <Route path="residente-info/:id/editar-medicamento/:id_ResidentMedication" element={<EditResidentMedicationForm/>}/>
               <Route path="residente/:id/agregar-patologia" element={<AddPathologyPage/>}/>
               <Route path="residente/:id/editar-patologia/:id_ResidentPathology" element={<EditResidentPathology/>}/>
+              <Route path="historial-medico/:residentId" element={<MedicalHistory />} />
+              <Route path="residente/:residentId/editar-historial/:id_MedicalHistory" element={<UpdateMedicalHistory/>}/>
+              <Route path="residente/:residentId/agregar-historial" element={<AddMedicalHistoryForm/>}/>
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="Configuracion-usuario" element={<UserSettings/>} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />

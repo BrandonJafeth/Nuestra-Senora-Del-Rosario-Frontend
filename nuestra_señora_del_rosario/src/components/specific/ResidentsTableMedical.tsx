@@ -49,9 +49,14 @@ function ResidentTableMedical() {
     return <div>Error al cargar los residentes</div>;
   }
 
-  // Función para redirigir a la pantalla de detalles del residente
+  // 🔹 Función para redirigir a la pantalla de detalles del residente
   const handleViewResidentDetail = (residentId: number) => {
     navigate(`/dashboard/residente-info/${residentId}`);
+  };
+
+  // 🔹 Función para redirigir al historial médico del residente
+  const handleViewMedicalHistory = (residentId: number) => {
+    navigate(`/dashboard/historial-medico/${residentId}`);
   };
 
   return (
@@ -112,12 +117,21 @@ function ResidentTableMedical() {
             <td className="px-6 py-4">{resident.edad}</td>
             <td className="px-6 py-4">{new Date(resident.fechaNacimiento).toLocaleDateString()}</td>
             <td className="px-6 py-4">{new Date(resident.entryDate).toLocaleDateString()}</td>
-            <td className="px-6 py-4">
+            <td className="px-6 py-4 flex flex-row gap-2">
+              {/* 🔹 Botón para ver detalles */}
               <button
                 className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full text-center transition duration-200"
                 onClick={() => handleViewResidentDetail(resident.id_Resident)}
               >
                 Resumen
+              </button>
+
+              {/* 🏥 Botón para ver historial médico */}
+              <button
+                className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg w-full text-center transition duration-200"
+                onClick={() => handleViewMedicalHistory(resident.id_Resident)}
+              >
+                Historial
               </button>
             </td>
           </tr>
