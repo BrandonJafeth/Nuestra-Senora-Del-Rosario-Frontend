@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import Toast from '../common/Toast';
+import { useRoles } from '../../hooks/useRoles';
 
 const CreateUserForm: React.FC = () => {
   const navigate = useNavigate();
@@ -13,10 +14,15 @@ const CreateUserForm: React.FC = () => {
   const [formData, setFormData] = useState({
     dni: '',
     email: '',
+    id_Role: 0,
     password: '',
     fullName: '', // 📌 Nuevo campo para el nombre completo
     isActive: true,
   });
+
+  const employeeDni = formData.dni; // Assuming you want to use the dni from formData
+  const { roles, isLoadingRoles, isErrorRoles } = useRoles(Number(employeeDni)); // 📌 Obtenemos los roles
+  
 
   // Estado para mensajes de Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -38,6 +44,7 @@ const CreateUserForm: React.FC = () => {
     createUser(
       {
         id_User: 0,
+        id_Role: Number(formData.id_Role),
         roles: [],
         dni: Number(formData.dni),
         email: formData.email,
@@ -125,23 +132,24 @@ const CreateUserForm: React.FC = () => {
 
         {/* Contraseña */}
         <div>
-          <label htmlFor="password" className="block text-lg font-medium">
-            Contraseña
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-            }`}
-            placeholder="Ingrese una contraseña"
-            required
-          />
-        </div>
-
+  <label htmlFor="password" className="block text-lg font-medium">
+    Contraseña
+  </label>
+  <input
+    type="password"
+    id="password"
+    name="password"
+    value={formData.password}
+    readOnly // 📌 Hace que el input no sea editable
+    className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition ${
+      isDarkMode ? 'bg-gray-700 text-white border-gray-600 cursor-not-allowed' : 'bg-gray-100 text-gray-900 border-gray-300 cursor-not-allowed'
+    }`}
+    placeholder="Contraseña generada automáticamente"
+  />
+  <p className="text-sm font-bold text-gray-500 mt-1">
+    La contraseña se generará automáticamente y será enviada al usuario.
+  </p>
+</div>
         {/* 📌 Nombre Completo */}
         <div>
           <label htmlFor="fullName" className="block text-lg font-medium">
@@ -179,6 +187,33 @@ const CreateUserForm: React.FC = () => {
             <option value="false">Inactivo</option>
           </select>
         </div>
+
+        <div>
+          <label htmlFor="id_Role" className="block text-lg font-medium">Rol</label>
+          {isLoadingRoles ? (
+            <p className="text-gray-500">Cargando roles...</p>
+          ) : isErrorRoles ? (
+            <p className="text-red-500">Error al cargar roles</p>
+          ) : (
+            <select
+              id="id_Role"
+              name="id_Role"
+              value={formData.id_Role}
+              onChange={handleChange}
+              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
+              }`}
+            >
+              <option value={0} disabled>Seleccione un rol</option>
+              {roles?.map((role) => (
+                <option key={role.idRole} value={role.idRole}>
+                  {role.nameRole}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
 
         {/* Botones */}
         <div className="col-span-2 flex justify-center gap-6 mt-6">
