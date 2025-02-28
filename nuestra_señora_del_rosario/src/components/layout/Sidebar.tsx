@@ -1,6 +1,6 @@
 import { useIcon } from "../../hooks/useIcons";
 import useToggle from '../../hooks/useToggle';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useAuth } from '../../hooks/useAuth';
 import { SidebarProps } from "../../types/SidebarType";
@@ -17,6 +17,8 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   // Estado para el dropdown de "Personal"
   const [isPersonalDropdownOpen, setPersonalDropdownOpen] = useState(false);
   const togglePersonalDropdown = () => setPersonalDropdownOpen(!isPersonalDropdownOpen);
+  const location = useLocation();
+  const isSettingsPage = location.pathname.startsWith('/dashboard/Configuracion');
 
   // Estado para el dropdown de "Inventario"
   const [isInventoryDropdownOpen, setInventoryDropdownOpen] = useState(false);
@@ -30,7 +32,15 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     { name: 'Cardex', link: '/dashboard/cardex', roles: ['Enfermeria'] }, 
   ];
 
+  const settingsItems = [
+    { name: 'Ajustes del Usuario', link: '/dashboard/Configuracion/usuario' },
+    { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
+    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina-informativa', roles:['Admin'] },
+  ];
+
   return (
+    <>
+    {!isSettingsPage && (
     <aside
       className={`fixed left-0 z-40 w-64 h-[calc(100%-64px)] pt-4 transition-transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -282,6 +292,52 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
         </ul>
       </div>
     </aside>
+    )}
+
+{isSettingsPage && (
+        <aside
+          className={`fixed left-0 z-40 w-64 h-[calc(100%-64px)] pt-4 transition-transform ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-black'} border-r border-gray-200 dark:border-gray-700 font-poppins`}
+          style={{ top: "64px" }}
+          aria-label="Sidebar Configuración"
+        >
+          <div className={`h-full flex flex-col justify-between px-3 pb-4 overflow-y-auto ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
+            <ul className="space-y-2 font-medium">
+              {settingsItems
+                .filter((item) => !item.roles || item.roles.includes(rol))
+                .map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      to={item.link}
+                      className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
+                        isDarkMode ? "hover:bg-gray-700 dark:text-white" : "hover:bg-gray-200 text-black"
+                      }`}
+                    >
+                       <span className="flex items-center justify-center w-6 h-6">
+                    {getIcon(item.name)}
+                  </span>
+                      <span className="ml-3">{item.name}</span>
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+            <ul className="space-y-2 font-medium">
+          <li className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
+            isDropdownOpen ? 'mt-4' : 'mt-0'
+          } ${isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'}`}>
+            <button onClick={logout} className="flex items-center w-full">
+              <span className="flex items-center justify-center w-6 h-6">
+                {getIcon('Ingreso')}
+              </span>
+              <span className="ml-3">Cerrar Sesión</span>
+            </button>
+          </li>
+        </ul>
+          </div>
+        </aside>
+      )}
+    </>
   );
 };
 

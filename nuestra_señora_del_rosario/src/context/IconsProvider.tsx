@@ -9,7 +9,8 @@ import {
   FaIdCard, 
   FaLock,
   FaListUl,       // Icono para "Lista de productos"
-  FaBoxOpen       // Icono para "Consumo de Productos"
+  FaBoxOpen,       // Icono para "Consumo de Productos"
+  FaLaptop
 } from 'react-icons/fa'; 
 import IconContext from './IconsContext';
 
@@ -25,6 +26,9 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Donaciones: <FaDonate />,
     Voluntariado: <FaHandsHelping />,
     'Cronograma de Citas': <FaCalendarAlt />,
+    'Ajustes del Usuario': <FaUsers />,
+    'Ajustes del Sistema': <FaLaptop />,
+    'Página Informativa': <FaUsers />,
     Cedula: <FaIdCard />, 
     Contraseña: <FaLock />,
     'Lista de productos': <FaListUl />,     // Icono para "Lista de productos"

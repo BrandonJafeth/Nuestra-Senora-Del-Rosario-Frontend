@@ -19,7 +19,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
   };
 
   const handleUserSettings = () => {
-    navigate('/dashboard/Configuracion-usuario');
+    navigate('/dashboard/Configuracion');
     setIsDropdownOpen(false);
   };
 

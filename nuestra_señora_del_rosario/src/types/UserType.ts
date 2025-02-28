@@ -11,6 +11,7 @@ export interface UserResponse {
   }
   export interface User {
     id_User: number;
+    id_Role: number;
     dni: number;
     email: string;
     fullName: string;
