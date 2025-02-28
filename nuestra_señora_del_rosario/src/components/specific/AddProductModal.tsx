@@ -7,7 +7,7 @@ import { Product } from '../../types/ProductType';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import { useCategories } from '../../hooks/useCategories';
-import { useUnitsOfMeasure } from '../../hooks/useUnitOfMeasure';
+import { useUnitOfMeasure } from '../../hooks/useUnitOfMeasure';
 
 interface ProductAddModalProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
   const { isDarkMode } = useThemeDark();
   const createProductMutation = useCreateProduct();
   const { showToast, message, type } = useToast();
-  const { data: unitsOfMeasure } = useUnitsOfMeasure();
+  const { data: unitsOfMeasure } = useUnitOfMeasure();
   const { data: categories } = useCategories();
 
   const [name, setName] = useState('');
