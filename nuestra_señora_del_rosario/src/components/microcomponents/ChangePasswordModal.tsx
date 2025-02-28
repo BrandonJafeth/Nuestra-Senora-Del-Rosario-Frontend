@@ -48,7 +48,8 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
       password: "",
       is_Active: false,
       isActive: false,
-      roles: []
+      roles: [],
+      id_Role: 0
     });
   };
 
