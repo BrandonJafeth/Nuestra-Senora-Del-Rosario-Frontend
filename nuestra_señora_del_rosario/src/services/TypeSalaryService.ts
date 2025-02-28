@@ -15,8 +15,13 @@ class TypeSalaryService extends ApiService<TypeSalaryData> {
   }
 
   public deleteTypeSalary(id: number) {
+    if (!id) {
+      return Promise.reject("ID inválido");
+    }
     return this.delete('/TypeOfSalary', id);
   }
+  
+  
 }
 
 const typeSalaryService = new TypeSalaryService();

@@ -47,22 +47,27 @@ export const useManagmentTypeSalary = () => {
     }
   );
 
-  // 📌 Eliminar un tipo de salario
   const deleteTypeSalary = useMutation(
-    async (id: number) => {
-      const response = await typeSalaryService.deleteTypeSalary(id);
-      return response;
+    async (id: number | undefined) => {
+      if (id === undefined || id === null) {
+        console.error("❌ Error: ID de tipo de salario es inválido", id);
+        throw new Error("ID de tipo de salario inválido");
+      }
+      return typeSalaryService.deleteTypeSalary(id);
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries("typeSalary");
         showToast("✅ Tipo de Salario eliminado correctamente!", "success");
       },
-      onError: () => {
+      onError: (error) => {
+        console.error("Error al eliminar:", error);
         showToast("❌ No se puede eliminar el Tipo de Salario porque está en uso", "error");
       },
     }
   );
+  
+  
 
   return { createTypeSalary, updateTypeSalary, deleteTypeSalary, toast };
 };

@@ -1,7 +1,8 @@
 import React from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useNavigate } from "react-router-dom";
 
 interface Column {
   key: string;
@@ -33,16 +34,21 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onDelete,
   isLoading,
   skeletonRows = 5,
-  isDarkMode,
-  pageNumber,
-  totalPages,
-  onNextPage,
-  onPreviousPage,
+  isDarkMode
 }) => {
+  
+    const navigate = useNavigate()
+  const handleGoBack = () => navigate(-1);
   return (
     <div className={`p-6 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} shadow-md rounded-lg`}>
       {/* 📌 Título y Botón en la Misma Fila */}
       <div className="flex justify-between items-center mb-4">
+         <button
+                  onClick={handleGoBack}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center space-x-2"
+                >
+                  <FaArrowLeft /> <span>Regresar</span>
+                </button>
         <h3 className="text-2xl font-bold">{title}</h3>
         <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={onAdd}>
           Agregar Nuevo
@@ -92,11 +98,11 @@ const AdminTable: React.FC<AdminTableProps> = ({
                       Editar
                     </button>
                     <button
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                      onClick={() => onDelete(item.id)}
-                    >
-                      Eliminar
-                    </button>
+  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+  onClick={() => onDelete(item)}
+>
+  Eliminar
+</button>
                   </td>
                 </tr>
               ))
@@ -109,29 +115,6 @@ const AdminTable: React.FC<AdminTableProps> = ({
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* 📌 Controles de paginación */}
-      <div className="flex justify-center items-center mt-4 space-x-4">
-        <button
-          onClick={onPreviousPage}
-          disabled={pageNumber === 1}
-          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          <FaArrowLeft />
-        </button>
-
-        <span className={`${isDarkMode ? "text-white" : "text-gray-800"}`}>
-          Página {pageNumber} de {totalPages}
-        </span>
-
-        <button
-          onClick={onNextPage}
-          disabled={pageNumber === totalPages}
-          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          <FaArrowRight />
-        </button>
       </div>
     </div>
   );
