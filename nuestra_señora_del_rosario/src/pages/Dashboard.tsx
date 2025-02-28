@@ -30,6 +30,8 @@ import MedicalHistory from '../components/specific/MedicalHistory';
 import UpdateMedicalHistory from '../components/specific/UpdateMedicalHistory';
 import AddMedicalHistoryForm from '../components/specific/AddMedicalHistory';
 import HomeConfig from '../components/specific/HomeConfig';
+import SystemConfiguration from '../components/specific/SystemConfiguration';
+import TableTypeOfSalary from '../components/specific/TableTypeSalary';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -76,7 +78,9 @@ function Dashboard() {
               <Route path="residente/:residentId/agregar-historial" element={<AddMedicalHistoryForm/>}/>
               <Route path="notifications"  element={<NotificationMailbox />} />
               <Route path="Configuracion" element={<HomeConfig />} />
-              <Route path="Configuracion-usuario" element={<UserSettings/>} />
+              <Route path="Configuracion/usuario" element={<UserSettings/>} />
+              <Route path="Configuracion/sistema" element={<SystemConfiguration />} />
+              <Route path="Configuracion/sistema/tipo-salario" element={<TableTypeOfSalary/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>

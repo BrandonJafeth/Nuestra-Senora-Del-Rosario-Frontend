@@ -33,9 +33,9 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   ];
 
   const settingsItems = [
-    { name: 'Ajustes del Usuario', link: '/Configuracion/usuario' },
-    { name: 'Ajustes del Sistema', link: '/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
-    { name: 'Página Informativa', link: '/Configuracion/pagina-informativa', roles:['Admin'] },
+    { name: 'Ajustes del Usuario', link: '/dashboard/Configuracion/usuario' },
+    { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
+    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina-informativa', roles:['Admin'] },
   ];
 
   return (
@@ -322,6 +322,18 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                   </li>
                 ))}
             </ul>
+            <ul className="space-y-2 font-medium">
+          <li className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
+            isDropdownOpen ? 'mt-4' : 'mt-0'
+          } ${isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'}`}>
+            <button onClick={logout} className="flex items-center w-full">
+              <span className="flex items-center justify-center w-6 h-6">
+                {getIcon('Ingreso')}
+              </span>
+              <span className="ml-3">Cerrar Sesión</span>
+            </button>
+          </li>
+        </ul>
           </div>
         </aside>
       )}
