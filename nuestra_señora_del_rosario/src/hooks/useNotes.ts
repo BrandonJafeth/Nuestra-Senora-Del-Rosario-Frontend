@@ -4,9 +4,19 @@ import notesService from '../services/NoteService';
 import { NoteRequest } from '../types/NoteTypes';
 
 export const useNotes = () => {
-  return useQuery('notes', notesService.getAllNotes, {
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutos
-    refetchOnWindowFocus: false,
+  return useQuery<NoteRequest[], Error>("notes", async () => {
+    const response = await notesService.getAllNotes();
+    if (!response.data || !Array.isArray(response.data)) {
+      console.error("❌ Error: Datos de notas no válidos", response);
+      return [];
+    }
+
+    return response.data.map((item) => ({
+      id_Note: item.id_Note ?? 0,
+      reason: item.reason || "Sin motivo",
+      noteDate: item.noteDate ? new Date(item.noteDate).toLocaleDateString() : "Fecha desconocida", // 📌 Formatea la fecha
+      description: item.description || "Sin descripción",
+    }));
   });
 };
 
@@ -20,19 +30,7 @@ export const useCreateNote = () => {
   });
 };
 
-// Hook para actualizar una nota existente
-export const useUpdateNote = () => {
-  const queryClient = useQueryClient();
-  return useMutation(
-    ({ id, data }: { id: number; data: Partial<NoteRequest> }) =>
-      notesService.updateNotes(id, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('notes'); // Refresca las notas tras actualizar
-      },
-    }
-  );
-};
+
 
 // Hook para eliminar una nota
 export const useDeleteNote = () => {

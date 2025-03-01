@@ -9,6 +9,10 @@ class HealthcareCenterService extends ApiService<HealthcareCenter> {
     public createHealthcareCenter(data: HealthcareCenter) {
         return this.create('/HealthcareCenter', data);
       }
+
+      public deleteHealthcareCenter(id: number) {
+        return this.delete('/HealthcareCenter', id);
+      }
     
 }
 

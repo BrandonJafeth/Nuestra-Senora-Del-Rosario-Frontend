@@ -5,7 +5,7 @@ import { useUpdateProduct } from '../../hooks/useUpdateProduct';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import { useCategories } from '../../hooks/useCategories';
-import { useUnitsOfMeasure } from '../../hooks/useUnitOfMeasure';
+import { useUnitOfMeasure } from '../../hooks/useUnitOfMeasure';
 
 interface ProductEditModalProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
   const updateProduct = useUpdateProduct();
   const { showToast, message, type } = useToast();
   const { data: categories } = useCategories();
-  const { data: unitsOfMeasure } = useUnitsOfMeasure();
+  const { data: unitsOfMeasure } = useUnitOfMeasure();
 
   useEffect(() => {
     console.log('Initial product data:', initialProductData); // Verifica los datos iniciales

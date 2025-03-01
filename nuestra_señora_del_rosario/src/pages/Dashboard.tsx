@@ -32,6 +32,15 @@ import AddMedicalHistoryForm from '../components/specific/AddMedicalHistory';
 import HomeConfig from '../components/specific/HomeConfig';
 import SystemConfiguration from '../components/specific/SystemConfiguration';
 import TableTypeOfSalary from '../components/specific/TableTypeSalary';
+import TableUnitOfMeasure from '../components/specific/TableUnitOfMeasure';
+import TableRooms from '../components/specific/TableRooms';
+import TableProfessions from '../components/specific/TableProfessions';
+import TableDependencyLevels from '../components/specific/TableDependencyLevel';
+import TableAppointmentStatuses from '../components/specific/TableAppointmentStatuses';
+import TablePathologies from '../components/specific/TablePathologies';
+import TableNotes from '../components/specific/TableNotes';
+import TableSpecialities from '../components/specific/TableSpecialities';
+import TableHealtcareCenter from '../components/specific/TableHealtcareCenter';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -81,6 +90,15 @@ function Dashboard() {
               <Route path="Configuracion/usuario" element={<UserSettings/>} />
               <Route path="Configuracion/sistema" element={<SystemConfiguration />} />
               <Route path="Configuracion/sistema/tipo-salario" element={<TableTypeOfSalary/>}/>
+              <Route path="Configuracion/sistema/unidad-medida" element={<TableUnitOfMeasure/>}/>
+              <Route path="Configuracion/sistema/habitacion" element={<TableRooms/>}/>
+              <Route path="Configuracion/sistema/profesion" element={<TableProfessions/>}/>
+              <Route path="Configuracion/sistema/nivel-dependencia" element={<TableDependencyLevels />} />
+              <Route path="Configuracion/sistema/estado-citas" element={<TableAppointmentStatuses />} />
+              <Route path="Configuracion/sistema/patologia" element={<TablePathologies />} />
+              <Route path="Configuracion/sistema/notas" element={<TableNotes />} />
+              <Route path="Configuracion/sistema/especialidad" element={<TableSpecialities />} />
+              <Route path="Configuracion/sistema/centro-atencion" element={<TableHealtcareCenter/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
