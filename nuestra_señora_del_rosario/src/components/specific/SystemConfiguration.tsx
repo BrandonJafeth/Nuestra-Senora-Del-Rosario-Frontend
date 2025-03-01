@@ -20,7 +20,7 @@ const SystemConfiguration: React.FC = () => {
         <AdminCard title="Profesiones" description="Gestiona las profesiones registradas." route="/dashboard/Configuracion/sistema/profesion" roles={["Admin"]}/>
         <AdminCard title="Notas Médicas" description="Gestiona las notas médicas de los pacientes." route="/Configuracion/sistema/notas" roles={["Enfermeria"]}/>
         <AdminCard title="Centros de Salud" description="Gestiona los centros de salud registrados." route="/Configuracion/sistema/centro-atencion" roles={["Enfermeria"]}/>
-        <AdminCard title="Niveles de Dependencia" description="Gestiona los niveles de dependencia para los residentes." route="/Configuracion/sistema/nivel-dependencia" roles={["Enfermeria", "Admin"]}/>
+        <AdminCard title="Niveles de Dependencia" description="Gestiona los niveles de dependencia para los residentes." route="/dashboard/Configuracion/sistema/nivel-dependencia" roles={["Enfermeria", "Admin"]}/>
       </div>
     </div>
   );

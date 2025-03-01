@@ -35,6 +35,7 @@ import TableTypeOfSalary from '../components/specific/TableTypeSalary';
 import TableUnitOfMeasure from '../components/specific/TableUnitOfMeasure';
 import TableRooms from '../components/specific/TableRooms';
 import TableProfessions from '../components/specific/TableProfessions';
+import TableDependencyLevels from '../components/specific/TableDependencyLevel';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -87,6 +88,7 @@ function Dashboard() {
               <Route path="Configuracion/sistema/unidad-medida" element={<TableUnitOfMeasure/>}/>
               <Route path="Configuracion/sistema/habitacion" element={<TableRooms/>}/>
               <Route path="Configuracion/sistema/profesion" element={<TableProfessions/>}/>
+              <Route path="Configuracion/sistema/nivel-dependencia" element={<TableDependencyLevels />} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
