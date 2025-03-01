@@ -1,19 +1,28 @@
 import { useQuery } from "react-query";
-import professionService from "../services/ProfessionService";
 import { ProfessionData } from "../types/ProfessionType";
+import ApiService from "../services/GenericService/ApiService";
+
+const apiService = new ApiService<ProfessionData>();
 
 export const useProfession = () => {
-  return useQuery<ProfessionData[], Error>("professions", async () => {
-    const response = await professionService.getAllProfession();
-    
-    if (!response.data || !Array.isArray(response.data)) {
-      console.error("❌ Error: Datos de profesiones no válidos", response);
-      return [];
-    }
+  return useQuery<ProfessionData[], Error>(
+    "Profession",
+    async () => {
+      const response = await apiService.getAll("Profession");
 
-    return response.data.map((item) => ({
-      id_Profession: item.id_Profession ?? 0, // Asegurar que el ID existe
-      name_Profession: item.name_Profession || "Desconocido", // Evitar valores nulos
-    }));
-  });
+      if (!response.data || !Array.isArray(response.data)) {
+        console.error("🚨 Error: Datos de profesiones no válidos", response);
+        return [];
+      }
+
+      return response.data.map((item) => ({
+        id_Profession: item.id_Profession ?? 0,
+        name_Profession: item.name_Profession || "Sin nombre",
+      }));
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 10 * 60 * 1000,
+    }
+  );
 };
