@@ -4,7 +4,7 @@ import { UnitOfMeasure } from "../types/UnitOfMeasureType";
 
 export const useUnitOfMeasure = () => {
   return useQuery<UnitOfMeasure[], Error>(
-    "unitOfMeasure",
+    "UnitOfMeasure",
     async () => {
       const response = await unitOfMeasureService.getAllUnits();
 

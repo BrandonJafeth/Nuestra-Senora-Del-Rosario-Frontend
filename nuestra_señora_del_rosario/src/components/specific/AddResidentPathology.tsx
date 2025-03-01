@@ -57,7 +57,7 @@ const AddPathologyPage: React.FC = () => {
             className="w-full p-2 border rounded-md bg-white text-gray-900"
           >
             <option value="">Seleccione una patología</option>
-            {data?.data?.map((pathology) => (
+            {data?.map((pathology) => (
               <option key={pathology.id_Pathology} value={pathology.id_Pathology}>
                 {pathology.name_Pathology}
               </option>

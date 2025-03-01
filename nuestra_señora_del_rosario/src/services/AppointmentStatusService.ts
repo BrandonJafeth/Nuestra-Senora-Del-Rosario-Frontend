@@ -12,7 +12,7 @@ class AppointmentStatusService extends ApiService<AppointmentStatus> {
     }
 
     public updateAppointmentStatus(id : number, appointmentStatus: AppointmentStatus) {
-      return this.putWithoutId(`/AppointmentStatus${id}`, appointmentStatus);
+      return this.patch(`/AppointmentStatus/`, id, appointmentStatus);
     }
 
     public deleteAppointmentStatus(id: string) {

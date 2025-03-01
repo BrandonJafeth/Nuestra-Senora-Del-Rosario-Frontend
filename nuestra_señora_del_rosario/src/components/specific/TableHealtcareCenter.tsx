@@ -1,39 +1,95 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import AdminTable from "../microcomponents/AdminTable";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import Toast from "../common/Toast";
 import AdminModalAdd from "../microcomponents/AdminModalAdd";
+import AdminModalEdit from "../microcomponents/AdminModalEdit";
 import { useManagmentHealtcareCenter } from "../../hooks/useManagmentHealtcareCenter";
 import { useHealthcareCenters } from "../../hooks/useHealthcareCenters";
 
 const TableHealthcareCenter: React.FC = () => {
-  const { createHealthcareCenter, deleteHealthcareCenter, toast } = useManagmentHealtcareCenter();
+  const { deleteEntity, createEntity, updateEntity, toast } = useManagmentHealtcareCenter();
   const { data: healthcareCenters, isLoading } = useHealthcareCenters();
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber] = useState(1);
   const totalPages = 3;
 
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newHealthcareCenter, setNewHealthcareCenter] = useState({
+  const [newHealthcareCenter, setNewHealthcareCenter] = useState({ name_HC: "", location_HC: "", type_HC: "Público" });
+
+  // 📌 Estado del modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editHealthcareCenter, setEditHealthcareCenter] = useState<{ id_HC: number; name_HC: string; location_HC: string; type_HC: string }>({
+    id_HC: 0,
     name_HC: "",
     location_HC: "",
-    type_HC: "Público", // Valor por defecto
+    type_HC: "Público",
   });
+
+  // 📌 Estado del modal de confirmación antes de editar
+  const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
+  const [pendingEditName, setPendingEditName] = useState<string>("");
 
   // 📌 Estado del modal de confirmación para eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [healthcareCenterToDelete, setHealthcareCenterToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // 📌 Modal para agregar
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => {
     setNewHealthcareCenter({ name_HC: "", location_HC: "", type_HC: "Público" });
     setIsAddModalOpen(false);
   };
 
+  // 📌 Modal para editar solo el nombre
+  const openEditModal = (item: any) => {
+    if (!item || typeof item !== "object" || !item.id_HC) {
+      console.error("🚨 Error: Datos inválidos para edición", item);
+      return;
+    }
+
+    setEditHealthcareCenter({
+      id_HC: item.id_HC, // ✅ Se mantiene el ID correctamente
+      name_HC: item.name_HC,
+      location_HC: item.location_HC,
+      type_HC: item.type_HC,
+    });
+
+    setPendingEditName(item.name_HC); // ✅ Solo se edita el nombre
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // 📌 Confirmación antes de editar
+  const handlePreConfirmEdit = (updatedName: string) => {
+    setPendingEditName(updatedName);
+    setIsConfirmEditModalOpen(true);
+  };
+
+  // 📌 Ejecutar edición después de confirmación
+  const handleConfirmEdit = () => {
+    setIsConfirmEditModalOpen(false);
+    updateEntity.mutate(
+      {
+        id: editHealthcareCenter.id_HC, // ✅ Asegurar que el ID está presente
+        name_HC: pendingEditName, // ✅ Solo se actualiza el nombre
+        location_HC: editHealthcareCenter.location_HC, // Se mantiene la ubicación
+        type_HC: editHealthcareCenter.type_HC, // Se mantiene el tipo
+      },
+      {
+        onSuccess: () => {
+          closeEditModal();
+        },
+      }
+    );
+  };
+
   const openConfirmDeleteModal = (item: any) => {
-    if (!item || typeof item !== "object") return;
-    if (!item.id_HC) return;
+    if (!item || typeof item !== "object" || !item.id_HC) return;
     setHealthcareCenterToDelete(item.id_HC);
     setIsConfirmDeleteModalOpen(true);
   };
@@ -43,20 +99,6 @@ const TableHealthcareCenter: React.FC = () => {
     setIsConfirmDeleteModalOpen(false);
   };
 
-  const handleDeleteConfirmed = () => {
-    if (healthcareCenterToDelete !== null) {
-      setIsDeleting(true);
-      deleteHealthcareCenter.mutate(healthcareCenterToDelete, {
-        onSuccess: () => {
-          setIsDeleting(false);
-          closeConfirmDeleteModal();
-        },
-        onError: () => {
-          setIsDeleting(false);
-        },
-      });
-    }
-  };
 
   const handleAddHealthcareCenter = () => {
     if (
@@ -64,7 +106,7 @@ const TableHealthcareCenter: React.FC = () => {
       newHealthcareCenter.location_HC.trim() === ""
     )
       return;
-    createHealthcareCenter.mutate({
+    createEntity.mutate({
       name_HC: newHealthcareCenter.name_HC,
       location_HC: newHealthcareCenter.location_HC,
       type_HC: newHealthcareCenter.type_HC,
@@ -75,10 +117,7 @@ const TableHealthcareCenter: React.FC = () => {
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de Centros de Atención</h2>
-        <div className="w-28"></div>
-      </div>
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Centros de Atención</h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
@@ -89,20 +128,20 @@ const TableHealthcareCenter: React.FC = () => {
           { key: "location_HC", label: "Ubicación" },
           { key: "type_HC", label: "Tipo" },
         ]}
-        data={healthcareCenters?.data || []}
+        data={healthcareCenters || []}
         isLoading={isLoading}
         onAdd={openAddModal}
-        onEdit={(item) => console.log("Editar:", item)}
-        onDelete={(item) => openConfirmDeleteModal(item)}
+        onEdit={openEditModal}
+        onDelete={openConfirmDeleteModal}
         isDarkMode={false}
         pageNumber={pageNumber}
-        totalPages={totalPages}
-        onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}
-        onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
-      />
+        totalPages={totalPages} onNextPage={function (): void {
+          throw new Error("Function not implemented.");
+        } } onPreviousPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
-      {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Centro de Atención" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Centro de Atención" onClose={closeAddModal}>
         <input
           type="text"
           value={newHealthcareCenter.name_HC}
@@ -138,11 +177,44 @@ const TableHealthcareCenter: React.FC = () => {
         </div>
       </AdminModalAdd>
 
-      {/* 📌 Modal de Confirmación para Eliminar */}
+      {/* 📌 Modal para Editar solo el Nombre */}
+      <AdminModalEdit
+        isOpen={isEditModalOpen}
+        title="Editar Nombre del Centro de Atención"
+        onClose={closeEditModal}
+        onSave={handlePreConfirmEdit}
+        initialValue={pendingEditName} // ✅ Solo permite editar el nombre
+      />
+
+      {/* 📌 Modal de Confirmación antes de editar */}
+      <ConfirmationModal
+        isOpen={isConfirmEditModalOpen}
+        onClose={() => setIsConfirmEditModalOpen(false)}
+        onConfirm={handleConfirmEdit}
+        title="Confirmar Edición"
+        message={`¿Seguro que deseas cambiar el nombre a "${pendingEditName}"?`}
+        confirmText="Confirmar"
+        isLoading={false}
+      />
+
+      {/* 📌 Modal de Confirmación para eliminar */}
       <ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
-        onConfirm={handleDeleteConfirmed}
+        onConfirm={() => {
+          if (healthcareCenterToDelete !== null) {
+            setIsDeleting(true);
+            deleteEntity.mutate(healthcareCenterToDelete, {
+              onSuccess: () => {
+                setIsDeleting(false);
+                closeConfirmDeleteModal();
+              },
+              onError: () => {
+                setIsDeleting(false);
+              },
+            });
+          }
+        }}
         title="Eliminar Centro de Atención"
         message="¿Estás seguro de que quieres eliminar este centro de atención?"
         confirmText="Eliminar"

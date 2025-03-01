@@ -1,19 +1,30 @@
 import { useQuery } from "react-query";
-import roomService from "../services/RoomService";
 import { RoomType } from "../types/RoomType";
+import ApiService from "../services/GenericService/ApiService";
+
+
+const apiService = new ApiService<RoomType>();
 
 export const useRoom = () => {
-  return useQuery<RoomType[], Error>("rooms", async () => {
-    const response = await roomService.getAllRooms();
-    if (!response.data || !Array.isArray(response.data)) {
-      console.error("❌ Error: Datos de habitaciones no válidos", response);
-      return [];
-    }
+  return useQuery<RoomType[], Error>(
+    "Room",
+    async () => {
+      const response = await apiService.getAll("Room");
 
-    return response.data.map((item) => ({
-      id_Room: item.id_Room ?? 0, // Asegurar que el ID existe
-      roomNumber: item.roomNumber || "Desconocido",
-      capacity: item.capacity || "No especificado",
-    }));
-  });
+      if (!response.data || !Array.isArray(response.data)) {
+        console.error("🚨 Error: Datos de habitaciones no válidos", response);
+        return [];
+      }
+
+      return response.data.map((item) => ({
+        id_Room: item.id_Room ?? 0,
+        roomNumber: item.roomNumber || "Sin número",
+        capacity: item.capacity ?? 0,
+      }));
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 10 * 60 * 1000,
+    }
+  );
 };
