@@ -3,33 +3,90 @@ import AdminTable from "../microcomponents/AdminTable";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import Toast from "../common/Toast";
 import AdminModalAdd from "../microcomponents/AdminModalAdd";
+import AdminModalEdit from "../microcomponents/AdminModalEdit";
 import { useManagmentDependencyLevel } from "../../hooks/useManagmentDependencyLevel";
 import { useDependencyLevel } from "../../hooks/useDependencyLevel";
 
 const TableDependencyLevels: React.FC = () => {
-  const {  createDependencyLevel, deleteDependencyLevel, toast } = useManagmentDependencyLevel();
+  const { deleteEntity, createEntity, updateEntity, toast } = useManagmentDependencyLevel();
   const { data: dependencyLevels, isLoading } = useDependencyLevel();
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber] = useState(1);
   const totalPages = 3;
 
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newDependencyLevel, setNewDependencyLevel] = useState({ name: "" });
+  const [newDependencyLevel, setNewDependencyLevel] = useState({ levelName: "" });
+
+  // 📌 Estado del modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editDependencyLevel, setEditDependencyLevel] = useState<{ id_DependencyLevel: number; levelName: string }>({
+    id_DependencyLevel: 0,
+    levelName: "",
+  });
+
+  // 📌 Estado del modal de confirmación antes de editar
+  const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
+  const [pendingEditName, setPendingEditName] = useState<string>("");
 
   // 📌 Estado del modal de confirmación para eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [dependencyLevelToDelete, setDependencyLevelToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // 📌 Modal para agregar
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => {
-    setNewDependencyLevel({ name: "" });
+    setNewDependencyLevel({ levelName: "" });
     setIsAddModalOpen(false);
   };
 
+  // 📌 Modal para editar solo el nombre
+  const openEditModal = (item: any) => {
+    if (!item || typeof item !== "object" || !item.id_DependencyLevel) {
+      console.error("🚨 Error: Datos inválidos para edición", item);
+      return;
+    }
+
+    setEditDependencyLevel({ id_DependencyLevel: item.id_DependencyLevel, levelName: item.levelName });
+    setPendingEditName(item.levelName); // ✅ Solo se edita el nombre
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // 📌 Confirmación antes de editar
+  const handlePreConfirmEdit = (updatedName: string) => {
+    setPendingEditName(updatedName);
+    setIsConfirmEditModalOpen(true);
+  };
+
+  // 📌 Ejecutar edición después de confirmación
+  const handleConfirmEdit = () => {
+    setIsConfirmEditModalOpen(false);
+    
+    if (!editDependencyLevel.id_DependencyLevel) {
+      console.error("🚨 Error: ID no definido al actualizar el nivel de dependencia.");
+      return;
+    }
+
+    updateEntity.mutate(
+      {
+        id: editDependencyLevel.id_DependencyLevel, // ✅ Asegurar que el ID está presente
+        levelName: pendingEditName, // ✅ Solo se actualiza el nombre
+      },
+      {
+        onSuccess: () => {
+          closeEditModal();
+        },
+      }
+    );
+  };
+
+  // 📌 Modal para eliminar
   const openConfirmDeleteModal = (item: any) => {
-    if (!item || typeof item !== "object") return;
-    if (!item.id_DependencyLevel) return;
+    if (!item || typeof item !== "object" || !item.id_DependencyLevel) return;
     setDependencyLevelToDelete(item.id_DependencyLevel);
     setIsConfirmDeleteModalOpen(true);
   };
@@ -42,7 +99,7 @@ const TableDependencyLevels: React.FC = () => {
   const handleDeleteConfirmed = () => {
     if (dependencyLevelToDelete !== null) {
       setIsDeleting(true);
-      deleteDependencyLevel.mutate(dependencyLevelToDelete, {
+      deleteEntity.mutate(dependencyLevelToDelete, {
         onSuccess: () => {
           setIsDeleting(false);
           closeConfirmDeleteModal();
@@ -55,17 +112,14 @@ const TableDependencyLevels: React.FC = () => {
   };
 
   const handleAddDependencyLevel = () => {
-    if (newDependencyLevel.name.trim() === "") return;
-    createDependencyLevel.mutate({ levelName: newDependencyLevel.name, id_DependencyLevel: 0 });
+    if (newDependencyLevel.levelName.trim() === "") return;
+    createEntity.mutate({ levelName: newDependencyLevel.levelName, id_DependencyLevel: 0 });
     closeAddModal();
   };
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de Niveles de Dependencia</h2>
-        <div className="w-28"></div>
-      </div>
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Niveles de Dependencia</h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
@@ -75,21 +129,21 @@ const TableDependencyLevels: React.FC = () => {
         data={dependencyLevels || []}
         isLoading={isLoading}
         onAdd={openAddModal}
-        onEdit={(item) => console.log("Editar:", item)}
-        onDelete={(item) => openConfirmDeleteModal(item)}
+        onEdit={openEditModal}
+        onDelete={openConfirmDeleteModal}
         isDarkMode={false}
         pageNumber={pageNumber}
-        totalPages={totalPages}
-        onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}
-        onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
-      />
+        totalPages={totalPages} onNextPage={function (): void {
+          throw new Error("Function not implemented.");
+        } } onPreviousPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
-      {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Nivel de Dependencia" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Nivel de Dependencia" onClose={closeAddModal}>
         <input
           type="text"
-          value={newDependencyLevel.name}
-          onChange={(e) => setNewDependencyLevel({ ...newDependencyLevel, name: e.target.value })}
+          value={newDependencyLevel.levelName}
+          onChange={(e) => setNewDependencyLevel({ ...newDependencyLevel, levelName: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
           placeholder="Ingrese el nombre del nivel de dependencia"
         />
@@ -103,7 +157,27 @@ const TableDependencyLevels: React.FC = () => {
         </div>
       </AdminModalAdd>
 
-      {/* 📌 Modal de Confirmación para Eliminar */}
+      {/* 📌 Modal para Editar solo el Nombre */}
+      <AdminModalEdit
+        isOpen={isEditModalOpen}
+        title="Editar Nivel de Dependencia"
+        onClose={closeEditModal}
+        onSave={handlePreConfirmEdit}
+        initialValue={pendingEditName}
+      />
+
+      {/* 📌 Modal de Confirmación antes de editar */}
+      <ConfirmationModal
+        isOpen={isConfirmEditModalOpen}
+        onClose={() => setIsConfirmEditModalOpen(false)}
+        onConfirm={handleConfirmEdit}
+        title="Confirmar Edición"
+        message={`¿Seguro que deseas cambiar el nombre a "${pendingEditName}"?`}
+        confirmText="Confirmar"
+        isLoading={false}
+      />
+
+      {/* 📌 Modal de Confirmación para eliminar */}
       <ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
