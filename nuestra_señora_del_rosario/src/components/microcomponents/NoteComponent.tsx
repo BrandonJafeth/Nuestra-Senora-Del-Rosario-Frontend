@@ -13,7 +13,7 @@ const NotesComponent: React.FC = () => {
   // Guardar las notas en el estado cuando estén disponibles
   useEffect(() => {
     if (notesData) {
-      setNotes(notesData.data);
+      setNotes(notesData);
     }
   }, [notesData]);
 

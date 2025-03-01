@@ -194,7 +194,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona una especialidad</option>
-              {specialties?.data.map((specialty) => (
+              {specialties?.map((specialty) => (
                 <option key={specialty.id_Specialty} value={specialty.id_Specialty}>
                   {specialty.name_Specialty}
                 </option>

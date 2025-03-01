@@ -35,7 +35,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
               <span className="sr-only">Open sidebar</span>
               <Icon icon="line-md:menu-fold-left" className="w-6 h-6" />
             </button>
-            <a href="#" className="flex ms-2 md:me-24">
+            <a href="/dashboard" className="flex ms-2 md:me-24">
               <img
                 src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png"
                 className="h-10 me-3"
