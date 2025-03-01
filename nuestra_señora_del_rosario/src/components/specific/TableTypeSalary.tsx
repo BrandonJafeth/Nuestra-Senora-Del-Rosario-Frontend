@@ -8,7 +8,7 @@ import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import Toast from "../common/Toast";
 
 const TableTypeOfSalary: React.FC = () => {
-  const { createTypeSalary, updateTypeSalary, deleteTypeSalary, toast } = useManagmentTypeSalary();
+  const { createEntity, updateEntity, deleteEntity, toast } = useManagmentTypeSalary();
   const { data: typeSalary, isLoading } = useTypeSalary();
 
   // 📌 Estado del modal de agregar
@@ -17,11 +17,11 @@ const TableTypeOfSalary: React.FC = () => {
 
   // 📌 Estado del modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editedSalary, setEditedSalary] = useState<{ id: number; name: string } | null>(null);
+  const [editSalaryType, setEditSalaryType] = useState<{ id_TypeOfSalary: number; name_TypeOfSalary: string } | null>(null);
 
-  // 📌 Estado del modal de confirmación para edición
+  // 📌 Estado del modal de confirmación antes de editar
   const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
-  const [pendingEdit, setPendingEdit] = useState<{ id: number; name: string } | null>(null);
+  const [pendingEdit, setPendingEdit] = useState<{ id_TypeOfSalary: number; name_TypeOfSalary: string } | null>(null);
 
   // 📌 Estado del modal de confirmación para eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
@@ -34,34 +34,38 @@ const TableTypeOfSalary: React.FC = () => {
 
   // 📌 Abrir el modal de edición
   const openEditModal = (item: { id_TypeOfSalary: number; name_TypeOfSalary: string }) => {
-    setEditedSalary({ id: item.id_TypeOfSalary, name: item.name_TypeOfSalary });
+    setEditSalaryType({ id_TypeOfSalary: item.id_TypeOfSalary, name_TypeOfSalary: item.name_TypeOfSalary });
     setIsEditModalOpen(true);
   };
 
   // 📌 Cerrar el modal de edición
   const closeEditModal = () => {
-    setEditedSalary(null);
+    setEditSalaryType(null);
     setIsEditModalOpen(false);
   };
 
   // 📌 Guardar cambios antes de confirmar la edición
   const handleEditSubmit = (updatedName: string) => {
-    if (!editedSalary) return;
-    setPendingEdit({ id: editedSalary.id, name: updatedName });
+    if (!editSalaryType) return;
+    setPendingEdit({ id_TypeOfSalary: editSalaryType.id_TypeOfSalary, name_TypeOfSalary: updatedName });
     setIsConfirmEditModalOpen(true);
     closeEditModal();
   };
 
-  // 📌 Confirmar edición con datos correctos
+  // 📌 Confirmar edición con ID correcto
   const handleEditConfirmed = () => {
     if (pendingEdit) {
-      updateTypeSalary.mutate(
-        { id: pendingEdit.id, data: { name_TypeOfSalary: pendingEdit.name } },
+      updateEntity.mutate(
+        {
+          id: pendingEdit.id_TypeOfSalary,
+          name_TypeOfSalary: pendingEdit.name_TypeOfSalary,
+        },
         { onSuccess: () => setIsConfirmEditModalOpen(false) }
       );
     }
   };
 
+  // 📌 Abrir modal de confirmación para eliminar
   const openConfirmDeleteModal = (item: any) => {
     if (!item || typeof item !== "object") {
       return;
@@ -73,8 +77,6 @@ const TableTypeOfSalary: React.FC = () => {
     setIsConfirmDeleteModalOpen(true);
   };
   
-  
-
   // 📌 Cerrar el modal de confirmación de eliminación
   const closeConfirmDeleteModal = () => {
     setSalaryToDelete(null);
@@ -85,7 +87,7 @@ const TableTypeOfSalary: React.FC = () => {
   const handleDeleteConfirmed = () => {
     if (salaryToDelete !== null) {
       setIsDeleting(true);
-      deleteTypeSalary.mutate(salaryToDelete, {
+      deleteEntity.mutate(salaryToDelete, {
         onSuccess: () => {
           setIsDeleting(false);
           closeConfirmDeleteModal();
@@ -100,10 +102,7 @@ const TableTypeOfSalary: React.FC = () => {
   // 📌 Agregar un nuevo tipo de salario
   const handleAddTypeSalary = () => {
     if (newSalaryType.trim() === "") return;
-    createTypeSalary.mutate({
-      name_TypeOfSalary: newSalaryType,
-      id_TypeOfSalary: 0,
-    });
+    createEntity.mutate({ name_TypeOfSalary: newSalaryType, id_TypeOfSalary: 0 });
     setNewSalaryType("");
     closeAddModal();
   };
@@ -115,10 +114,8 @@ const TableTypeOfSalary: React.FC = () => {
 
       <AdminTable
         title="Lista de Tipos de Salario"
-        columns={[
-          { key: "name_TypeOfSalary", label: "Nombre" },
-        ]}
-        data={typeSalary || []} // ⚠️ Aquí revisa que `typeSalary` tenga id_TypeOfSalary
+        columns={[{ key: "name_TypeOfSalary", label: "Nombre" }]}
+        data={typeSalary || []}
         isLoading={isLoading}
         onAdd={openAddModal}
         onEdit={(item) => openEditModal(item)}
@@ -127,11 +124,9 @@ const TableTypeOfSalary: React.FC = () => {
           throw new Error("Function not implemented.");
         } } onPreviousPage={function (): void {
           throw new Error("Function not implemented.");
-        } }/>
+        } }      />
 
-
-      {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Tipo de Salario" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Tipo de Salario" onClose={closeAddModal}>
         <input
           type="text"
           value={newSalaryType}
@@ -153,9 +148,9 @@ const TableTypeOfSalary: React.FC = () => {
       <AdminModalEdit
         isOpen={isEditModalOpen}
         title="Editar Tipo de Salario"
-        initialValue={editedSalary?.name || ""}
+        initialValue={editSalaryType?.name_TypeOfSalary || ""}
         onClose={closeEditModal}
-        onSave={handleEditSubmit} // 📌 Guarda antes de confirmar
+        onSave={handleEditSubmit}
       />
 
       {/* 📌 Modal de Confirmación para Edición */}
@@ -164,12 +159,11 @@ const TableTypeOfSalary: React.FC = () => {
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleEditConfirmed}
         title="Confirmar Edición"
-        message={`¿Estás seguro de que quieres cambiar el nombre a "${pendingEdit?.name}"?`}
+        message={`¿Seguro que deseas cambiar el nombre a "${pendingEdit?.name_TypeOfSalary}"?`}
         confirmText="Guardar Cambios"
       />
 
-      {/* 📌 Modal de Confirmación para Eliminar */}
-      <ConfirmationModal
+      {/* 📌 Modal de Confirmación para Eliminar */<ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
@@ -177,7 +171,7 @@ const TableTypeOfSalary: React.FC = () => {
         message="¿Estás seguro de que quieres eliminar este Tipo de Salario?"
         confirmText="Eliminar"
         isLoading={isDeleting}
-      />
+      />}
     </div>
   );
 };
