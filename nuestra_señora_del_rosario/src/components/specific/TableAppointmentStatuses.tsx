@@ -3,28 +3,71 @@ import AdminTable from "../microcomponents/AdminTable";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import Toast from "../common/Toast";
 import AdminModalAdd from "../microcomponents/AdminModalAdd";
+import AdminModalEdit from "../microcomponents/AdminModalEdit"; 
 import { useAppointmentStatuses } from "../../hooks/useappointmentStatus";
-import { useManagmentAppointmentStatus } from "../../hooks/useManagmentAppointmentStatus";
+import { useAppointmentStatusMutation } from "../../hooks/useAppoinmentStatusMutation";
+
 
 const TableAppointmentStatuses: React.FC = () => {
-  const { data : appointmentStatuses, isLoading } = useAppointmentStatuses();
-  const {createAppointmentStatus, deleteAppointmentStatus, toast} = useManagmentAppointmentStatus();
+  const { data: appointmentStatuses, isLoading } = useAppointmentStatuses();
+  const { createEntity, updateEntity, deleteEntity, toast } = useAppointmentStatusMutation();
   const [pageNumber, setPageNumber] = useState(1);
   const totalPages = 3;
 
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newAppointmentStatus, setNewAppointmentStatus] = useState({ name: "" });
+  const [newAppointmentStatus, setNewAppointmentStatus] = useState({ name_StatusAP: "" });
+
+  // 📌 Estado del modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editAppointmentStatus, setEditAppointmentStatus] = useState<{ id_StatusAP: number; name_StatusAP: string }>({
+    id_StatusAP: 0,
+    name_StatusAP: "",
+  });
+
+  // 📌 Estado del modal de confirmación para edición
+  const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
+  const [pendingEditValue, setPendingEditValue] = useState<string>("");
 
   // 📌 Estado del modal de confirmación para eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
-  const [appointmentStatusToDelete, setAppointmentStatusToDelete] = useState<string | null>(null);
+  const [appointmentStatusToDelete, setAppointmentStatusToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => {
-    setNewAppointmentStatus({ name: "" });
+    setNewAppointmentStatus({ name_StatusAP: "" });
     setIsAddModalOpen(false);
+  };
+
+  const openEditModal = (item: any) => {
+    if (!item || typeof item !== "object") return;
+    setEditAppointmentStatus({ id_StatusAP: item.id_StatusAP, name_StatusAP: item.name_StatusAP });
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditAppointmentStatus({ id_StatusAP: 0, name_StatusAP: "" });
+    setIsEditModalOpen(false);
+  };
+
+  // 📌 Abre el modal de confirmación antes de editar
+  const handlePreConfirmEdit = (updatedValue: string) => {
+    setPendingEditValue(updatedValue);
+    setIsConfirmEditModalOpen(true);
+  };
+
+  // 📌 Ejecuta la edición después de la confirmación
+  const handleConfirmEdit = () => {
+    setIsConfirmEditModalOpen(false);
+    updateEntity.mutate(
+      { id: editAppointmentStatus.id_StatusAP, name_StatusAP: pendingEditValue },
+      {
+        onSuccess: () => {
+          closeEditModal();
+        },
+      }
+    );
   };
 
   const openConfirmDeleteModal = (item: any) => {
@@ -42,7 +85,7 @@ const TableAppointmentStatuses: React.FC = () => {
   const handleDeleteConfirmed = () => {
     if (appointmentStatusToDelete !== null) {
       setIsDeleting(true);
-      deleteAppointmentStatus.mutate(appointmentStatusToDelete, {
+      deleteEntity.mutate(appointmentStatusToDelete, {
         onSuccess: () => {
           setIsDeleting(false);
           closeConfirmDeleteModal();
@@ -53,10 +96,10 @@ const TableAppointmentStatuses: React.FC = () => {
       });
     }
   };
-  
+
   const handleAddAppointmentStatus = () => {
-    if (newAppointmentStatus.name.trim() === "") return;
-    createAppointmentStatus.mutate({ name_StatusAP: newAppointmentStatus.name, id_StatusAP: 0 });
+    if (newAppointmentStatus.name_StatusAP.trim() === "") return;
+    createEntity.mutate({ name_StatusAP: newAppointmentStatus.name_StatusAP, id_StatusAP: 0 });
     closeAddModal();
   };
 
@@ -72,10 +115,10 @@ const TableAppointmentStatuses: React.FC = () => {
       <AdminTable
         title="Lista de Estados de Citas"
         columns={[{ key: "name_StatusAP", label: "Nombre" }]}
-        data={appointmentStatuses?.data || []}
+        data={appointmentStatuses || []}
         isLoading={isLoading}
         onAdd={openAddModal}
-        onEdit={(item) => console.log("Editar:", item)}
+        onEdit={(item) => openEditModal(item)}
         onDelete={(item) => openConfirmDeleteModal(item)}
         isDarkMode={false}
         pageNumber={pageNumber}
@@ -85,11 +128,11 @@ const TableAppointmentStatuses: React.FC = () => {
       />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Estado de Cita" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Estado de Cita" onClose={closeAddModal}>
         <input
           type="text"
-          value={newAppointmentStatus.name}
-          onChange={(e) => setNewAppointmentStatus({ ...newAppointmentStatus, name: e.target.value })}
+          value={newAppointmentStatus.name_StatusAP}
+          onChange={(e) => setNewAppointmentStatus({ ...newAppointmentStatus, name_StatusAP: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
           placeholder="Ingrese el nombre del estado de cita"
         />
@@ -102,6 +145,26 @@ const TableAppointmentStatuses: React.FC = () => {
           </button>
         </div>
       </AdminModalAdd>
+
+      {/* 📌 Modal para Editar */}
+      <AdminModalEdit
+        isOpen={isEditModalOpen}
+        title="Editar Estado de Cita"
+        onClose={closeEditModal}
+        onSave={handlePreConfirmEdit} // ✅ Muestra el modal de confirmación antes de editar
+        initialValue={editAppointmentStatus.name_StatusAP}
+      />
+
+      {/* 📌 Modal de Confirmación antes de editar */}
+      <ConfirmationModal
+        isOpen={isConfirmEditModalOpen}
+        onClose={() => setIsConfirmEditModalOpen(false)}
+        onConfirm={handleConfirmEdit}
+        title="Confirmar Edición"
+        message={`¿Seguro que deseas editar el estado de cita a "${pendingEditValue}"?`}
+        confirmText="Confirmar"
+        isLoading={false}
+      />
 
       {/* 📌 Modal de Confirmación para Eliminar */}
       <ConfirmationModal

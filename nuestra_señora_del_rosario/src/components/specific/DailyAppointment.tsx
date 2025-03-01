@@ -38,7 +38,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
   const { data: statusesResponse, error: statusesError } = useAppointmentStatuses();
   const { data: companionsResponse } = useEmployeesByProfession(5);
 
-  const statuses = statusesResponse?.data || [];
+  const statuses = statusesResponse || [];
   const companions: EmployeeType[] = companionsResponse || [];
 
   const { mutate: updateAppointment, isLoading: updating } = useUpdateAppointment();
