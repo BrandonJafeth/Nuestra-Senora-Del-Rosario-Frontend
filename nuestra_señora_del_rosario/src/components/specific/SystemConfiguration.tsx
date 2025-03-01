@@ -18,8 +18,8 @@ const SystemConfiguration: React.FC = () => {
         <AdminCard title="Gestión de Habitaciones" description="Gestiona las habitaciones del centro." route="/dashboard/Configuracion/sistema/habitacion" roles={["Admin"]}/>
         <AdminCard title="Patologías" description="Gestiona las patologías médicas registradas." route="/dashboard/Configuracion/sistema/patologia" roles={["Enfermeria"]}/>
         <AdminCard title="Profesiones" description="Gestiona las profesiones registradas." route="/dashboard/Configuracion/sistema/profesion" roles={["Admin"]}/>
-        <AdminCard title="Notas Médicas" description="Gestiona las notas médicas de los pacientes." route="/dahsboard/Configuracion/sistema/notas" roles={["Enfermeria"]}/>
-        <AdminCard title="Centros de Salud" description="Gestiona los centros de salud registrados." route="/dahsboard/Configuracion/sistema/centro-atencion" roles={["Enfermeria"]}/>
+        <AdminCard title="Notas Médicas" description="Gestiona las notas médicas de los pacientes." route="/dashboard/Configuracion/sistema/notas" roles={["Enfermeria"]}/>
+        <AdminCard title="Centros de Salud" description="Gestiona los centros de salud registrados." route="/dashboard/Configuracion/sistema/centro-atencion" roles={["Enfermeria"]}/>
         <AdminCard title="Niveles de Dependencia" description="Gestiona los niveles de dependencia para los residentes." route="/dashboard/Configuracion/sistema/nivel-dependencia" roles={["Enfermeria", "Admin"]}/>
       </div>
     </div>

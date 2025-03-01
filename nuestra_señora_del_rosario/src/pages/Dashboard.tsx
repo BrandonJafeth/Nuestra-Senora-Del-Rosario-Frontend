@@ -38,6 +38,7 @@ import TableProfessions from '../components/specific/TableProfessions';
 import TableDependencyLevels from '../components/specific/TableDependencyLevel';
 import TableAppointmentStatuses from '../components/specific/TableAppointmentStatuses';
 import TablePathologies from '../components/specific/TablePathologies';
+import TableNotes from '../components/specific/TableNotes';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -93,6 +94,7 @@ function Dashboard() {
               <Route path="Configuracion/sistema/nivel-dependencia" element={<TableDependencyLevels />} />
               <Route path="Configuracion/sistema/estado-citas" element={<TableAppointmentStatuses />} />
               <Route path="Configuracion/sistema/patologia" element={<TablePathologies />} />
+              <Route path="Configuracion/sistema/notas" element={<TableNotes />} />
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
