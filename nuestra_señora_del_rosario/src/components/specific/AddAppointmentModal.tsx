@@ -175,7 +175,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona un centro</option>
-              {healthcareCenters?.data.map((hc) => (
+              {healthcareCenters?.map((hc) => (
                 <option key={hc.id_HC} value={hc.id_HC}>
                   {hc.name_HC}
                 </option>

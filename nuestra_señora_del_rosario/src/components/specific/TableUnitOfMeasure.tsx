@@ -19,9 +19,9 @@ const TableUnitOfMeasure: React.FC = () => {
 
   // 📌 Estado del modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editUnitOfMeasure, setEditUnitOfMeasure] = useState<{ unitOfMeasureID: number; nombreUnidad: string }>({
+  const [editUnitOfMeasure, setEditUnitOfMeasure] = useState<{ unitOfMeasureID: number; unitName: string }>({
     unitOfMeasureID: 0,
-    nombreUnidad: "",
+    unitName: "",
   });
 
   // 📌 Estado del modal de confirmación para edición
@@ -48,12 +48,12 @@ const TableUnitOfMeasure: React.FC = () => {
     }
 
     console.log("🛠️ Editando:", item);
-    setEditUnitOfMeasure({ unitOfMeasureID: item.unitOfMeasureID, nombreUnidad: item.nombreUnidad });
+    setEditUnitOfMeasure({ unitOfMeasureID: item.unitOfMeasureID, unitName: item.nombreUnidad });
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
-    setEditUnitOfMeasure({ unitOfMeasureID: 0, nombreUnidad: "" });
+    setEditUnitOfMeasure({ unitOfMeasureID: 0, unitName: "" });
     setIsEditModalOpen(false);
   };
 
@@ -158,7 +158,7 @@ const TableUnitOfMeasure: React.FC = () => {
         title="Editar Unidad de Medida"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
-        initialValue={editUnitOfMeasure.nombreUnidad}
+        initialValue={editUnitOfMeasure.unitName}
       />
 
       {/* 📌 Modal de Confirmación antes de editar */}
