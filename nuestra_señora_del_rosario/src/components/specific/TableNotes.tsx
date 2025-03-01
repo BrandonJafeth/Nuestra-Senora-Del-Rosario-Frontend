@@ -3,33 +3,85 @@ import AdminTable from "../microcomponents/AdminTable";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import Toast from "../common/Toast";
 import AdminModalAdd from "../microcomponents/AdminModalAdd";
+import AdminModalEdit from "../microcomponents/AdminModalEdit"; // ✅ Importado correctamente
 import { useManagmentNote } from "../../hooks/useManagmentNote";
 import { useNotes } from "../../hooks/useNotes";
 
 const TableNotes: React.FC = () => {
-  const { data : notes, isLoading} = useNotes();
-  const {createNote, deleteNote, toast} = useManagmentNote()
-  const [pageNumber, setPageNumber] = useState(1);
+  const { deleteEntity, createEntity, updateEntity, toast } = useManagmentNote();
+  const { data: notes, isLoading } = useNotes();
+  const [pageNumber] = useState(1);
   const totalPages = 3;
 
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newNote, setNewNote] = useState({ reason: "", noteDate: "", description: "" });
 
+  // 📌 Estado del modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editNote, setEditNote] = useState<{ id_Note: number; reason: string; noteDate: string; description: string }>({
+    id_Note: 0,
+    reason: "",
+    noteDate: "",
+    description: "",
+  });
+
+  // 📌 Estado del modal de confirmación para edición
+  const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
+  const [pendingEditValue, setPendingEditValue] = useState<string>("");
+
   // 📌 Estado del modal de confirmación para eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // 📌 Modal para agregar
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => {
     setNewNote({ reason: "", noteDate: "", description: "" });
     setIsAddModalOpen(false);
   };
 
+  // 📌 Modal para editar
+  const openEditModal = (item: any) => {
+    if (!item || typeof item !== "object" || !item.id_Note) {
+      console.error("🚨 Error: Datos inválidos para edición", item);
+      return;
+    }
+
+    console.log("🛠️ Editando:", item);
+    setEditNote({ id_Note: item.id_Note, reason: item.reason, noteDate: item.noteDate, description: item.description });
+    setPendingEditValue(item.description); // ✅ Se edita solo la descripción en el modal
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditNote({ id_Note: 0, reason: "", noteDate: "", description: "" });
+    setIsEditModalOpen(false);
+  };
+
+  // 📌 Abre el modal de confirmación antes de editar
+  const handlePreConfirmEdit = (updatedValue: string) => {
+    setPendingEditValue(updatedValue);
+    setIsConfirmEditModalOpen(true);
+  };
+
+  // 📌 Ejecuta la edición después de la confirmación
+  const handleConfirmEdit = () => {
+    setIsConfirmEditModalOpen(false);
+    updateEntity.mutate(
+      { id: editNote.id_Note, reason: editNote.reason, noteDate: editNote.noteDate, description: pendingEditValue },
+      {
+        onSuccess: () => {
+          closeEditModal();
+        },
+      }
+    );
+  };
+
+  // 📌 Modal para eliminar
   const openConfirmDeleteModal = (item: any) => {
-    if (!item || typeof item !== "object") return;
-    if (!item.id_Note) return;
+    if (!item || typeof item !== "object" || !item.id_Note) return;
     setNoteToDelete(item.id_Note);
     setIsConfirmDeleteModalOpen(true);
   };
@@ -42,7 +94,7 @@ const TableNotes: React.FC = () => {
   const handleDeleteConfirmed = () => {
     if (noteToDelete !== null) {
       setIsDeleting(true);
-      deleteNote.mutate(noteToDelete, {
+      deleteEntity.mutate(noteToDelete, {
         onSuccess: () => {
           setIsDeleting(false);
           closeConfirmDeleteModal();
@@ -56,16 +108,13 @@ const TableNotes: React.FC = () => {
 
   const handleAddNote = () => {
     if (newNote.reason.trim() === "" || newNote.noteDate.trim() === "" || newNote.description.trim() === "") return;
-    createNote.mutate({ reason: newNote.reason, noteDate: newNote.noteDate, description: newNote.description, id_Note: 0 });
+    createEntity.mutate({ reason: newNote.reason, noteDate: newNote.noteDate, description: newNote.description, id_Note: 0 });
     closeAddModal();
   };
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de Notas</h2>
-        <div className="w-28"></div>
-      </div>
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Notas</h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
@@ -79,17 +128,17 @@ const TableNotes: React.FC = () => {
         data={notes || []}
         isLoading={isLoading}
         onAdd={openAddModal}
-        onEdit={(item) => console.log("Editar:", item)}
-        onDelete={(item) => openConfirmDeleteModal(item)}
+        onEdit={openEditModal}
+        onDelete={openConfirmDeleteModal}
         isDarkMode={false}
         pageNumber={pageNumber}
-        totalPages={totalPages}
-        onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}
-        onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
-      />
+        totalPages={totalPages} onNextPage={function (): void {
+          throw new Error("Function not implemented.");
+        } } onPreviousPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
-      {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Nota" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Nota" onClose={closeAddModal}>
         <input
           type="text"
           value={newNote.reason}
@@ -119,7 +168,27 @@ const TableNotes: React.FC = () => {
         </div>
       </AdminModalAdd>
 
-      {/* 📌 Modal de Confirmación para Eliminar */}
+      {/* 📌 Modal para Editar */}
+      <AdminModalEdit
+        isOpen={isEditModalOpen}
+        title="Editar Nota"
+        onClose={closeEditModal}
+        onSave={handlePreConfirmEdit}
+        initialValue={pendingEditValue} // ✅ Solo se edita la descripción en el modal
+      />
+
+      {/* 📌 Modal de Confirmación antes de editar */}
+      <ConfirmationModal
+        isOpen={isConfirmEditModalOpen}
+        onClose={() => setIsConfirmEditModalOpen(false)}
+        onConfirm={handleConfirmEdit}
+        title="Confirmar Edición"
+        message="¿Seguro que deseas editar esta nota?"
+        confirmText="Confirmar"
+        isLoading={false}
+      />
+
+      {/* 📌 Modal de Confirmación para eliminar */}
       <ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
