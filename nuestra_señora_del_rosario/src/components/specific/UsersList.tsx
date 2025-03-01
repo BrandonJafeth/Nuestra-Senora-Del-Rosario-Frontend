@@ -13,7 +13,6 @@ const UserList: React.FC = () => {
   const { data, isLoading, isError, error } = useUsers(pageNumber, pageSize);
   const { isDarkMode } = useThemeDark();
   const navigate = useNavigate();
-  console.log('data =>', data);
 
   // Estado para manejar el modal de asignación de roles
   const [selectedUser, setSelectedUser] = useState<{ id_User: number; fullName: string } | null>(null);

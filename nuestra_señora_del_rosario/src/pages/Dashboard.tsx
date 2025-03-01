@@ -33,6 +33,7 @@ import HomeConfig from '../components/specific/HomeConfig';
 import SystemConfiguration from '../components/specific/SystemConfiguration';
 import TableTypeOfSalary from '../components/specific/TableTypeSalary';
 import TableUnitOfMeasure from '../components/specific/TableUnitOfMeasure';
+import TableRooms from '../components/specific/TableRooms';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -83,6 +84,7 @@ function Dashboard() {
               <Route path="Configuracion/sistema" element={<SystemConfiguration />} />
               <Route path="Configuracion/sistema/tipo-salario" element={<TableTypeOfSalary/>}/>
               <Route path="Configuracion/sistema/unidad-medida" element={<TableUnitOfMeasure/>}/>
+              <Route path="Configuracion/sistema/habitacion" element={<TableRooms/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
