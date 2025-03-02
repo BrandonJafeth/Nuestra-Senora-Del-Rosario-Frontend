@@ -41,7 +41,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(formData, {
+    mutation.mutate([formData], {
       onSuccess: () => {
         showToast('Movimiento de inventario agregado con éxito.', 'success');
         setTimeout(onClose, 2000);
