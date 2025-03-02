@@ -5,8 +5,8 @@ import Cookies from 'js-cookie';
 
 class UserManagmentService extends ApiService<User> {
 
-  public getAllUsersPages(pageNumber: number, pageSize: number) {
-    return this.getAll(`/users?page=${pageNumber}&size=${pageSize}`);
+  public getPaginatedUsers(pageNumber: number, pageSize: number) {
+    return this.getAll(`/users/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
 
   public getUserById(id: number) {
