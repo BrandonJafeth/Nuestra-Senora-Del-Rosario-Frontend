@@ -27,15 +27,7 @@ interface ProductConsumptionEvent extends Event {
 }
 
 const ProductCalendar: React.FC = () => {
-  const [events, setEvents] = useState<ProductConsumptionEvent[]>([
-    {
-      title: 'Consumo de Arroz',
-      start: new Date(),
-      end: new Date(),
-      product: 'Arroz',
-      quantity: 20,
-    },
-  ]);
+  const [events, setEvents] = useState<ProductConsumptionEvent[]>([]);
 
   const [isProductRequestModalOpen, setIsProductRequestModalOpen] = useState(false); // Estado para el modal de consumo de productos
   const [isDailyMovementsModalOpen, setIsDailyMovementsModalOpen] = useState(false); // Estado para el modal de movimientos diarios
@@ -62,7 +54,7 @@ const ProductCalendar: React.FC = () => {
   };
 
   const handleSaveMovement = async (movement: InventoryMovement) => {
-    createInventoryMovement.mutate(movement, {
+    createInventoryMovement.mutate([movement], {
       onSuccess: () => {
       showToast('Egreso registrado correctamente', 'success');
         setEvents([

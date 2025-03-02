@@ -22,10 +22,12 @@ export interface UserResponse {
     newPassword: string;
     confirmPassword: string;
     roles: string[];
+    totalPages? : number;
+    users ?: User[];
   }
   
   export interface UserResponsePages {
-    count: number; // Total de usuarios devueltos
+   totalPages: number; // Total de usuarios
     users: User[]; // Lista de usuarios
   }
   

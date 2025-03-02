@@ -1,26 +1,26 @@
 import { useQuery } from 'react-query';
+import userPaginatedService from '../services/UserPaginatedService';
 import { UserResponsePages } from '../types/UserType';
-import userManagmentService from '../services/UserManagmentService';
 
-export const useUsers = (pageNumber: number, pageSize: number) => {
+
+export const usePaginatedUsers = (pageNumber: number, pageSize: number) => {
   return useQuery<UserResponsePages, Error>(
-    ['users', pageNumber, pageSize],
+    ['paginatedUsers', pageNumber, pageSize], 
     async () => {
-      const response = await userManagmentService.getAllUsersPages(pageNumber, pageSize);
-      const data = response.data;
-      
-      // Si data es un arreglo, lo transformamos:
-      if (Array.isArray(data)) {
-        return {
-          count: data.length,
-          users: data,
-        };
+      const response = await userPaginatedService.getPaginatedUsers(pageNumber, pageSize);
+      if (!response.data.users || !response.data.totalPages) {
+        throw new Error("La respuesta del backend no tiene la estructura esperada");
       }
-      // Sino, asumimos que ya tiene la estructura { count, users }
-      return data;
+
+      return {
+        users: response.data.users,
+        totalPages: response.data.totalPages,
+      };
+      
     },
     {
-      keepPreviousData: true,
+      keepPreviousData: true, 
+      staleTime: 5 * 60 * 1000, 
     }
   );
 };
