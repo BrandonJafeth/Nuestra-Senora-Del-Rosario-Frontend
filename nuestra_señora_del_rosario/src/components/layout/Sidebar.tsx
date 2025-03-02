@@ -35,7 +35,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const settingsItems = [
     { name: 'Ajustes del Usuario', link: '/dashboard/Configuracion/usuario' },
     { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
-    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina-informativa', roles:['Admin'] },
+    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina', roles:['Admin'] },
   ];
 
   return (

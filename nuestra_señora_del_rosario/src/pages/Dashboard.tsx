@@ -41,6 +41,9 @@ import TablePathologies from '../components/specific/TablePathologies';
 import TableNotes from '../components/specific/TableNotes';
 import TableSpecialities from '../components/specific/TableSpecialities';
 import TableHealtcareCenter from '../components/specific/TableHealtcareCenter';
+import TableCategories from '../components/specific/TableCategories';
+import SystemPageSettings from '../components/specific/SystemPageSettings';
+import Gallery from '../components/specific/GalleryCard';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -89,6 +92,7 @@ function Dashboard() {
               <Route path="Configuracion" element={<HomeConfig />} />
               <Route path="Configuracion/usuario" element={<UserSettings/>} />
               <Route path="Configuracion/sistema" element={<SystemConfiguration />} />
+              <Route path="Configuracion/pagina" element={<SystemPageSettings/>}/>
               <Route path="Configuracion/sistema/tipo-salario" element={<TableTypeOfSalary/>}/>
               <Route path="Configuracion/sistema/unidad-medida" element={<TableUnitOfMeasure/>}/>
               <Route path="Configuracion/sistema/habitacion" element={<TableRooms/>}/>
@@ -99,6 +103,8 @@ function Dashboard() {
               <Route path="Configuracion/sistema/notas" element={<TableNotes />} />
               <Route path="Configuracion/sistema/especialidad" element={<TableSpecialities />} />
               <Route path="Configuracion/sistema/centro-atencion" element={<TableHealtcareCenter/>}/>
+              <Route path="Configuracion/sistema/categoria" element={<TableCategories/>}/>
+              <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
           </div>
