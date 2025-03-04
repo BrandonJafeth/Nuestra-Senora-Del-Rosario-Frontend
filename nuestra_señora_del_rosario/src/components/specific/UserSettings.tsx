@@ -59,45 +59,49 @@ const UserSettings: React.FC = () => {
         </div>
 
         {/* Secciones de Cambio de Correo y Contraseña */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Cambio de Nombre de Usuario y Correo */}
-          <div className={`shadow-md rounded-lg p-6 flex flex-col items-start transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-            <div className="flex items-center mb-4">
-              <Icon icon="mdi:account-outline" className="text-3xl mr-3 text-blue-500" />
-              <h3 className="text-xl font-semibold">Información del Usuario</h3>
-            </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {/* Cambio de Nombre de Usuario y Correo */}
+  <div className={`shadow-md rounded-lg p-6 flex flex-col h-full transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+    <div className="flex items-center mb-4">
+      <Icon icon="mdi:account-outline" className="text-3xl mr-3 text-blue-500" />
+      <h3 className="text-xl font-semibold">Información del Usuario</h3>
+    </div>
 
-            {/* Nombre de Usuario */}
-            <p className="mb-2"><span className="font-semibold">Nombre de usuario:</span> {user?.fullName || "N/A"}</p>
+    <p className="mb-2"><span className="font-semibold">Nombre de usuario:</span> {user?.fullName || "N/A"}</p>
+    <p className="mb-4"><span className="font-semibold">Correo:</span> {user?.email || "N/A"}</p>
 
-            {/* Correo Electrónico */}
-            <p className="mb-4"><span className="font-semibold">Correo:</span> {user?.email || "N/A"}</p>
+    {/* Contenedor flexible para alinear el botón abajo */}
+    <div className="mt-auto">
+      <button
+        onClick={handleOpenModal}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
+      >
+        Cambiar Información del Usuario
+      </button>
+    </div>
+  </div>
 
-            {/* Botón para abrir el modal */}
-            <button
-              onClick={handleOpenModal}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
-            >
-              Cambiar Información del Usuario
-            </button>
-          </div>
+  {/* Cambio de Contraseña */}
+  <div className={`shadow-md rounded-lg p-6 flex flex-col h-full transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+    <div className="flex items-center mb-4">
+      <Icon icon="mdi:lock-outline" className="text-3xl mr-3 text-blue-500" />
+      <h3 className="text-xl font-semibold">Contraseña del Usuario</h3>
+    </div>
 
-          {/* Cambio de Contraseña */}
-          <div className={`shadow-md rounded-lg p-6 flex flex-col items-start transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-            <div className="flex items-center mb-4">
-              <Icon icon="mdi:lock-outline" className="text-3xl mr-3 text-blue-500" />
-              <h3 className="text-xl font-semibold">Contraseña del Usuario</h3>
-            </div>
-            <p className="mb-4"><span className="font-semibold">Contraseña:</span> ********</p>
-            <button
-              onClick={() => setIsPasswordModalOpen(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
-            >
-              Cambiar Contraseña
-            </button>
-          </div>
-        </div>
-      </div>
+    <p className="mb-4"><span className="font-semibold">Contraseña:</span> ********</p>
+
+    {/* Contenedor flexible para alinear el botón abajo */}
+    <div className="mt-auto">
+      <button
+        onClick={() => setIsPasswordModalOpen(true)}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
+      >
+        Cambiar Contraseña
+      </button>
+    </div>
+  </div>
+</div>
+
       <ChangePasswordModal
       isOpen={isPasswordModalOpen}
       onClose={() => setIsPasswordModalOpen(false)}
@@ -105,7 +109,7 @@ const UserSettings: React.FC = () => {
       {/* Renderizar el modal solo si user no es undefined */}
       {user && <UserProfileModal isOpen={isModalOpen} onClose={handleCloseModal} user={user} />}
     </div>
-  );
+  </div>);
 };
 
 export default UserSettings;
