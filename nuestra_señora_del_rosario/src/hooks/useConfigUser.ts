@@ -1,26 +1,13 @@
-import { useState } from 'react';
-import userConfigService from '../services/UserConfigService';
-import { UpdateUserStatus } from '../types/UserConfigType';
-import { AxiosError } from 'axios';
+
+import { useMutation } from "react-query";
+import userConfigService from "../services/UserConfigService";
+import { UpdateUserStatus } from "../types/UserConfigType";
+import { AxiosError, AxiosResponse } from "axios";
 
 export const useUpdateUserStatus = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<AxiosError | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  const updateUserStatus = async (userId: number, status: UpdateUserStatus) => {
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
-    try {
-      await userConfigService.updateUserStatus(userId, status);
-      setIsSuccess(true);
-    } catch (err) {
-      setError(err as AxiosError);
-    } finally {
-      setIsLoading(false);
+  return useMutation<AxiosResponse<void>, AxiosError, { userId: number; status: UpdateUserStatus }>(
+    async ({ userId, status }: { userId: number; status: UpdateUserStatus }) => {
+      return await userConfigService.updateUserStatus(userId, status);
     }
-  };
-
-  return { updateUserStatus, isLoading, error, isSuccess };
+  );
 };

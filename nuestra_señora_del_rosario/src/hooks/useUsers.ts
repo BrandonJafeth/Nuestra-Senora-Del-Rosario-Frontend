@@ -5,7 +5,7 @@ import { UserResponsePages } from '../types/UserType';
 
 export const usePaginatedUsers = (pageNumber: number, pageSize: number) => {
   return useQuery<UserResponsePages, Error>(
-    ['paginatedUsers', pageNumber, pageSize], 
+    ['PaginatedUsers', pageNumber, pageSize], 
     async () => {
       const response = await userPaginatedService.getPaginatedUsers(pageNumber, pageSize);
       if (!response.data.users || !response.data.totalPages) {
