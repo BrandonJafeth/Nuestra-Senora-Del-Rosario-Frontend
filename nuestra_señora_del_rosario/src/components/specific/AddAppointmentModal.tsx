@@ -237,12 +237,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
 
           <div className="col-span-2 flex justify-end mt-6 space-x-4">
             <button
-              onClick={onClose}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-              Cancelar
-            </button>
-            <button
               onClick={handleSubmit}
               disabled={loading}
               className={`px-4 py-2 rounded-lg ${
@@ -250,6 +244,12 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               } text-white`}
             >
               {loading ? <LoadingSpinner /> : 'Guardar'}
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Cancelar
             </button>
           </div>
         </div>

@@ -102,6 +102,13 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
           </div>
           <div className="flex justify-center mt-4">
             <button
+              type="submit"
+              className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
+              tabIndex={0}
+            >
+              Confirmar Movimiento
+            </button>
+            <button
               type="button"
               onClick={() => {
                 onClose();
@@ -110,13 +117,6 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
               tabIndex={1}
             >
               Cancelar
-            </button>
-            <button
-              type="submit"
-              className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
-              tabIndex={0}
-            >
-              Confirmar Movimiento
             </button>
           </div>
         </form>

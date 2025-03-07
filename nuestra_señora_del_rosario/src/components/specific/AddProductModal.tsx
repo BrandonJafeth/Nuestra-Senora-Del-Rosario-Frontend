@@ -141,6 +141,14 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
 
           {/* Botones alineados horizontalmente */}
           <div className="flex justify-center mt-4">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
+                  tabIndex={0}
+                  >
+                    Agregar Producto
+                  </button>
             <button
               type="button"
               onClick={onRequestClose}
@@ -148,14 +156,6 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
             tabIndex={1}
             >
               Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
-            tabIndex={0}
-            >
-              Agregar Producto
             </button>
           </div>
         </form>

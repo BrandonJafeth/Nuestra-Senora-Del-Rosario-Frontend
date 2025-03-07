@@ -223,6 +223,13 @@ function VolunteerRequests() {
         onClose={() => setSelectedVolunteer(null)}
         actions={
           <>
+          {/* Botón de Aceptar SIEMPRE visible */}
+          <button
+            className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+            onClick={() => handleAccept(selectedVolunteer!)}
+          >
+            Aceptar
+          </button>
             {selectedVolunteer?.status_Name !== "Rechazado" && (
             <button
               className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
@@ -241,13 +248,6 @@ function VolunteerRequests() {
             </button>
           )}
           
-          {/* Botón de Aceptar SIEMPRE visible */}
-          <button
-            className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
-            onClick={() => handleAccept(selectedVolunteer!)}
-          >
-            Aceptar
-          </button>
           </>
         }
       >

@@ -29,6 +29,19 @@ function EmployeeForm() {
     }
   };
 
+  const handlecancel = () => {
+setDni('');
+setFirstName('');
+setLastName1('');
+setLastName2('');
+setPhoneNumber('');
+setAddress('');
+setEmail('');
+setEmergencyPhone('');
+setProfession(0);
+setTypeOfSalaryId(0);
+  }
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -193,19 +206,20 @@ function EmployeeForm() {
       {/* Botones de Acción */}
       <div className="flex justify-center space-x-4 mt-8">
         <button
-          type="button"
-          className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-          tabIndex={1}
-        >
-          Cancelar
-        </button>
-        <button
           onClick={handleFormSubmit} // Llama al manejador de envío
           type="submit"
           className="px-7 py-4 bg-blue-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
           tabIndex={0}
         >
           Agregar
+        </button>
+        <button
+          type="button"
+          onClick={handlecancel}
+          className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+          tabIndex={1}
+        >
+          Cancelar
         </button>
       </div>
 

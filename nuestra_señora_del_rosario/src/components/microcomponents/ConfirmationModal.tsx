@@ -47,14 +47,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         {/* 🔹 Botones más grandes y ajustados para eliminar el espacio extra */}
         <div className="flex justify-center gap-5 mt-4">
           <button
-            onClick={onClose}
-            className={`px-6 py-3 rounded-lg shadow-md text-lg transition duration-200 ${
-              isDarkMode ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"
-            } text-white`}
-          >
-            {cancelText}
-          </button>
-          <button
             onClick={onConfirm}
             disabled={isLoading}
             className={`px-6 py-3 rounded-lg shadow-md text-lg transition duration-200 ${
@@ -66,6 +58,14 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             } text-white`}
           >
             {isLoading ? <LoadingSpinner /> : confirmText}
+          </button>
+          <button
+            onClick={onClose}
+            className={`px-6 py-3 rounded-lg shadow-md text-lg transition duration-200 ${
+              isDarkMode ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"
+            } text-white`}
+          >
+            {cancelText}
           </button>
         </div>
       </div>

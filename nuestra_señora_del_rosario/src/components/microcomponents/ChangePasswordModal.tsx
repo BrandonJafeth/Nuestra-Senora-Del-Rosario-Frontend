@@ -151,13 +151,6 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
           {/* Botones */}
           <div className="flex justify-end space-x-4 mt-4">
             <button
-              type="button"
-              className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200"
-              onClick={handleClose}
-            >
-              Cancelar
-            </button>
-            <button
               type="submit"
               className={`px-4 py-2 text-white rounded-lg shadow-md transition duration-200 ${
                 isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
@@ -165,6 +158,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
               disabled={isLoading}
             >
               {isLoading ? <LoadingSpinner /> : "Guardar"}
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200"
+              onClick={handleClose}
+            >
+              Cancelar
             </button>
           </div>
         </form>

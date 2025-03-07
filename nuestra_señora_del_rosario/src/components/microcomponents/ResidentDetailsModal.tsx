@@ -169,14 +169,7 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white`}
-            tabIndex={1}
-          >
-            {isEditing ? 'Cancelar' : 'Cerrar'}
-          </button>
+        <div className="mt-6 flex space-x-3 justify-end">
           {!isEditing ? (
             <button
               onClick={onEdit}
@@ -195,6 +188,13 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
               {isUpdating ? 'Guardando...' : 'Guardar'}
             </button>
           )}
+          <button
+            onClick={onClose}
+            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'} text-white`}
+            tabIndex={1}
+          >
+            {isEditing ? 'Cancelar' : 'Cerrar'}
+          </button>
         </div>
       </div>
     </div>

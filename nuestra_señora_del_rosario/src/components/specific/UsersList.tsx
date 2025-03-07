@@ -47,6 +47,11 @@ const UserList: React.FC = () => {
     setUserStatusModal({ id_User, is_Active });
   };
 
+   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setPageSize(Number(event.target.value));
+      setPageNumber(1); 
+    };
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
       <div className="flex justify-between items-center mb-6">
@@ -61,26 +66,31 @@ const UserList: React.FC = () => {
           <button onClick={handleCreateUserFromEmployee} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all">
             Crear Usuario por Empleado
           </button>
+        <div className="flex items-center">
+    <label
+      htmlFor="pageSize"
+      className={`mr-2 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
+    >
+      Mostrar:
+    </label>
+    <select
+      id="pageSize"
+      value={pageSize}
+      onChange={handlePageSizeChange}
+      className={`p-2 border rounded-lg ${
+        isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'
+      }`}
+    >
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+    </select>
+  </div>
         </div>
       </div>
 
-      {/* 🔹 Selector para la cantidad de registros por página */}
-      <div className="mb-4 flex items-center space-x-3">
-        <label className="text-sm font-medium">Registros por página:</label>
-        <select
-          value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value)); // 🔹 Actualiza la cantidad de registros
-            setPageNumber(1); // 🔹 Reinicia a la primera página
-          }}
-          className="p-2 border rounded-md"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-        </select>
-      </div>
+     
 
       <ReusableTableRequests<User>
   data={Array.isArray(data?.users) ? data.users : []}  // Evita errores de `map()`
