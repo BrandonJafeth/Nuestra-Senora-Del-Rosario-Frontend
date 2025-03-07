@@ -139,11 +139,11 @@ const TablePathologies: React.FC = () => {
           placeholder="Ingrese el nombre de la unidad de medida"
         />
         <div className="flex justify-center space-x-4">
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onClick={closeAddModal}>
-            Cancelar
-          </button>
           <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={handleAddPathology}>
             Guardar
+          </button>
+          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onClick={closeAddModal}>
+            Cancelar
           </button>
         </div>
       </AdminModalAdd>

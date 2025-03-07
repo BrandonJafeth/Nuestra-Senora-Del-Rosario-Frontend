@@ -285,13 +285,6 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
             </div>
             <div className="flex justify-end mt-6 space-x-4">
               <button
-                onClick={() => setEditModalIsOpen(false)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg"
-                tabIndex={1}
-              >
-                Cancelar
-              </button>
-              <button
                 type="submit"
                 className={`px-4 py-2 rounded-lg ${
                   updating ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
@@ -299,6 +292,13 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 tabIndex={0}
               >
                 Guardar
+              </button>
+              <button
+                onClick={() => setEditModalIsOpen(false)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                tabIndex={1}
+              >
+                Cancelar
               </button>
             </div>
           </form>

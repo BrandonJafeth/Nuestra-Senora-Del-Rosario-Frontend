@@ -107,13 +107,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
         </div>
 
         {/* Botones */}
-        <div className="flex justify-end mt-4">
-          <button
-            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white mr-2"
-            onClick={onClose}
-          >
-            Cancelar
-          </button>
+        <div className="flex justify-end space-x-3 mt-4">
           <button
             type="submit"
             disabled={isLoading}
@@ -122,6 +116,12 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             } text-white`}
             >
             {isLoading ? <LoadingSpinner /> : 'Guardar'}
+          </button>
+          <button
+            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white mr-2"
+            onClick={onClose}
+          >
+            Cancelar
           </button>
         </div>
       </form>
