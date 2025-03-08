@@ -36,6 +36,8 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     { name: 'Ajustes del Usuario', link: '/dashboard/Configuracion/usuario' },
     { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
     { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina', roles:['Admin'] },
+    { name: 'Página Central', link: '/dashboard' },
+
   ];
 
   return (
@@ -51,14 +53,14 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
       <div className={`h-full flex flex-col justify-between px-3 pb-4 overflow-y-auto ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
         
         {/* Parte superior con los enlaces */}
-        <ul className="space-y-2 font-medium">
+        <ul className="space-y-2 font-medium text-lg">
           {menuItems
             .filter(item => !item.roles || item.roles.includes(rol)) 
             .map((item) => (
               <li key={item.name}>
                 <Link
                   to={item.link}
-                  className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
+                  className={`flex items-center p-2 rounded-lg transition-colors duration-200${
                     isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
                   }`}
                 >
@@ -303,7 +305,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
           aria-label="Sidebar Configuración"
         >
           <div className={`h-full flex flex-col justify-between px-3 pb-4 overflow-y-auto ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
-            <ul className="space-y-2 font-medium">
+            <ul className="space-y-2 font-medium text-lg">
               {settingsItems
                 .filter((item) => !item.roles || item.roles.includes(rol))
                 .map((item) => (
