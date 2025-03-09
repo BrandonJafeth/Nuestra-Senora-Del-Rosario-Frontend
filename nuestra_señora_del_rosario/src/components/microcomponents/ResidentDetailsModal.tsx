@@ -1,4 +1,9 @@
-import React from 'react';
+// src/components/microcomponents/ResidentDetailsModal.tsx
+
+import React, { useState } from 'react';
+import UploadDocumentModal from './UploadDocumentModal';
+import { useNavigate } from 'react-router-dom';
+import { useResidentDocuments } from '../../hooks/useResidentFile';
 
 interface ResidentDetailsModalProps {
   isOpen: boolean;
@@ -39,6 +44,16 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
   setStatus,
   isDarkMode,
 }) => {
+  // Estado para controlar el modal de subida de documentos
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const navigate = useNavigate();
+
+  const residentFullName = resident
+  ? `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}`
+  : '';
+
+  const { data: documents } = useResidentDocuments(residentFullName);
+
   if (!isOpen || !resident) return null;
 
   return (
@@ -47,8 +62,8 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
         <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
 
         <div className="grid grid-cols-2 gap-4">
-         {/* 📌 Habitación */}
-         <div>
+          {/* 📌 Habitación */}
+          <div>
             <label className="block font-bold">Habitación:</label>
             {isEditing ? (
               <select
@@ -67,7 +82,6 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
               <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white">{resident.roomNumber || 'Sin habitación'}</p>
             )}
           </div>
-
 
           {/* 📌 Grado de Dependencia */}
           <div>
@@ -89,8 +103,9 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
               <p className="mt-1 p-2 border rounded-md bg-gray-500 text-white">{resident.dependencyLevel || 'No especificado'}</p>
             )}
           </div>
- {/* 📌 Estado */}
- <div>
+
+          {/* 📌 Estado */}
+          <div>
             <label className="block font-bold">Estado:</label>
             <input
               type="text"
@@ -104,11 +119,12 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           </div>
 
           <div>
-            <label className='block font-bold'>Sexo:</label>
-            <input type="text" 
-            value={resident.sexo}
-            readOnly
-            className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
+            <label className="block font-bold">Sexo:</label>
+            <input
+              type="text"
+              value={resident.sexo}
+              readOnly
+              className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
             />
           </div>
 
@@ -123,28 +139,32 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           </div>
 
           <div>
-            <label className='block font-bold'>Edad:</label>
-            <input type="text" 
-            value={resident.edad}
-            readOnly
-            className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
+            <label className="block font-bold">Edad:</label>
+            <input
+              type="text"
+              value={resident.edad}
+              readOnly
+              className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label className='block font-bold'>Fecha de entrada</label>
-            <input type="text" 
-            value={formatDate(resident.entryDate)}
-            readOnly
-            className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
+            <label className="block font-bold">Fecha de entrada:</label>
+            <input
+              type="text"
+              value={formatDate(resident.entryDate)}
+              readOnly
+              className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
             />
           </div>
 
           <div>
             <label className="block font-bold">Cédula:</label>
-            <input type="text" 
-            value={resident.cedula_RD}
-            className='w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed'
+            <input
+              type="text"
+              value={resident.cedula_RD}
+              className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
+              readOnly
             />
           </div>
 
@@ -169,7 +189,24 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
           </div>
         </div>
 
+        {/* Botón para editar o guardar cambios */}
         <div className="mt-6 flex space-x-3 justify-end">
+          {documents && documents.length > 0 && (
+          <button
+            onClick={() => navigate(`/dashboard/residente/documentos/${encodeURIComponent(residentFullName)}`)}
+            className="px-6 py-2 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Ver Documentos
+          </button>
+        )}
+
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+          >
+            Subir Documentos
+          </button>
+
           {!isEditing ? (
             <button
               onClick={onEdit}
@@ -196,6 +233,15 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
             {isEditing ? 'Cancelar' : 'Cerrar'}
           </button>
         </div>
+
+        {/* Modal de subida de documentos */}
+        {showUploadModal && (
+          <UploadDocumentModal
+            isOpen={showUploadModal}
+            cedula={resident.cedula_RD}
+            onClose={() => setShowUploadModal(false)}
+          />
+        )}
       </div>
     </div>
   );
