@@ -6,7 +6,7 @@ class ApplicationStatusService {
   private api: AxiosInstance;
 
   constructor() {
-    this.api = axios.create({ baseURL: 'https://nuestra-senora-del-rosario-backend.onrender.com/api' });
+    this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
   }
 
   // Método para actualizar el estado de una solicitud de ingreso

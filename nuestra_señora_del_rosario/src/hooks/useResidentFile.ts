@@ -2,13 +2,14 @@ import { useQuery } from "react-query";
 import { ResidentDocument } from "../types/FileResidentType";
 import residentDocumentService from "../services/FileResidentService";
 
-export const useResidentDocuments = (residentName: string) => {
+export const useResidentDocuments = (residentCedula: string) => {
+  console.log(residentCedula);
   return useQuery<ResidentDocument[], Error>({
-    queryKey: ['residentDocuments', residentName],
+    queryKey: ['residentDocuments', residentCedula],
     queryFn: async () => {
-      const { data } = await residentDocumentService.getDocumentsByCedula(residentName);
+      const { data } = await residentDocumentService.getDocumentsByCedula(residentCedula);
       return data;
     },
-    enabled: !!residentName, 
+    enabled: !!residentCedula, 
   });
 };

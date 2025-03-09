@@ -28,7 +28,7 @@ class ResidentsService extends ApiService<Resident> {
 
   // Actualizar residente (patch de campos específicos) - Este método usa axios directamente
   public updateResidentStatus(id: number, data: ResidentPatchDto): Promise<AxiosResponse<void>> {
-    return axios.patch<void>(`https://nuestra-senora-del-rosario-backend.onrender.com/api/Residents/${id}`, data, {
+    return axios.patch<void>(`https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Residents/${id}`, data, {
       headers: {
         'Content-Type': 'application/json-patch+json', // Especificamos el tipo de contenido
       },
@@ -36,7 +36,7 @@ class ResidentsService extends ApiService<Resident> {
   }
 
   public createResidentFromApplicant(data: ResidentPostFromApplicantForm): Promise<AxiosResponse<Resident>> {
-    return axios.post<Resident>('hhttps://nuestra-senora-del-rosario-backend.onrender.com/api/Residents/fromApplicant', data, {
+    return axios.post<Resident>('https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Residents/fromApplicant', data, {
       headers: {
         'Content-Type': 'application/json',
       },

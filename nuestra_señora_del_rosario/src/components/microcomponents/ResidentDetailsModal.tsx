@@ -48,11 +48,9 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
   const [showUploadModal, setShowUploadModal] = useState(false);
   const navigate = useNavigate();
 
-  const residentFullName = resident
-  ? `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}`
-  : '';
+  const residentCedula = resident ? resident.cedula_RD : "";
 
-  const { data: documents } = useResidentDocuments(residentFullName);
+const { data: documents } = useResidentDocuments(residentCedula);
 
   if (!isOpen || !resident) return null;
 
@@ -193,8 +191,9 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
         <div className="mt-6 flex space-x-3 justify-end">
           {documents && documents.length > 0 && (
           <button
-            onClick={() => navigate(`/dashboard/residente/documentos/${encodeURIComponent(residentFullName)}`)}
-            className="px-6 py-2 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 text-white"
+          onClick={() => navigate(`/dashboard/residente/documentos/${encodeURIComponent(residentCedula)}`, {
+            state: { residentName: `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}` }
+          })}className="px-6 py-2 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 text-white"
           >
             Ver Documentos
           </button>

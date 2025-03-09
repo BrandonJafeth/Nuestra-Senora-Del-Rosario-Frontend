@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt, FaArrowLeft } from 'react-icons/fa';
 import { useResidentDocuments } from '../../hooks/useResidentFile';
 import { useThemeDark } from '../../hooks/useThemeDark';
@@ -17,6 +17,8 @@ const getFileIcon = (fileName: string) => {
 };
 
 const ResidentDocumentsPage: React.FC = () => {
+  const location = useLocation();
+  const residentsName = location.state?.residentName || "Residente Desconocido";
   const { residentName } = useParams<{ residentName: string }>();
   const decodedResidentName = decodeURIComponent(residentName || '');
   const { data: documents, isLoading, isError } = useResidentDocuments(decodedResidentName);
@@ -70,7 +72,7 @@ const ResidentDocumentsPage: React.FC = () => {
           <span className="text-lg font-semibold">Regresar</span>
         </button>
         <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Documentos de {decodedResidentName}
+          Documentos de {residentsName}
         </h2>
       </div>
       <div className="overflow-x-auto rounded-lg">

@@ -43,7 +43,7 @@ import Toast from '../common/Toast';
   
     // Enlace para descargar el comprobante en formato PDF
     const downloadLink = generatedReceiptId
-      ? `https://nuestra-senora-del-rosario-backend.onrender.com/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
+      ? `https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
       : null;
   
     // Manejar cambios en el formulario
