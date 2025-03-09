@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRenameFile } from '../../hooks/useRenameFile';
 import Toast from '../common/Toast';
+import { useToast } from '../../hooks/useToast';
 
 interface RenameDocumentModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface RenameDocumentModalProps {
 const RenameDocumentModal: React.FC<RenameDocumentModalProps> = ({ isOpen, document, onClose }) => {
   const [newName, setNewName] = React.useState(document?.name || '');
   const { renameFileMutation, toast } = useRenameFile();
+  const {message, showToast, type} = useToast();
 
   useEffect(() => {
     if (document) setNewName(document.name);
@@ -18,7 +20,8 @@ const RenameDocumentModal: React.FC<RenameDocumentModalProps> = ({ isOpen, docum
 
   const handleRename = () => {
     renameFileMutation.mutate({ fileId: document.id, newName });
-    onClose();
+    showToast("Se ha renombrado el archivo exitosamente", "success")
+    setTimeout(() => onClose(), 2000);
   };
 
   if (!isOpen || !document) return null;
@@ -52,6 +55,7 @@ const RenameDocumentModal: React.FC<RenameDocumentModalProps> = ({ isOpen, docum
           </div>
         </div>
       </div>
+      <Toast message={message} type={type} />
     </>
   );
 };

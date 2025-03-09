@@ -15,6 +15,12 @@ class FileUploadService extends ApiService<FileUploadResponse> {
     // Se manda como parámetro en query string, no en body
     return this.putWithoutId(`/FileUpload/rename/${fileId}?newName=${encodeURIComponent(newName)}`, {});
   }
+
+  // FileUploadService.ts
+public deleteFile(fileId: string) {
+  return this.delete(`/FileUpload/delete`, fileId);
+}
+
 }
 
 const fileUploadService = new FileUploadService();

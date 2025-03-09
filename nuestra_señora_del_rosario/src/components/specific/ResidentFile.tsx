@@ -4,6 +4,10 @@ import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt, FaArrowLeft } from 'reac
 import { useResidentDocuments } from '../../hooks/useResidentFile';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import RenameDocumentModal from '../microcomponents/RenameDocumentModal';
+import { useDeleteFile } from '../../hooks/useFileDelete';
+import ConfirmationModal from '../microcomponents/ConfirmationModal';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 const getFileIcon = (fileName: string) => {
   if (fileName.endsWith('.pdf')) return <FaFilePdf className="text-red-500 text-xl mr-2" />;
@@ -18,18 +22,38 @@ const ResidentDocumentsPage: React.FC = () => {
   const { data: documents, isLoading, isError } = useResidentDocuments(decodedResidentName);
   const { isDarkMode } = useThemeDark();
   const navigateBack = () => window.history.back();
-
+  const {message, showToast, type} = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<{id: string, name: string} | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { mutate: deleteFile } = useDeleteFile();
 
   const openModal = (doc: { id: string; name: string }) => {
     setSelectedDocument(doc);
     setIsModalOpen(true);
   };
 
+  const openDeleteModal = (doc: { id: string; name: string }) => {
+    setSelectedDocument(doc);
+    setDeleteModalOpen(true);
+  };
+
   const closeModal = () => {
     setSelectedDocument(null);
     setIsModalOpen(false);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedDocument(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (selectedDocument) {
+      deleteFile(selectedDocument.id);
+      showToast("Se ha eliminado el archivo exitosamente", "success")
+      setTimeout(() => setDeleteModalOpen(false), 2000);
+    } 
   };
 
   if (isLoading) return <div>Cargando documentos...</div>;
@@ -74,13 +98,19 @@ const ResidentDocumentsPage: React.FC = () => {
                 <td className="px-6 py-3">
                   <a href={doc.webContentLink} download className="text-blue-500 hover:underline">Descargar</a>
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-6 py-3 space-x-2">
                   <button
                     onClick={() => openModal(doc)}
                     className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 transition duration-200"
                   >
                     Editar
                   </button>
+                  <button
+                  onClick={() => openDeleteModal(doc)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200"
+                >
+                  Eliminar
+                </button>
                 </td>
               </tr>
             ))}
@@ -95,6 +125,19 @@ const ResidentDocumentsPage: React.FC = () => {
           onClose={closeModal}
         />
       )}
+
+{selectedDocument && (
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onConfirm={handleDelete}
+          title="Confirmar eliminación"
+          message={`¿Está seguro que desea eliminar el documento "${selectedDocument.name}"?`}
+          confirmText="Eliminar"
+          isLoading={false}
+        />
+      )}
+      <Toast message={message} type={type}/>
     </div>
   );
 };
