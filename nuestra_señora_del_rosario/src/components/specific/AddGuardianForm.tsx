@@ -35,7 +35,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   useEffect(() => {
     const fetchGuardians = async () => {
       try {
-        const response = await fetch('https://nuestra-senora-del-rosario-backend.onrender.com/api/Guardian');
+        const response = await fetch('https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Guardian');
         const data = await response.json();
         setGuardians(data);
       } catch (error) {
