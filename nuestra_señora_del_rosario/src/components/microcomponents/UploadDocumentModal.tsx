@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useToast } from '../../hooks/useToast';
 import { useFileUpload } from '../../hooks/useFileUpload';
+import LoadingSpinner from './LoadingSpinner';
 
 
 interface UploadDocumentModalProps {
@@ -44,18 +45,18 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
           <input type="file" onChange={handleFileChange} className="mb-4" />
           <div className="flex justify-end space-x-4">
             <button
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              {isLoading ? <LoadingSpinner/> : 'Subir'}
+            </button>
+            <button
               type="button"
               onClick={onClose}
               className="px-4 py-2 bg-red-500 text-white rounded"
             >
               Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              {isLoading ? 'Subiendo...' : 'Subir'}
             </button>
           </div>
         </form>

@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import UploadDocumentModal from './UploadDocumentModal';
+import { useNavigate } from 'react-router-dom';
+import { useResidentDocuments } from '../../hooks/useResidentFile';
 
 interface ResidentDetailsModalProps {
   isOpen: boolean;
@@ -44,6 +46,13 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
 }) => {
   // Estado para controlar el modal de subida de documentos
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const navigate = useNavigate();
+
+  const residentFullName = resident
+  ? `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}`
+  : '';
+
+  const { data: documents } = useResidentDocuments(residentFullName);
 
   if (!isOpen || !resident) return null;
 
@@ -182,6 +191,22 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
 
         {/* Botón para editar o guardar cambios */}
         <div className="mt-6 flex space-x-3 justify-end">
+          {documents && documents.length > 0 && (
+          <button
+            onClick={() => navigate(`/dashboard/residente/documentos/${encodeURIComponent(residentFullName)}`)}
+            className="px-6 py-2 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Ver Documentos
+          </button>
+        )}
+
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+          >
+            Subir Documentos
+          </button>
+
           {!isEditing ? (
             <button
               onClick={onEdit}
@@ -206,16 +231,6 @@ const ResidentDetailsModal: React.FC<ResidentDetailsModalProps> = ({
             tabIndex={1}
           >
             {isEditing ? 'Cancelar' : 'Cerrar'}
-          </button>
-        </div>
-
-        {/* Botón para Subir Documentos */}
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={() => setShowUploadModal(true)}
-            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-purple-500 hover:bg-purple-600' : 'bg-purple-600 hover:bg-purple-700'} text-white`}
-          >
-            Subir Documentos
           </button>
         </div>
 
