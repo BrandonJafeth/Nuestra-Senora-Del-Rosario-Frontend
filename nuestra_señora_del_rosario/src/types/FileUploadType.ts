@@ -13,3 +13,8 @@ export interface FileUploadResponse {
     file: File;
   }
   
+  export interface FileType {
+    fileId: string;
+    newName: string;
+  }
+  

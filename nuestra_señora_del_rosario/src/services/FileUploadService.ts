@@ -5,10 +5,15 @@ import { FileUploadResponse } from '../types/FileUploadType';
 class FileUploadService extends ApiService<FileUploadResponse> {
   public uploadFile(cedula: string, file: File) {
     const formData = new FormData();
-    formData.append('file', file); // <-- IMPORTANTE: "file" debe coincidir con el servidor
+    formData.append('file', file);
 
-    // Llamada directa a axios sin headers adicionales (axios los configura automáticamente)
     return this.create(`/FileUpload/upload/${cedula}`, formData as unknown as FileUploadResponse);
+  }
+
+  // ✅ Método corregido y bien definido
+  public renameFile(fileId: string, newName: string) {
+    // Se manda como parámetro en query string, no en body
+    return this.putWithoutId(`/FileUpload/rename/${fileId}?newName=${encodeURIComponent(newName)}`, {});
   }
 }
 

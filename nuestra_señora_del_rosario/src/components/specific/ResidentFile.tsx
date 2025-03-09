@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt, FaArrowLeft } from 'react-icons/fa';
 import { useResidentDocuments } from '../../hooks/useResidentFile';
 import { useThemeDark } from '../../hooks/useThemeDark';
+import RenameDocumentModal from '../microcomponents/RenameDocumentModal';
 
 const getFileIcon = (fileName: string) => {
   if (fileName.endsWith('.pdf')) return <FaFilePdf className="text-red-500 text-xl mr-2" />;
@@ -18,12 +19,25 @@ const ResidentDocumentsPage: React.FC = () => {
   const { isDarkMode } = useThemeDark();
   const navigateBack = () => window.history.back();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<{id: string, name: string} | null>(null);
+
+  const openModal = (doc: { id: string; name: string }) => {
+    setSelectedDocument(doc);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedDocument(null);
+    setIsModalOpen(false);
+  };
+
   if (isLoading) return <div>Cargando documentos...</div>;
   if (isError) return <div>Error al cargar documentos.</div>;
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-              <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6">
         <button
           onClick={navigateBack}
           className="flex justify-start items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
@@ -31,8 +45,8 @@ const ResidentDocumentsPage: React.FC = () => {
           <FaArrowLeft size={20} />
           <span className="text-lg font-semibold">Regresar</span>
         </button>
-        <h2 className={`flex justify-end mx-8 my-3 text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-        Documentos de {decodedResidentName}
+        <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Documentos de {decodedResidentName}
         </h2>
       </div>
       <div className="overflow-x-auto rounded-lg">
@@ -43,6 +57,7 @@ const ResidentDocumentsPage: React.FC = () => {
               <th className="px-6 py-3">Tamaño</th>
               <th className="px-6 py-3">Ver</th>
               <th className="px-6 py-3">Descargar</th>
+              <th className="px-6 py-3">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white">
@@ -54,30 +69,32 @@ const ResidentDocumentsPage: React.FC = () => {
                 </td>
                 <td className="px-6 py-3">{(doc.size / (1024 * 1024)).toFixed(2)} MB</td>
                 <td className="px-6 py-3">
-                  <a
-                    href={doc.webViewLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    Ver
-                  </a>
+                  <a href={doc.webViewLink} target="_blank" className="text-blue-500 hover:underline">Ver</a>
                 </td>
                 <td className="px-6 py-3">
-                  <a
-                    href={doc.webContentLink}
-                    target="_blank"
-                    download
-                    className="text-blue-500 hover:underline"
+                  <a href={doc.webContentLink} download className="text-blue-500 hover:underline">Descargar</a>
+                </td>
+                <td className="px-6 py-3">
+                  <button
+                    onClick={() => openModal(doc)}
+                    className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 transition duration-200"
                   >
-                    Descargar
-                  </a>
+                    Editar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {selectedDocument && (
+        <RenameDocumentModal
+          isOpen={isModalOpen}
+          document={selectedDocument}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 };
