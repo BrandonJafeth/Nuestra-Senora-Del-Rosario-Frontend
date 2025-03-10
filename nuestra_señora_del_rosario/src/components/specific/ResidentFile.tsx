@@ -28,7 +28,7 @@ const ResidentDocumentsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<{id: string, name: string} | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { mutate: deleteFile } = useDeleteFile();
+  const { mutate: deleteFile } = useDeleteFile(decodedResidentName);
 
   const openModal = (doc: { id: string; name: string }) => {
     setSelectedDocument(doc);
@@ -56,6 +56,7 @@ const ResidentDocumentsPage: React.FC = () => {
       showToast("Se ha eliminado el archivo exitosamente", "success")
       setTimeout(() => setDeleteModalOpen(false), 2000);
     } 
+      
   };
 
   if (isLoading) return <div>Cargando documentos...</div>;
