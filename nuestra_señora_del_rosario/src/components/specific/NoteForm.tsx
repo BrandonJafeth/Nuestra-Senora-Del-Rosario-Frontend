@@ -49,20 +49,22 @@ const {showToast, message, type} = useToast();
         </div>
 
         {/* Fecha */}
-        <div>
-          <label htmlFor="noteDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Fecha:
-          </label>
-          <input
-            type="date"
-            id="noteDate"
-            {...register('noteDate', { required: 'La fecha es obligatoria.' })}
-            className={`mt-1 w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-              errors.noteDate ? 'border-red-500' : ''
-            }`}
-          />
-          {errors.noteDate && <p className="text-red-500 text-sm mt-1">{errors.noteDate.message}</p>}
-        </div>
+<div>
+  <label htmlFor="noteDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Fecha:
+  </label>
+  <input
+    type="date"
+    id="noteDate"
+    {...register('noteDate', { required: 'La fecha es obligatoria.' })}
+    min={new Date().toISOString().split('T')[0]} // Bloquea fechas anteriores a hoy
+    className={`mt-1 w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+      errors.noteDate ? 'border-red-500' : ''
+    }`}
+  />
+  {errors.noteDate && <p className="text-red-500 text-sm mt-1">{errors.noteDate.message}</p>}
+</div>
+
 
         {/* Descripción */}
         <div>
