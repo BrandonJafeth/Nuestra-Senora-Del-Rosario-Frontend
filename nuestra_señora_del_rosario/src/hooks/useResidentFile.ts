@@ -3,7 +3,6 @@ import { ResidentDocument } from "../types/FileResidentType";
 import residentDocumentService from "../services/FileResidentService";
 
 export const useResidentDocuments = (residentCedula: string) => {
-  console.log(residentCedula);
   return useQuery<ResidentDocument[], Error>({
     queryKey: ['residentDocuments', residentCedula],
     queryFn: async () => {
