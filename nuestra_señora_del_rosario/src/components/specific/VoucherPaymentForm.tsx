@@ -14,6 +14,8 @@ import Toast from '../common/Toast';
     const { state } = location; 
     const id_EmployeeFromState = state?.id_Employee  || 0; 
     const employeeDniFromState = state?.employeeDni  || 0; 
+    const employeeNameFromState = state?.name  || 'Desconocido'; 
+    const employeelastnameFromState = state?.lastName || 'Desconocido';
     const { isDarkMode } = useThemeDark(); 
   
     const [formData, setFormData] = useState<PaymentReceiptType>({
@@ -99,7 +101,7 @@ import Toast from '../common/Toast';
         }`}
       >
         <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Generar Comprobante de Pago
+          Generar Comprobante de Pago  - <span>{employeeNameFromState} {employeelastnameFromState}</span>
         </h2>
   
         {/* Formulario */}

@@ -15,7 +15,7 @@ const EmployeeList: React.FC = () => {
   if (error) return <p>Error al cargar los empleados: {`${error.message}`}</p>;
 
   const handleGenerateReceipt = (employee: any) => {
-    navigate(`/dashboard/comprobante-pago`, { state: { id_Employee: employee.id_Employee } });
+    navigate(`/dashboard/comprobante-pago`, { state: { id_Employee: employee.id_Employee, name: employee.first_Name, lastName : employee.last_Name1 } });
   };
 
   // Funciones para manejar la paginación

@@ -3,13 +3,17 @@ import { useNotes } from "../../hooks/useNotes"; // Hook para obtener las notas
 import { useDeleteNote } from "../../hooks/useDeleteNote"; // Hook para eliminar notas
 import LoadingSpinner from "./LoadingSpinner"; // Spinner opcional
 import ConfirmationModal from "./ConfirmationModal"; // Modal de confirmación
+import { useManagmentNote } from "../../hooks/useManagmentNote";
+import { useToast } from "../../hooks/useToast";
+import Toast from "../common/Toast";
 
 const NotesComponent: React.FC = () => {
   const { data: notesData, isLoading, error } = useNotes();
-  const { mutate: deleteNote, isLoading: isDeleting } = useDeleteNote();
+  const {deleteEntity} = useManagmentNote();
+  const {isLoading: isDeleting} = useDeleteNote();
   const [notes, setNotes] = useState<any[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null); // Estado para la nota a eliminar
-
+  const {showToast, message, type} = useToast()
   // Guardar las notas en el estado cuando estén disponibles
   useEffect(() => {
     if (notesData) {
@@ -23,9 +27,13 @@ const NotesComponent: React.FC = () => {
   const handleDelete = () => {
     if (!confirmDelete) return;
 
-    deleteNote(confirmDelete, {
+    deleteEntity.mutate(confirmDelete, {
       onSuccess: () => {
         setConfirmDelete(null);
+        setTimeout(() => {  
+         showToast("Se ha eliminado la nota exitosamente", "success")
+        }
+        , 2000);
       },
     });
   };
@@ -49,7 +57,7 @@ const NotesComponent: React.FC = () => {
                 <strong className="text-blue-800 dark:text-blue-300 text-lg">{note.reason}</strong>
                 <p className="text-gray-700 dark:text-gray-400 mt-1">{note.description}</p>
                 <span className="text-sm text-gray-500 dark:text-gray-300">
-                  <p>Fecha: {new Date(note.createdAt).toLocaleDateString("es-CR")} </p>
+                  <p>Fecha: {new Date(note.noteDate).toLocaleDateString("es-CR")} </p>
                 </span>
               </div>
               <button
@@ -74,6 +82,8 @@ const NotesComponent: React.FC = () => {
         confirmText="Eliminar"
         isLoading={isDeleting}
       />
+
+      <Toast message={message} type={type} />
     </div>
   );
 };
