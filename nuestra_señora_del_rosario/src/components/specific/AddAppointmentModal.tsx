@@ -139,17 +139,21 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Fecha:
-            </label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              className="w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Fecha:
+  </label>
+  <input
+    type="date"
+    name="date"
+    value={formData.date}
+    min={new Date().toISOString().split('T')[0]} // Establecer la fecha mínima como hoy
+    onChange={handleInputChange}
+    className={`w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+      formData.date && new Date(formData.date) < new Date() ? 'bg-red-500 text-white' : ''
+    }`}
+  />
+</div>
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
