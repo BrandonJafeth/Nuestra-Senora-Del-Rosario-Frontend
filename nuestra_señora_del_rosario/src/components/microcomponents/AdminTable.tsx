@@ -3,6 +3,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate } from "react-router-dom";
+import { useThemeDark } from "../../hooks/useThemeDark"; // Importamos el hook de modo oscuro
 
 interface Column {
   key: string;
@@ -18,7 +19,6 @@ interface AdminTableProps {
   onDelete: (id: number) => void;
   isLoading: boolean;
   skeletonRows?: number;
-  isDarkMode: boolean;
   pageNumber: number;
   totalPages?: number;
   onNextPage: () => void;
@@ -34,28 +34,36 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onDelete,
   isLoading,
   skeletonRows = 5,
-  isDarkMode
+  pageNumber,
+  totalPages,
+  onNextPage,
+  onPreviousPage,
 }) => {
-  
-    const navigate = useNavigate()
+  const { isDarkMode } = useThemeDark(); // Usamos el hook para determinar el modo
+  const navigate = useNavigate();
+
   const handleGoBack = () => navigate(-1);
+
   return (
     <div className={`p-6 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} shadow-md rounded-lg`}>
-      {/* 📌 Título y Botón en la Misma Fila */}
+      {/* Título y botones */}
       <div className="flex justify-between items-center mb-4">
-         <button
-                  onClick={handleGoBack}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center space-x-2"
-                >
-                  <FaArrowLeft /> <span>Regresar</span>
-                </button>
+        <button
+          onClick={handleGoBack}
+          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center space-x-2"
+        >
+          <FaArrowLeft /> <span>Regresar</span>
+        </button>
         <h3 className="text-2xl font-bold">{title}</h3>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={onAdd}>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          onClick={onAdd}
+        >
           Agregar Nuevo
         </button>
       </div>
 
-      {/* 📌 Tabla */}
+      {/* Tabla */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead className="min-w-full table-auto">
@@ -98,11 +106,11 @@ const AdminTable: React.FC<AdminTableProps> = ({
                       Editar
                     </button>
                     <button
-  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-  onClick={() => onDelete(item)}
->
-  Eliminar
-</button>
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      onClick={() => onDelete(item)}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))
@@ -115,6 +123,25 @@ const AdminTable: React.FC<AdminTableProps> = ({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Paginación */}
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={onPreviousPage}
+          className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-300"
+        >
+          Anterior
+        </button>
+        <span>
+          Página {pageNumber} {totalPages ? `de ${totalPages}` : ""}
+        </span>
+        <button
+          onClick={onNextPage}
+          className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-300"
+        >
+          Siguiente
+        </button>
       </div>
     </div>
   );
