@@ -23,6 +23,11 @@ public getAllProducts(pageNumber: number, pageSize: number) {
   public updateProduct(id: number, productPatch: Partial<Product>) {
     return this.patch('/Product', id, productPatch);
   }
+
+  public getProductsByCategory(categoryId: number, pageNumber: number, pageSize: number) {
+    const url = `/Product/bycategory?categoryId=${categoryId}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    return this.getAllPages(url, pageNumber, pageSize);
+  }
 }
 
 const productService = new ProductService();

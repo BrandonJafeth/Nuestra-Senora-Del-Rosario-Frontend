@@ -1,6 +1,5 @@
 // FILE: components/InventoryTable.tsx
 import React, { useState } from 'react';
-import { useProducts } from '../../hooks/useProducts';
 import Skeleton from 'react-loading-skeleton';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -10,22 +9,35 @@ import ProductAddModal from './AddProductModal';
 import ProductEditModal from './ModalEditProduct';
 import { Product } from '../../types/ProductType';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useProductsByCategory } from '../../hooks/useProductByCategory';
+import CategoryDropdown from '../microcomponents/CategoryDropdown';
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
+  
 
+  // Paginación
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 5;
+  // Por ejemplo, filtramos por la categoría 1
+  const [categoryId, setCategoryId] = useState<number>(0);
 
-  const { data, isLoading: productsLoading, isError: productsError } = useProducts(pageNumber, pageSize);
+  // Usamos el hook que ya devuelve el payload desenvuelto
+  const {
+    data,
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useProductsByCategory(categoryId, pageNumber, pageSize);
 
+  // data tiene la forma { item1: Product[], item2: number }
+  const products = data?.item1 || [];
+  const totalPages = data?.item2 || 1;
+
+  // Manejo de modales
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  const products = data?.products || [];
-  const totalPages = data?.totalPages || 1;
 
   const openModal = (product: Product) => {
     setSelectedProduct(product);
@@ -55,12 +67,19 @@ const InventoryTable: React.FC = () => {
     setSelectedProduct(null);
   };
 
+  // Paginación
   const handleNextPage = () => {
     if (pageNumber < totalPages) setPageNumber(pageNumber + 1);
   };
 
   const handlePreviousPage = () => {
     if (pageNumber > 1) setPageNumber(pageNumber - 1);
+  };
+
+  const handleCategorySelect = (selectedId: number) => {
+    setCategoryId(selectedId);
+    // Opcional: Reiniciar la paginación al cambiar la categoría
+    setPageNumber(1);
   };
 
   if (productsLoading) {
@@ -79,11 +98,21 @@ const InventoryTable: React.FC = () => {
           <tbody>
             {[...Array(5)].map((_, index) => (
               <tr key={index} className="text-center">
-                <td className="py-2 px-4 border dark:border-gray-500"><Skeleton width={100} /></td>
-                <td className="py-2 px-4 border dark:border-gray-500"><Skeleton width={100} /></td>
-                <td className="py-2 px-4 border dark:border-gray-500"><Skeleton width={60} /></td>
-                <td className="py-2 px-4 border dark:border-gray-500"><Skeleton width={80} /></td>
-                <td className="py-2 px-4 border dark:border-gray-500"><Skeleton width={80} /></td>
+                <td className="py-2 px-4 border dark:border-gray-500">
+                  <Skeleton width={100} />
+                </td>
+                <td className="py-2 px-4 border dark:border-gray-500">
+                  <Skeleton width={100} />
+                </td>
+                <td className="py-2 px-4 border dark:border-gray-500">
+                  <Skeleton width={60} />
+                </td>
+                <td className="py-2 px-4 border dark:border-gray-500">
+                  <Skeleton width={80} />
+                </td>
+                <td className="py-2 px-4 border dark:border-gray-500">
+                  <Skeleton width={80} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -92,11 +121,19 @@ const InventoryTable: React.FC = () => {
     );
   }
 
-  if (productsError) return <p className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Error al cargar los productos.</p>;
+  if (productsError)
+    return (
+      <p className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+        Error al cargar los productos.
+      </p>
+    );
 
   return (
-    <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
-      
+    <div
+      className={`w-full max-w-[1169px] mx-auto p-6 ${
+        isDarkMode ? 'bg-[#0D313F]' : 'bg-white'
+      } rounded-[20px] shadow-2xl relative`}
+    >
       <div className="absolute top-4 left-4">
         <button
           onClick={openProductModal}
@@ -105,19 +142,32 @@ const InventoryTable: React.FC = () => {
           Agregar Producto
         </button>
       </div>
+      
 
-      <div className="absolute top-4 right-4">
-        <InventoryReportViewer month={new Date().getMonth() + 1} year={new Date().getFullYear()} />
+      <div className="absolute flex gap-3 top-4 right-4">
+      <CategoryDropdown onCategorySelect={handleCategorySelect} />
+        <InventoryReportViewer
+          month={new Date().getMonth() + 1}
+          year={new Date().getFullYear()}
+        />
       </div>
 
-      <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+      <h2
+        className={`text-3xl font-bold mb-8 text-center font-poppins ${
+          isDarkMode ? 'text-white' : 'text-gray-800'
+        }`}
+      >
         Inventario
       </h2>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead>
-            <tr className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} text-center`}>
+            <tr
+              className={`${
+                isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'
+              } text-center`}
+            >
               <th className="p-4 border dark:border-gray-500">Producto</th>
               <th className="p-4 border dark:border-gray-500">Unidad de medida</th>
               <th className="p-4 border dark:border-gray-500">Cantidad</th>
@@ -126,15 +176,27 @@ const InventoryTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {products.map((item: any) => (
+            {products.map((item: Product) => (
               <tr
                 key={item.productID}
-                className={`${isDarkMode ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-200'}`}
+                className={`${
+                  isDarkMode
+                    ? 'bg-gray-600 text-white hover:bg-gray-700'
+                    : 'bg-white text-gray-800 hover:bg-gray-200'
+                }`}
               >
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{item.name}</td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{item.unitOfMeasure || 'N/A'}</td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{item.totalQuantity}</td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{item.categoryName || 'N/A'}</td>
+                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                  {item.name}
+                </td>
+                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                  {item.unitOfMeasure || 'N/A'}
+                </td>
+                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                  {item.totalQuantity}
+                </td>
+                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                  {item.categoryName || 'N/A'}
+                </td>
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                   <button
                     onClick={() => openModal(item)}
@@ -156,26 +218,26 @@ const InventoryTable: React.FC = () => {
       </div>
 
       <div className="flex justify-center items-center mt-4 space-x-4">
-  <button
-    onClick={handlePreviousPage}
-    disabled={pageNumber === 1}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowLeft />
-  </button>
+        <button
+          onClick={handlePreviousPage}
+          disabled={pageNumber === 1}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowLeft />
+        </button>
 
-  <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-    Página {pageNumber} de {totalPages}
-  </span>
+        <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Página {pageNumber} de {totalPages}
+        </span>
 
-  <button
-    onClick={handleNextPage}
-    disabled={pageNumber === totalPages}
-    className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
-  >
-    <FaArrowRight />
-  </button>
-</div>
+        <button
+          onClick={handleNextPage}
+          disabled={pageNumber === totalPages}
+          className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:bg-gray-300"
+        >
+          <FaArrowRight />
+        </button>
+      </div>
 
       {selectedProduct && (
         <InventoryMovementForm

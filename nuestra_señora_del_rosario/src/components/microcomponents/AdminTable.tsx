@@ -34,10 +34,6 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onDelete,
   isLoading,
   skeletonRows = 5,
-  pageNumber,
-  totalPages,
-  onNextPage,
-  onPreviousPage,
 }) => {
   const { isDarkMode } = useThemeDark(); // Usamos el hook para determinar el modo
   const navigate = useNavigate();
@@ -125,24 +121,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
         </table>
       </div>
 
-      {/* Paginación */}
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={onPreviousPage}
-          className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-300"
-        >
-          Anterior
-        </button>
-        <span>
-          Página {pageNumber} {totalPages ? `de ${totalPages}` : ""}
-        </span>
-        <button
-          onClick={onNextPage}
-          className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-300"
-        >
-          Siguiente
-        </button>
-      </div>
+      
     </div>
   );
 };
