@@ -116,7 +116,7 @@ const TableProfessions: React.FC = () => {
         onAdd={openAddModal}
         onEdit={(item) => openEditModal(item)}
         onDelete={(item) => openConfirmDeleteModal(item)}
-        isDarkMode={false} pageNumber={0} onNextPage={function (): void {
+        pageNumber={0} onNextPage={function (): void {
           throw new Error("Function not implemented.");
         } } onPreviousPage={function (): void {
           throw new Error("Function not implemented.");

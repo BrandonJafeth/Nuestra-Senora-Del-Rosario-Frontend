@@ -120,7 +120,6 @@ const TableAppointmentStatuses: React.FC = () => {
         onAdd={openAddModal}
         onEdit={(item) => openEditModal(item)}
         onDelete={(item) => openConfirmDeleteModal(item)}
-        isDarkMode={false}
         pageNumber={pageNumber}
         totalPages={totalPages}
         onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}

@@ -130,7 +130,6 @@ const TableNotes: React.FC = () => {
         onAdd={openAddModal}
         onEdit={openEditModal}
         onDelete={openConfirmDeleteModal}
-        isDarkMode={false}
         pageNumber={pageNumber}
         totalPages={totalPages} onNextPage={function (): void {
           throw new Error("Function not implemented.");
