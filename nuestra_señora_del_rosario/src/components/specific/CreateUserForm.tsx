@@ -217,13 +217,6 @@ const CreateUserForm: React.FC = () => {
 
         {/* Botones */}
         <div className="col-span-2 flex justify-center gap-6 mt-6">
-          <button
-            type="button"
-            onClick={() => navigate('/dashboard/usuarios')}
-            className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all"
-          >
-            Cancelar
-          </button>
 
           <button
             type="submit"
@@ -233,6 +226,13 @@ const CreateUserForm: React.FC = () => {
             }`}
           >
             {isLoading ? <LoadingSpinner /> : 'Agregar'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard/usuarios')}
+            className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all"
+          >
+            Cancelar
           </button>
         </div>
       </form>

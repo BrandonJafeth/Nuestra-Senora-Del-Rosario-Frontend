@@ -70,13 +70,6 @@ const CreateUserFromEmployeeForm: React.FC = () => {
         {/* Botones de acción */}
         <div className="flex justify-center space-x-4 mt-8">
           <button
-            type="button"
-            className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-            onClick={resetForm}
-          >
-            Cancelar
-          </button>
-          <button
             type="submit"
             className={`px-7 py-4 text-white text-lg font-inter rounded-lg shadow-lg transition duration-200 ${
               isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
@@ -84,6 +77,13 @@ const CreateUserFromEmployeeForm: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? <LoadingSpinner/> : 'Asignar Usuario'}
+          </button>
+          <button
+            type="button"
+            className="px-7 py-4 bg-red-500 text-white text-lg font-inter rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+            onClick={resetForm}
+          >
+            Cancelar
           </button>
         </div>
       </form>

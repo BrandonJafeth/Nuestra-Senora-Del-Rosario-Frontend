@@ -7,4 +7,14 @@ export interface Product {
     categoryID: number;
     unitOfMeasureID: number;
     initialQuantity: number;
+    
   }
+
+// types/ConvertProductResponse.ts
+export interface ConvertedData {
+  productID: number;
+  name: string;
+  unitOfMeasure: string;
+  convertedUnitOfMeasure: string;
+  convertedTotalQuantity: number;
+}

@@ -11,25 +11,21 @@ import { Product } from '../../types/ProductType';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useProductsByCategory } from '../../hooks/useProductByCategory';
 import CategoryDropdown from '../microcomponents/CategoryDropdown';
+import ConvertProductModal from '../microcomponents/ConvertProductModal';
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
   
-
   // Paginación
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 5;
-  // Por ejemplo, filtramos por la categoría 1
+
+  // Categoría
   const [categoryId, setCategoryId] = useState<number>(0);
 
-  // Usamos el hook que ya devuelve el payload desenvuelto
-  const {
-    data,
-    isLoading: productsLoading,
-    isError: productsError,
-  } = useProductsByCategory(categoryId, pageNumber, pageSize);
+  // Hook para obtener productos por categoría
+  const { data, isLoading: productsLoading, isError: productsError } = useProductsByCategory(categoryId, pageNumber, pageSize);
 
-  // data tiene la forma { item1: Product[], item2: number }
   const products = data?.item1 || [];
   const totalPages = data?.item2 || 1;
 
@@ -39,6 +35,11 @@ const InventoryTable: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+  // Modal de Conversión
+  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+  const [convertData, setConvertData] = useState<{ productId: number; targetUnit: string } | null>(null);
+
+  // Abre modal de movimientos
   const openModal = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -49,6 +50,7 @@ const InventoryTable: React.FC = () => {
     setSelectedProduct(null);
   };
 
+  // Abre modal de agregar producto
   const openProductModal = () => {
     setIsProductModalOpen(true);
   };
@@ -57,6 +59,7 @@ const InventoryTable: React.FC = () => {
     setIsProductModalOpen(false);
   };
 
+  // Abre modal de editar producto
   const openEditModal = (product: Product) => {
     setSelectedProduct(product);
     setIsEditModalOpen(true);
@@ -65,6 +68,22 @@ const InventoryTable: React.FC = () => {
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setSelectedProduct(null);
+  };
+
+  // Abre modal de conversión
+  const openConvertModal = (product: Product) => {
+    // Ejemplo: usaremos la unidad de medida actual del producto como "targetUnit"
+    // o si tienes otra lógica, ajusta aquí
+    setConvertData({
+      productId: product.productID,
+      targetUnit: product.unitOfMeasure, 
+    });
+    setIsConvertModalOpen(true);
+  };
+
+  const closeConvertModal = () => {
+    setIsConvertModalOpen(false);
+    setConvertData(null);
   };
 
   // Paginación
@@ -78,10 +97,10 @@ const InventoryTable: React.FC = () => {
 
   const handleCategorySelect = (selectedId: number) => {
     setCategoryId(selectedId);
-    // Opcional: Reiniciar la paginación al cambiar la categoría
     setPageNumber(1);
   };
 
+  // Render mientras carga
   if (productsLoading) {
     return (
       <div className="overflow-x-auto">
@@ -121,6 +140,7 @@ const InventoryTable: React.FC = () => {
     );
   }
 
+  // Error
   if (productsError)
     return (
       <p className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -134,6 +154,7 @@ const InventoryTable: React.FC = () => {
         isDarkMode ? 'bg-[#0D313F]' : 'bg-white'
       } rounded-[20px] shadow-2xl relative`}
     >
+      {/* Botón para agregar producto */}
       <div className="absolute top-4 left-4">
         <button
           onClick={openProductModal}
@@ -142,10 +163,10 @@ const InventoryTable: React.FC = () => {
           Agregar Producto
         </button>
       </div>
-      
 
+      {/* Dropdown de categorías y visor de reportes */}
       <div className="absolute flex gap-3 top-4 right-4">
-      <CategoryDropdown onCategorySelect={handleCategorySelect} />
+        <CategoryDropdown onCategorySelect={handleCategorySelect} />
         <InventoryReportViewer
           month={new Date().getMonth() + 1}
           year={new Date().getFullYear()}
@@ -160,6 +181,7 @@ const InventoryTable: React.FC = () => {
         Inventario
       </h2>
 
+      {/* Tabla de Productos */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead>
@@ -198,17 +220,28 @@ const InventoryTable: React.FC = () => {
                   {item.categoryName || 'N/A'}
                 </td>
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                  {/* Botón Agregar Movimiento */}
                   <button
                     onClick={() => openModal(item)}
                     className="px-4 py-2 mr-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
                   >
-                    Agregar Movimiento
+                    Agregar Producto
                   </button>
+
+                  {/* Botón Editar */}
                   <button
                     onClick={() => openEditModal(item)}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
+                    className="px-4 py-2 mr-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
                   >
                     Editar
+                  </button>
+
+                  {/* Botón Convertir Producto */}
+                  <button
+                    onClick={() => openConvertModal(item)}
+                    className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition duration-200"
+                  >
+                    Convertir
                   </button>
                 </td>
               </tr>
@@ -217,6 +250,7 @@ const InventoryTable: React.FC = () => {
         </table>
       </div>
 
+      {/* Paginación */}
       <div className="flex justify-center items-center mt-4 space-x-4">
         <button
           onClick={handlePreviousPage}
@@ -239,6 +273,7 @@ const InventoryTable: React.FC = () => {
         </button>
       </div>
 
+      {/* Modal para movimientos */}
       {selectedProduct && (
         <InventoryMovementForm
           isOpen={isModalOpen}
@@ -247,17 +282,26 @@ const InventoryTable: React.FC = () => {
         />
       )}
 
-      <ProductAddModal
-        isOpen={isProductModalOpen}
-        onRequestClose={closeProductModal}
-      />
+      {/* Modal para agregar producto */}
+      <ProductAddModal isOpen={isProductModalOpen} onRequestClose={closeProductModal} />
 
+      {/* Modal para editar producto */}
       {selectedProduct && (
         <ProductEditModal
           isOpen={isEditModalOpen}
           onRequestClose={closeEditModal}
           productId={selectedProduct.productID}
           initialProductData={selectedProduct}
+        />
+      )}
+
+      {/* Modal para convertir producto */}
+      {convertData && (
+        <ConvertProductModal
+          isOpen={isConvertModalOpen}
+          onRequestClose={closeConvertModal}
+          productId={convertData.productId}
+          targetUnit={convertData.targetUnit}
         />
       )}
     </div>

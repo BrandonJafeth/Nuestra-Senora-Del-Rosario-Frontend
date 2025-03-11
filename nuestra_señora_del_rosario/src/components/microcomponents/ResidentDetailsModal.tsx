@@ -103,18 +103,31 @@ const { data: documents } = useResidentDocuments(residentCedula);
           </div>
 
           {/* 📌 Estado */}
-          <div>
-            <label className="block font-bold">Estado:</label>
-            <input
-              type="text"
-              value={status || ''}
-              onChange={isEditing ? (e) => setStatus(e.target.value) : undefined}
-              readOnly={!isEditing}
-              className={`w-full p-2 mt-1 border rounded-md ${
-                isEditing ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200') : 'bg-gray-500 text-white cursor-not-allowed'
-              }`}
-            />
-          </div>
+         {/* 📌 Estado */}
+<div>
+  <label className="block font-bold">Estado:</label>
+  {isEditing ? (
+    <select
+      value={status || ''}
+      onChange={(e) => setStatus(e.target.value)}
+      className={`w-full p-2 mt-1 border rounded-md ${
+        isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
+      }`}
+    >
+      <option value="">Selecciona estado</option>
+      <option value="Activo">Activo</option>
+      <option value="Inactivo">Inactivo</option>
+    </select>
+  ) : (
+    <input
+      type="text"
+      value={status || ''}
+      readOnly
+      className="w-full p-2 mt-1 border rounded-md bg-gray-500 text-white cursor-not-allowed"
+    />
+  )}
+</div>
+
 
           <div>
             <label className="block font-bold">Sexo:</label>
