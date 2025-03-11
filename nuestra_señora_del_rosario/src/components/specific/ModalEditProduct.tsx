@@ -1,3 +1,4 @@
+// FILE: ProductEditModal.tsx
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Product } from '../../types/ProductType';
@@ -29,8 +30,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
   const { data: unitsOfMeasure } = useUnitOfMeasure();
 
   useEffect(() => {
-    console.log('Initial product data:', initialProductData); // Verifica los datos iniciales
-    setProductData(initialProductData); // Actualiza los datos iniciales del producto
+    setProductData(initialProductData);
   }, [initialProductData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -40,6 +40,37 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    setProductData(initialProductData);
+  
+    // Si NO tienes categoryID pero SÍ tienes categoryName
+    if (!initialProductData.categoryID && initialProductData.categoryName && categories) {
+      const foundCategory = categories.find(
+        (c) => c.categoryName === initialProductData.categoryName
+      );
+      if (foundCategory) {
+        setProductData((prev) => ({
+          ...prev,
+          categoryID: foundCategory.categoryID,
+        }));
+      }
+    }
+  
+    // Si NO tienes unitOfMeasureID pero SÍ tienes unitOfMeasure
+    if (!initialProductData.unitOfMeasureID && initialProductData.unitOfMeasure && unitsOfMeasure) {
+      const foundUnit = unitsOfMeasure.find(
+        (u) => u.nombreUnidad === initialProductData.unitOfMeasure
+      );
+      if (foundUnit) {
+        setProductData((prev) => ({
+          ...prev,
+          unitOfMeasureID: foundUnit.unitOfMeasureID,
+        }));
+      }
+    }
+  }, [initialProductData, categories, unitsOfMeasure]);
+  
 
   const handleSave = () => {
     const newErrors: { categoryID?: string; unitOfMeasureID?: string } = {};
@@ -75,6 +106,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
   const toggleEditMode = () => {
     setIsEditing((prev) => !prev);
+    setErrors({});
   };
 
   return (
@@ -90,8 +122,11 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
         overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
       >
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Editar Producto</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+            Editar Producto
+          </h2>
           <form className="space-y-4">
+            {/* Nombre */}
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Nombre:</span>
               <input
@@ -99,9 +134,14 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                 name="name"
                 value={productData.name || ''}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                readOnly={!isEditing} 
+                className={`mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 
+                  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 
+                  dark:text-white ${!isEditing ? 'bg-gray-200 dark:bg-gray-600 cursor-not-allowed' : ''}`}
               />
             </label>
+
+            {/* Categoría */}
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Categoría:</span>
               {isEditing ? (
@@ -111,7 +151,8 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                   onChange={handleChange}
                   className={`mt-1 block w-full px-4 py-2 border ${
                     errors.categoryID ? 'border-red-500' : 'border-gray-300'
-                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
+                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+                  dark:bg-gray-700 dark:text-white`}
                 >
                   <option value="">Selecciona una categoría</option>
                   {categories?.map((category) => (
@@ -123,15 +164,20 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
               ) : (
                 <input
                   type="text"
-                  value={
-                  productData?.categoryName  
-                  }
+                  value={productData.categoryName || ''}
                   readOnly
-                  className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 
+                    dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 
+                    focus:ring-blue-500 dark:bg-gray-700 dark:text-white 
+                    bg-gray-200 cursor-not-allowed"
                 />
               )}
-              {errors.categoryID && <p className="text-red-500 text-sm mt-1">{errors.categoryID}</p>}
+              {errors.categoryID && (
+                <p className="text-red-500 text-sm mt-1">{errors.categoryID}</p>
+              )}
             </label>
+
+            {/* Unidad de Medida */}
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Unidad de Medida:</span>
               {isEditing ? (
@@ -141,7 +187,8 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                   onChange={handleChange}
                   className={`mt-1 block w-full px-4 py-2 border ${
                     errors.unitOfMeasureID ? 'border-red-500' : 'border-gray-300'
-                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
+                  } dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+                  dark:bg-gray-700 dark:text-white`}
                 >
                   <option value="">Selecciona una unidad</option>
                   {unitsOfMeasure?.map((unit) => (
@@ -153,15 +200,20 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
               ) : (
                 <input
                   type="text"
-                  value={
-                  productData?.unitOfMeasure
-                  }
+                  value={productData.unitOfMeasure || ''}
                   readOnly
-                  className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 
+                    dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 
+                    focus:ring-blue-500 dark:bg-gray-700 dark:text-white 
+                    bg-gray-200 cursor-not-allowed"
                 />
               )}
-              {errors.unitOfMeasureID && <p className="text-red-500 text-sm mt-1">{errors.unitOfMeasureID}</p>}
+              {errors.unitOfMeasureID && (
+                <p className="text-red-500 text-sm mt-1">{errors.unitOfMeasureID}</p>
+              )}
             </label>
+
+            {/* Cantidad Total */}
             <label className="block">
               <span className="text-gray-700 dark:text-gray-300">Cantidad Total:</span>
               <input
@@ -169,29 +221,33 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                 name="totalQuantity"
                 value={productData.totalQuantity || 0}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                readOnly={!isEditing}
+                className={`mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-700 
+                  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 
+                  dark:text-white ${!isEditing ? 'bg-gray-200 dark:bg-gray-600 cursor-not-allowed' : ''}`}
               />
             </label>
           </form>
+
+          {/* Botones de acción */}
           <div className="flex justify-center mt-4">
             {isEditing ? (
-              <div className='flex justify-center space-x-2'>
+              <div className="flex justify-center space-x-2">
                 <button
                   onClick={handleSave}
                   className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
                   tabIndex={0}
-                  >
+                >
                   Guardar
                 </button>
-                    <button
-                      onClick={toggleEditMode}
-                      className="ml-4 px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
-                      tabIndex={1}
-                      >
-                      Cancelar
-                    </button>
-                  </div>
-              
+                <button
+                  onClick={toggleEditMode}
+                  className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"
+                  tabIndex={1}
+                >
+                  Cancelar
+                </button>
+              </div>
             ) : (
               <button
                 onClick={toggleEditMode}
@@ -207,4 +263,5 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
     </>
   );
 };
-  export default ProductEditModal;
+
+export default ProductEditModal;

@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { InventoryMovement } from "../types/InventoryMovement";
 import { useMutation } from "react-query";
 
-const API_URL = "https://nuestra-senora-del-rosario-backend.onrender.com/api/Inventory"; // ⚠️ Reemplaza con tu URL real
+const API_URL = "https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Inventory"; 
 
 export const useCreateInventoryMovement = () => {
   return useMutation<AxiosResponse<any>, Error, InventoryMovement[]>({

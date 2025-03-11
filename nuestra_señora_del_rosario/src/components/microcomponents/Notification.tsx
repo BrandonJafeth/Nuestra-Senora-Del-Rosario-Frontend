@@ -25,7 +25,7 @@ const NotificationComponent: React.FC = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto mt-10">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
         Notificaciones
       </h2>

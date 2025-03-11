@@ -128,7 +128,6 @@ const TableCategories: React.FC = () => {
         onAdd={openAddModal}
         onEdit={openEditModal}
         onDelete={openConfirmDeleteModal}
-        isDarkMode={false}
         pageNumber={pageNumber}
         totalPages={totalPages}
         onNextPage={() => {}}

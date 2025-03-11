@@ -126,7 +126,6 @@ const TableUnitOfMeasure: React.FC = () => {
         onAdd={openAddModal}
         onEdit={openEditModal} // ✅ Ahora llama correctamente a openEditModal
         onDelete={(item) => openConfirmDeleteModal(item)}
-        isDarkMode={false}
         pageNumber={pageNumber}
         totalPages={totalPages}
         onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}

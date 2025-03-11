@@ -130,8 +130,7 @@ const TableDependencyLevels: React.FC = () => {
         isLoading={isLoading}
         onAdd={openAddModal}
         onEdit={openEditModal}
-        onDelete={openConfirmDeleteModal}
-        isDarkMode={false}
+        onDelete={openConfirmDeleteModal}     
         pageNumber={pageNumber}
         totalPages={totalPages} onNextPage={function (): void {
           throw new Error("Function not implemented.");

@@ -123,7 +123,6 @@ const TableSpecialties: React.FC = () => {
         onAdd={openAddModal}
         onEdit={openEditModal}
         onDelete={openConfirmDeleteModal}
-        isDarkMode={false}
         pageNumber={pageNumber}
         totalPages={totalPages}
         onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}

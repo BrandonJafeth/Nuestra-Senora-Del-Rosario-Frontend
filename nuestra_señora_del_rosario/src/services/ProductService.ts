@@ -23,6 +23,17 @@ public getAllProducts(pageNumber: number, pageSize: number) {
   public updateProduct(id: number, productPatch: Partial<Product>) {
     return this.patch('/Product', id, productPatch);
   }
+
+  public getProductsByCategory(categoryId: number, pageNumber: number, pageSize: number) {
+    const url = `/Product/bycategory?categoryId=${categoryId}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    return this.getAllPages(url, pageNumber, pageSize);
+  }
+
+  public convertProductUnit(productId: number, targetUnit: string) {
+    const url = `/Product/converted/${productId}?targetUnit=${encodeURIComponent(targetUnit)}`;
+    // Retorna una promesa de Axios, pero en .then() extraeremos la data con la forma ConvertProductResponse
+    return this.getAll(url);
+  }
 }
 
 const productService = new ProductService();
