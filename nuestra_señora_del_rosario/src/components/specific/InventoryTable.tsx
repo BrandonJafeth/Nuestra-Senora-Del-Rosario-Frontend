@@ -15,7 +15,7 @@ import ConvertProductModal from '../microcomponents/ConvertProductModal';
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
-  
+
   // Paginación
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 5;
@@ -24,7 +24,8 @@ const InventoryTable: React.FC = () => {
   const [categoryId, setCategoryId] = useState<number>(0);
 
   // Hook para obtener productos por categoría
-  const { data, isLoading: productsLoading, isError: productsError } = useProductsByCategory(categoryId, pageNumber, pageSize);
+  const { data, isLoading: productsLoading, isError: productsError } =
+    useProductsByCategory(categoryId, pageNumber, pageSize);
 
   const products = data?.item1 || [];
   const totalPages = data?.item2 || 1;
@@ -37,7 +38,9 @@ const InventoryTable: React.FC = () => {
 
   // Modal de Conversión
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
-  const [convertData, setConvertData] = useState<{ productId: number; targetUnit: string } | null>(null);
+  const [convertData, setConvertData] = useState<{ productId: number; targetUnit: string } | null>(
+    null
+  );
 
   // Abre modal de movimientos
   const openModal = (product: Product) => {
@@ -72,11 +75,9 @@ const InventoryTable: React.FC = () => {
 
   // Abre modal de conversión
   const openConvertModal = (product: Product) => {
-    // Ejemplo: usaremos la unidad de medida actual del producto como "targetUnit"
-    // o si tienes otra lógica, ajusta aquí
     setConvertData({
       productId: product.productID,
-      targetUnit: product.unitOfMeasure, 
+      targetUnit: product.unitOfMeasure,
     });
     setIsConvertModalOpen(true);
   };
@@ -103,14 +104,14 @@ const InventoryTable: React.FC = () => {
   // Render mientras carga
   if (productsLoading) {
     return (
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto px-4 sm:px-2">
         <table className="min-w-full bg-white dark:bg-[#0D313F] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
               <th className="py-2 px-4 border dark:border-gray-500">Producto</th>
               <th className="py-2 px-4 border dark:border-gray-500">Unidad de medida</th>
               <th className="py-2 px-4 border dark:border-gray-500">Cantidad</th>
-              <th className="py-2 px-4 border dark:border-gray-500">Categoria</th>
+              <th className="py-2 px-4 border dark:border-gray-500">Categoría</th>
               <th className="py-2 px-4 border dark:border-gray-500">Acciones</th>
             </tr>
           </thead>
@@ -141,40 +142,44 @@ const InventoryTable: React.FC = () => {
   }
 
   // Error
-  if (productsError)
+  if (productsError) {
     return (
-      <p className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+      <p className={`px-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
         Error al cargar los productos.
       </p>
     );
+  }
 
   return (
     <div
-      className={`w-full max-w-[1169px] mx-auto p-6 ${
-        isDarkMode ? 'bg-[#0D313F]' : 'bg-white'
-      } rounded-[20px] shadow-2xl relative`}
+      className={`
+        relative w-full max-w-[1169px] mx-auto px-4 py-6 sm:px-2 sm:py-4
+        ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} 
+        rounded-[20px] shadow-2xl
+      `}
     >
-      {/* Botón para agregar producto */}
-      <div className="absolute top-4 left-4">
+      {/* Sección superior */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+        {/* Botón "Agregar Producto" */}
         <button
           onClick={openProductModal}
           className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
         >
           Agregar Producto
         </button>
-      </div>
 
-      {/* Dropdown de categorías y visor de reportes */}
-      <div className="absolute flex gap-3 top-4 right-4">
-        <CategoryDropdown onCategorySelect={handleCategorySelect} />
-        <InventoryReportViewer
-          month={new Date().getMonth() + 1}
-          year={new Date().getFullYear()}
-        />
+        {/* Dropdown y visor de reportes */}
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <CategoryDropdown onCategorySelect={handleCategorySelect} />
+          <InventoryReportViewer
+            month={new Date().getMonth() + 1}
+            year={new Date().getFullYear()}
+          />
+        </div>
       </div>
 
       <h2
-        className={`text-3xl font-bold mb-8 text-center font-poppins ${
+        className={`text-3xl font-bold mb-6 text-center font-poppins ${
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}
       >
@@ -193,7 +198,7 @@ const InventoryTable: React.FC = () => {
               <th className="p-4 border dark:border-gray-500">Producto</th>
               <th className="p-4 border dark:border-gray-500">Unidad de medida</th>
               <th className="p-4 border dark:border-gray-500">Cantidad</th>
-              <th className="p-4 border dark:border-gray-500">Categoria</th>
+              <th className="p-4 border dark:border-gray-500">Categoría</th>
               <th className="p-4 border dark:border-gray-500">Acciones</th>
             </tr>
           </thead>
@@ -205,7 +210,7 @@ const InventoryTable: React.FC = () => {
                   isDarkMode
                     ? 'bg-gray-600 text-white hover:bg-gray-700'
                     : 'bg-white text-gray-800 hover:bg-gray-200'
-                }`}
+                } transition-colors`}
               >
                 <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                   {item.name}
@@ -223,15 +228,15 @@ const InventoryTable: React.FC = () => {
                   {/* Botón Agregar Movimiento */}
                   <button
                     onClick={() => openModal(item)}
-                    className="px-4 py-2 mr-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+                    className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
                   >
-                    Agregar Producto
+                    Agregar Movimiento
                   </button>
 
                   {/* Botón Editar */}
                   <button
                     onClick={() => openEditModal(item)}
-                    className="px-4 py-2 mr-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
+                    className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
                   >
                     Editar
                   </button>
@@ -251,7 +256,7 @@ const InventoryTable: React.FC = () => {
       </div>
 
       {/* Paginación */}
-      <div className="flex justify-center items-center mt-4 space-x-4">
+      <div className="flex justify-center items-center mt-6 space-x-4">
         <button
           onClick={handlePreviousPage}
           disabled={pageNumber === 1}

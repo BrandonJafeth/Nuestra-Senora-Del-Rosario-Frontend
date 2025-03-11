@@ -17,7 +17,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
     Admin: [1, 2, 3, 4],
     Enfermeria: [4],
     Fisioterapia: [4],
-    // Si hay otros roles, puedes agregarlos
+    // Si hay otros roles, agrégalos
   };
 
   // Si existe un mapping para el rol, se usan esas categorías; sino, se muestran todas.
@@ -54,14 +54,34 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
   if (isError) return <p>Error al cargar las categorías.</p>;
 
   return (
-    <select onChange={handleChange} value={selectedCategory} className="p-2 border rounded">
-      <option value="">Seleccione una categoría</option>
-      {filteredCategories.map((category) => (
-        <option key={category.categoryID} value={category.categoryID}>
-          {category.categoryName}
-        </option>
-      ))}
-    </select>
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+      {/* Etiqueta opcional: se puede ocultar en móviles si quieres */}
+      <label
+        htmlFor="category-select"
+        className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block"
+      >
+        Categoría:
+      </label>
+
+      <select
+        id="category-select"
+        onChange={handleChange}
+        value={selectedCategory}
+        className="
+          p-2 border rounded w-full sm:w-auto 
+          max-w-xs 
+          focus:outline-none focus:ring-2 focus:ring-blue-500
+          dark:bg-gray-700 dark:text-white dark:border-gray-600
+        "
+      >
+        <option value="">Seleccione una categoría</option>
+        {filteredCategories.map((category) => (
+          <option key={category.categoryID} value={category.categoryID}>
+            {category.categoryName}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 
