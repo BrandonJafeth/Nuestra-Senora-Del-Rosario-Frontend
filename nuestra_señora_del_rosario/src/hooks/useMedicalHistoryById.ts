@@ -9,11 +9,11 @@ export const useMedicalHistoryById = (residentId: number) => {
       const response = await medicalHistorysService.getMedicalHistoriesById(residentId);
       return response.data; 
     },
-    
     {
-      enabled: !!residentId, // Evita ejecutar la query si `id` es `null` o `undefined`
-      staleTime: 1000 * 60 * 5, // Cachea la respuesta por 5 minutos
+      enabled: !!residentId, // Sólo se ejecuta si residentId es válido
+      staleTime: 5 * 60 * 1000, // Cachea la respuesta por 5 minutos
       refetchOnWindowFocus: false,
+      refetchInterval: 5000, // Refresca la data cada 5 segundos (ajusta según tus necesidades)
     }
   );
 };

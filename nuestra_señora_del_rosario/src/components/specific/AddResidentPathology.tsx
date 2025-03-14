@@ -97,18 +97,18 @@ const AddPathologyPage: React.FC = () => {
         {/* Botones */}
         <div className="flex justify-center gap-5 mt-6">
           <button
-            type="button"
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-            onClick={() => navigate(`/dashboard/residente-info/${residentId}`)}
-          >
-            Cancelar
-          </button>
-          <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
             disabled={mutation.isLoading}
           >
             {mutation.isLoading ? "Guardando..." : "Agregar"}
+          </button>
+          <button
+            type="button"
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            onClick={() => navigate(`/dashboard/residente-info/${residentId}`)}
+          >
+            Cancelar
           </button>
         </div>
       </form>

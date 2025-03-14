@@ -12,6 +12,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useProductsByCategory } from '../../hooks/useProductByCategory';
 import CategoryDropdown from '../microcomponents/CategoryDropdown';
 import ConvertProductModal from '../microcomponents/ConvertProductModal';
+import { ConvertedData } from '../../types/ProductType';
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -41,6 +42,22 @@ const InventoryTable: React.FC = () => {
   const [convertData, setConvertData] = useState<{ productId: number; targetUnit: string } | null>(
     null
   );
+
+  // Estado para almacenar productos convertidos
+  const [convertedProducts, setConvertedProducts] = useState<{
+    [id: number]: { unitOfMeasure: string; totalQuantity: number };
+  }>({});
+
+  // Función para actualizar el producto con datos convertidos
+  const handleConversionComplete = (updatedData: ConvertedData) => {
+    setConvertedProducts(prevState => ({
+      ...prevState,
+      [updatedData.productID]: {
+        unitOfMeasure: updatedData.convertedUnitOfMeasure,
+        totalQuantity: updatedData.convertedTotalQuantity
+      }
+    }));
+  };
 
   // Abre modal de movimientos
   const openModal = (product: Product) => {
@@ -203,54 +220,60 @@ const InventoryTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {products.map((item: Product) => (
-              <tr
-                key={item.productID}
-                className={`${
-                  isDarkMode
-                    ? 'bg-gray-600 text-white hover:bg-gray-700'
-                    : 'bg-white text-gray-800 hover:bg-gray-200'
-                } transition-colors`}
-              >
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                  {item.name}
-                </td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                  {item.unitOfMeasure || 'N/A'}
-                </td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                  {item.totalQuantity}
-                </td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                  {item.categoryName || 'N/A'}
-                </td>
-                <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                  {/* Botón Agregar Movimiento */}
-                  <button
-                    onClick={() => openModal(item)}
-                    className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
-                  >
-                    Agregar Movimiento
-                  </button>
+            {products.map((item: Product) => {
+              // Si existe conversión para este producto, se muestran los datos convertidos
+              const converted = convertedProducts[item.productID];
+              return (
+                <tr
+                  key={item.productID}
+                  className={`${
+                    isDarkMode
+                      ? 'bg-gray-600 text-white hover:bg-gray-700'
+                      : 'bg-white text-gray-800 hover:bg-gray-200'
+                  } transition-colors`}
+                >
+                  <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                    {item.name}
+                  </td>
+                  <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                    {converted ? converted.unitOfMeasure : (item.unitOfMeasure || 'N/A')}
+                  </td>
+                  <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                    {converted ? converted.totalQuantity : item.totalQuantity}
+                  </td>
+                  <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                    {item.categoryName || 'N/A'}
+                  </td>
+                  <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+                    {/* Botón Agregar Movimiento */}
+                    <button
+                      onClick={() => openModal(item)}
+                      className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+                    >
+                      Movimiento
+                    </button>
 
-                  {/* Botón Editar */}
-                  <button
-                    onClick={() => openEditModal(item)}
-                    className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
-                  >
-                    Editar
-                  </button>
+                    {/* Botón Editar */}
+                    <button
+                      onClick={() => openEditModal(item)}
+                      className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition duration-200"
+                    >
+                      Editar
+                    </button>
 
-                  {/* Botón Convertir Producto */}
-                  <button
-                    onClick={() => openConvertModal(item)}
-                    className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition duration-200"
-                  >
-                    Convertir
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    {/* Botón Convertir (sólo para "leche") */}
+                    {item.name.toLowerCase() === "leche" && (
+                      <button
+                        onClick={() => openConvertModal(item)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition duration-200"
+                      >
+                        Convertir
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -307,6 +330,7 @@ const InventoryTable: React.FC = () => {
           onRequestClose={closeConvertModal}
           productId={convertData.productId}
           targetUnit={convertData.targetUnit}
+          onConversionComplete={handleConversionComplete}
         />
       )}
     </div>

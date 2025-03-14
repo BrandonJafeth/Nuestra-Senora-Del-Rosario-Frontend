@@ -45,6 +45,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
   }, [filteredCategories, selectedCategory, onCategorySelect]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    event.preventDefault(); 
     const selectedCategoryId = Number(event.target.value);
     setSelectedCategory(selectedCategoryId);
     onCategorySelect(selectedCategoryId);
@@ -68,8 +69,8 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
         onChange={handleChange}
         value={selectedCategory}
         className="
-          p-2 border rounded w-full sm:w-auto 
-          max-w-xs 
+          p-2 border rounded w-32 sm:w-48 
+          max-w-sm 
           focus:outline-none focus:ring-2 focus:ring-blue-500
           dark:bg-gray-700 dark:text-white dark:border-gray-600
         "
