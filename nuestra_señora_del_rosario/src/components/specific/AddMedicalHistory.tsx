@@ -95,18 +95,18 @@ const AddMedicalHistoryForm: React.FC = () => {
         {/* Botones */}
         <div className="flex justify-center gap-5 mt-6">
           <button
-            type="button"
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-            onClick={() => navigate(-1)}
-          >
-            Cancelar
-          </button>
-          <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition flex items-center gap-2"
             disabled={mutation.isLoading}
           >
             {mutation.isLoading ? <LoadingSpinner /> : "Agregar"}
+          </button>
+          <button
+            type="button"
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            onClick={() => navigate(-1)}
+          >
+            Cancelar
           </button>
         </div>
       </form>

@@ -14,6 +14,7 @@ export interface Product {
 export interface ConvertedData {
   productID: number;
   name: string;
+  totalQuantity: number;
   unitOfMeasure: string;
   convertedUnitOfMeasure: string;
   convertedTotalQuantity: number;

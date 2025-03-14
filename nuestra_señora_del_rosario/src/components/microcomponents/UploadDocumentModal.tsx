@@ -1,11 +1,9 @@
-// src/components/modals/UploadDocumentModal.tsx
-
+// FILE: src/components/modals/UploadDocumentModal.tsx
 import React, { useState } from 'react';
 import { useToast } from '../../hooks/useToast';
 import { useFileUpload } from '../../hooks/useFileUpload';
 import LoadingSpinner from './LoadingSpinner';
-
-
+import Toast from '../common/Toast';
 interface UploadDocumentModalProps {
   isOpen: boolean;
   cedula: string;
@@ -14,8 +12,8 @@ interface UploadDocumentModalProps {
 
 const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedula, onClose }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { mutate, isLoading, isError, isSuccess, error } = useFileUpload();
-  const { showToast } = useToast();
+  const { mutate, isLoading } = useFileUpload();
+  const { showToast, message, type } = useToast();
 
   if (!isOpen) return null;
 
@@ -33,10 +31,16 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
       return;
     }
   
-    mutate({ cedula, file: selectedFile });
+    mutate({ cedula, file: selectedFile }, {
+      onSuccess: () => {
+        showToast('Documento subido con éxito!', 'success');
+      },
+      onError: (err) => {
+        showToast(`Error al subir documento: ${err}`, 'error');
+      }
+    });
   };
   
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md">
@@ -49,7 +53,7 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
               disabled={isLoading}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
-              {isLoading ? <LoadingSpinner/> : 'Subir'}
+              {isLoading ? <LoadingSpinner /> : 'Subir'}
             </button>
             <button
               type="button"
@@ -60,16 +64,8 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
             </button>
           </div>
         </form>
-        {isError && (
-          <p className="text-red-500 mt-2">
-            Error al subir documento: {String(error)}
-          </p>
-        )}
-        {isSuccess && (
-          <p className="text-green-500 mt-2">
-            Documento subido con éxito!
-          </p>
-        )}
+        {/* Se renderiza el Toast si hay mensaje */}
+        {message && <Toast message={message} type={type as any} />}
       </div>
     </div>
   );

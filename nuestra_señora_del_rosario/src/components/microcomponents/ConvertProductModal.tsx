@@ -1,5 +1,5 @@
 // FILE: components/ConvertProductModal.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useConvertProductUnit } from '../../hooks/useConvertProductUInit';
 import { ConvertedData } from '../../types/ProductType';
@@ -10,18 +10,32 @@ interface ConvertProductModalProps {
   onRequestClose: () => void;
   productId: number;
   targetUnit: string;
+  onConversionComplete: (updatedData: ConvertedData) => void;
 }
 
 const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
   isOpen,
   onRequestClose,
   productId,
-  targetUnit
+  targetUnit,
+  onConversionComplete
 }) => {
-  const { data, isLoading, isError } = useConvertProductUnit(productId, targetUnit);
+  // Estado para la unidad de conversión. Inicialmente se usa targetUnit.
+  const [conversionUnit, setConversionUnit] = useState<string>(targetUnit);
 
-  // Forzamos el tipo para evitar que TS crea que data es un array de Products
+  // Se ejecuta el hook con la unidad actual seleccionada.
+  const { data, isLoading, isError } = useConvertProductUnit(productId, conversionUnit);
+
+  // Forzamos el tipo para evitar que TS piense que data es un array.
   const typedData = (!Array.isArray(data) ? data : undefined) as ConvertedData | undefined;
+
+  // Función para confirmar la conversión.
+  const handleConfirmConversion = () => {
+    if (typedData) {
+      onConversionComplete(typedData);
+      onRequestClose();
+    }
+  };
 
   return (
     <Modal
@@ -29,24 +43,52 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
       onRequestClose={onRequestClose}
       contentLabel="Convertir Producto"
       ariaHideApp={false}
-      // Clases para el overlay (fondo) y el contenedor principal
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm mx-auto outline-none"
     >
       <h2 className="text-xl font-bold mb-4 text-center dark:text-white">
         Conversión de Producto
       </h2>
+      
+      {/* Dropdown para seleccionar la unidad de medida */}
+      <div className="mb-4">
+        <label htmlFor="conversionUnit" className="block text-center mb-2 dark:text-white">
+          Selecciona la unidad a convertir:
+        </label>
+        <select
+          id="conversionUnit"
+          value={conversionUnit}
+          onChange={(e) => setConversionUnit(e.target.value)}
+          className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+        >
+          <option value="">Seleccione una Unidad de medida</option>
+          <option value="paquete">Paquete</option>
+          <option value="caja">Caja</option>
+          <option value="litros">Litros</option>
+        </select>
+      </div>
 
-      {isLoading && <p className="text-center">Cargando conversión... {<LoadingSpinner/>}</p>}
-      {isError && <p className="text-center text-red-500">Error al obtener datos de conversión.</p>}
+      {isLoading && (
+        <p className="text-center">
+          Cargando conversión... <LoadingSpinner />
+        </p>
+      )}
+      {isError && (
+        <p className="text-center text-red-500">
+          Error al obtener datos de conversión.
+        </p>
+      )}
 
       {typedData && (
         <div className="space-y-2 dark:text-white">
           <p>
-            <strong>Nombre:</strong> {typedData.name}
+            <strong>Producto:</strong> {typedData.name}
           </p>
           <p>
             <strong>Unidad Original:</strong> {typedData.unitOfMeasure}
+          </p>
+          <p>
+            <strong>Cantidad Original:</strong> {typedData.totalQuantity}
           </p>
           <p>
             <strong>Unidad Convertida:</strong> {typedData.convertedUnitOfMeasure}
@@ -57,7 +99,15 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
         </div>
       )}
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-6 flex justify-center space-x-4">
+        {typedData && (
+          <button
+            onClick={handleConfirmConversion}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Confirmar
+          </button>
+        )}
         <button
           onClick={onRequestClose}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
