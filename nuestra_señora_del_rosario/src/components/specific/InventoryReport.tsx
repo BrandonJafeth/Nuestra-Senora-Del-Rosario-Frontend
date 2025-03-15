@@ -1,4 +1,4 @@
-// components/InventoryReportPDF.tsx
+// FILE: components/InventoryReportPDF.tsx
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { InventoryReport } from '../../types/InventoryType';
@@ -51,7 +51,8 @@ const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
         <Text style={styles.tableCellHeader}>Total en Stock</Text>
         <Text style={styles.tableCellHeader}>Total Ingresos</Text>
         <Text style={styles.tableCellHeader}>Total Egresos</Text>
-        <Text style={styles.tableCellHeader}>Unidad de Medida</Text>
+        <Text style={styles.tableCellHeader}>U.Medida</Text>
+        <Text style={styles.tableCellHeader}>Total Convertido</Text>
       </View>
 
       {/* Filas de datos */}
@@ -62,6 +63,7 @@ const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
           <Text style={styles.tableCell}>{item.totalIngresos}</Text>
           <Text style={styles.tableCell}>{item.totalEgresos}</Text>
           <Text style={styles.tableCell}>{item.unitOfMeasure}</Text>
+          <Text style={styles.tableCell}>{item.convertedTotalInStock}</Text>
         </View>
       ))}
     </Page>

@@ -34,6 +34,8 @@ public getAllProducts(pageNumber: number, pageSize: number) {
     // Retorna una promesa de Axios, pero en .then() extraeremos la data con la forma ConvertProductResponse
     return this.getAll(url);
   }
+
+  
 }
 
 const productService = new ProductService();

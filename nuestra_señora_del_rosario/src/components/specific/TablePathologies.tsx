@@ -171,8 +171,8 @@ const TablePathologies: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Unidad de Medida"
-        message="¿Estás seguro de que quieres eliminar esta unidad de medida?"
+        title="Eliminar Patología"
+        message="¿Estás seguro de que quieres eliminar esta patología"
         confirmText="Eliminar"
         isLoading={isDeleting}
       />
