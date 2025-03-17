@@ -48,6 +48,7 @@ import ResidentDocumentsPage from '../components/specific/ResidentFile';
 import TableBrands from '../components/specific/TableBrands';
 import TableModels from '../components/specific/TableModels';
 import TableAssetCategories from '../components/specific/TableAssetCategories';
+import AssetTable from '../components/specific/AssetTable';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -81,6 +82,7 @@ function Dashboard() {
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
               <Route path="Residentes" element={<ResidentList/>} />
               <Route path='inventario/lista-productos' element={<InventoryTable />} />
+              <Route path='inventario/lista-activos' element={<AssetTable />} />
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
               <Route path="cardex" element={<ResidentTableMedical/>} />
