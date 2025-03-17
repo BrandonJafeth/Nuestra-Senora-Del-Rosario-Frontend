@@ -46,6 +46,7 @@ import SystemPageSettings from '../components/specific/SystemPageSettings';
 import Gallery from '../components/specific/GalleryCard';
 import ResidentDocumentsPage from '../components/specific/ResidentFile';
 import TableBrands from '../components/specific/TableBrands';
+import TableModels from '../components/specific/TableModels';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -108,6 +109,7 @@ function Dashboard() {
               <Route path="Configuracion/sistema/centro-atencion" element={<TableHealtcareCenter/>}/>
               <Route path="Configuracion/sistema/categoria" element={<TableCategories/>}/>
               <Route path="Configuracion/sistema/marca" element={<TableBrands/>} />
+              <Route path="Configuracion/sistema/modelo" element={<TableModels/>} />
               <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
