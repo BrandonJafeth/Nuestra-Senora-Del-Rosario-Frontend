@@ -45,6 +45,10 @@ import TableCategories from '../components/specific/TableCategories';
 import SystemPageSettings from '../components/specific/SystemPageSettings';
 import Gallery from '../components/specific/GalleryCard';
 import ResidentDocumentsPage from '../components/specific/ResidentFile';
+import TableBrands from '../components/specific/TableBrands';
+import TableModels from '../components/specific/TableModels';
+import TableAssetCategories from '../components/specific/TableAssetCategories';
+import AssetTable from '../components/specific/AssetTable';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -78,6 +82,7 @@ function Dashboard() {
               <Route path="solicitudes/donaciones" element={<DonationRequests />} />
               <Route path="Residentes" element={<ResidentList/>} />
               <Route path='inventario/lista-productos' element={<InventoryTable />} />
+              <Route path='inventario/lista-activos' element={<AssetTable />} />
               <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
               <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
               <Route path="cardex" element={<ResidentTableMedical/>} />
@@ -106,6 +111,9 @@ function Dashboard() {
               <Route path="Configuracion/sistema/especialidad" element={<TableSpecialities />} />
               <Route path="Configuracion/sistema/centro-atencion" element={<TableHealtcareCenter/>}/>
               <Route path="Configuracion/sistema/categoria" element={<TableCategories/>}/>
+              <Route path="Configuracion/sistema/marca" element={<TableBrands/>} />
+              <Route path="Configuracion/sistema/modelo" element={<TableModels/>} />
+              <Route path="Configuracion/sistema/categoria-activo" element={<TableAssetCategories/>} />
               <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>

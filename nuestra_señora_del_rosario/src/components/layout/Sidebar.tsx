@@ -131,6 +131,19 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <span className="ml-2">Consumo de Productos</span>
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="inventario/lista-activos"
+                    className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                      isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center w-5 h-5">
+                      {getIcon('Lista de productos')}
+                    </span>
+                    <span className="ml-2">Lista de activos</span>
+                  </Link>
+                </li>
               </ul>
             )}
           </li>

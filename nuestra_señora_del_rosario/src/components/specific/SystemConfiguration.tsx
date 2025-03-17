@@ -25,6 +25,9 @@ const SystemConfiguration: React.FC = () => {
         <AdminCard title="Centros de Salud" description="Gestiona los centros de salud registrados." route="/dashboard/Configuracion/sistema/centro-atencion" roles={["Enfermeria"]} isDarkMode={isDarkMode} />
         <AdminCard title="Niveles de Dependencia" description="Gestiona los niveles de dependencia para los residentes." route="/dashboard/Configuracion/sistema/nivel-dependencia" roles={["Enfermeria", "Admin"]} isDarkMode={isDarkMode} />
         <AdminCard title="Categorías" description="Gestiona las categorías para el inventario." route="/dashboard/Configuracion/sistema/categoria" roles={["Enfermeria", "Admin"]} isDarkMode={isDarkMode} />
+        <AdminCard title="Marcas de Activos" description="Gestiona las marcas de los activos." route="/dashboard/Configuracion/sistema/marca" roles={["Enfermeria", "Admin", "Fisioterapia"]} isDarkMode={isDarkMode} />
+        <AdminCard title="Modelos de las marcas" description="Gestiona los modelos de las marcas." route="/dashboard/Configuracion/sistema/modelo" roles={["Enfermeria", "Admin", "Fisioterapia"]} isDarkMode={isDarkMode} />
+        <AdminCard title="Categorias de los activos" description="Gestiona las categorías de los activos." route="/dashboard/Configuracion/sistema/categoria-activo" roles={["Enfermeria", "Admin", "Fisioterapia"]} isDarkMode={isDarkMode} />
       </div>
     </div>
   );
