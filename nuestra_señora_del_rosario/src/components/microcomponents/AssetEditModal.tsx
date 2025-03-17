@@ -3,39 +3,31 @@ import React, { useEffect, useState } from "react";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import { AssetType } from "../../types/AssetType";
 
-/** 
- * Props para el modal de edición de Activo 
- */
 interface AssetEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialAsset: AssetType;
-  onSave: (updatedAsset: Partial<AssetType>) => void;
+  /** onDraftSave: se llama cuando el usuario hace clic en "Guardar" para pasar los datos editados al padre */
+  onDraftSave: (draftData: Partial<AssetType>) => void;
 }
 
-/**
- * Componente Modal para editar los datos de un Activo
- */
 const AssetEditModal: React.FC<AssetEditModalProps> = ({
   isOpen,
   onClose,
   initialAsset,
-  onSave,
+  onDraftSave,
 }) => {
   const { isDarkMode } = useThemeDark();
   const [formData, setFormData] = useState<Partial<AssetType>>({});
 
-  // Cuando se abra el modal, cargamos los datos iniciales en el formulario
   useEffect(() => {
     if (isOpen) {
       setFormData(initialAsset);
     }
   }, [isOpen, initialAsset]);
 
-  // Si el modal no está abierto, no renderizamos nada
   if (!isOpen) return null;
 
-  /** Manejo de cambios en inputs */
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -43,9 +35,10 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  /** Al hacer clic en "Guardar", llamamos a la función onSave con los datos */
-  const handleSave = () => {
-    onSave(formData);
+  /** En vez de confirmar aquí, solo mandamos los datos al padre y cerramos el modal. */
+  const handleDraftSave = () => {
+    onDraftSave(formData);
+    onClose(); // Cierra el modal de edición
   };
 
   return (
@@ -141,11 +134,10 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
           }`}
         />
 
-        {/* Botones de Acción */}
         <div className="flex justify-end space-x-4">
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            onClick={handleSave}
+            onClick={handleDraftSave}
           >
             Guardar
           </button>
