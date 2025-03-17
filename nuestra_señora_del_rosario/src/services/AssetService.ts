@@ -25,7 +25,7 @@ class AssetService extends ApiService<AssetType> {
 
   public updateAsset(id: number, data: Partial<AssetType>) {
     // Ajusta la ruta según tu API (ej. /Asset/{id})
-    return this.patch(`/Asset/${id}`, id, data);
+    return this.putWithoutId(`/Asset/${id}`, data);
   }
 
   public deleteAsset(id: number) {
