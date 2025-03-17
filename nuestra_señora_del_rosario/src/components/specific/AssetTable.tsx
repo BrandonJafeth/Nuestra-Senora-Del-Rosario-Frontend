@@ -8,6 +8,7 @@ import { useAssets } from "../../hooks/useAssets";
 import { AssetType } from "../../types/AssetType";
 import { useManageAsset } from "../../hooks/useManagmentAsset";
 import AssetEditModal from "../microcomponents/AssetEditModal";
+import ConfirmationModal from "../microcomponents/ConfirmationModal";
 
 
 const AssetTable: React.FC = () => {
@@ -15,26 +16,29 @@ const AssetTable: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 10;
 
-  // Para abrir/cerrar el modal de edición
+  // Modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<AssetType | null>(null);
 
-  // Consumiendo el hook de activos
-  const { data, isLoading, error } = useAssets(pageNumber, pageSize);
+  // Modal de confirmación
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  // Guardamos los cambios que vienen desde el modal de edición
+  const [pendingEditData, setPendingEditData] = useState<Partial<AssetType>>({});
 
   // Hook para manejar la mutación PUT
   const { handleUpdateAsset } = useManageAsset();
 
-  // Cargando
+  // Datos
+  const { data, isLoading, error } = useAssets(pageNumber, pageSize);
+
   if (isLoading) {
     return (
       <div className="overflow-x-auto px-4 sm:px-2">
-        {/* Tabla con skeleton... */}
+        {/* ... tabla con Skeleton ... */}
       </div>
     );
   }
 
-  // Error
   if (error) {
     return (
       <p className={`px-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
@@ -43,7 +47,6 @@ const AssetTable: React.FC = () => {
     );
   }
 
-  // Datos
   const totalRecords = data?.totalRecords || 0;
   const totalPages = totalRecords > 0 ? Math.ceil(totalRecords / pageSize) : 1;
   const assets = Array.isArray(data) ? data : [];
@@ -56,25 +59,40 @@ const AssetTable: React.FC = () => {
     );
   }
 
-  /** Abre el modal de edición con los datos del activo */
+  /** Abre el modal de edición con datos del activo */
   const handleEdit = (asset: AssetType) => {
     setAssetToEdit(asset);
     setIsEditModalOpen(true);
   };
 
-  /** Lógica para actualizar el activo */
-  const handleSaveChanges = (updatedAsset: Partial<AssetType>) => {
+  /** Recibe el borrador de cambios desde el modal de edición */
+  const handleDraftSave = (draftData: Partial<AssetType>) => {
+    // Guardamos los cambios en pendingEditData
+    setPendingEditData(draftData);
+    // Abrimos el modal de confirmación
+    setIsConfirmOpen(true);
+  };
+
+  /** El usuario confirma la actualización */
+  const handleConfirmUpdate = () => {
     if (!assetToEdit) return;
     // Llamamos a la mutación PUT
-    handleUpdateAsset(assetToEdit.idAsset, updatedAsset);
-    // Cerramos el modal
-    setIsEditModalOpen(false);
+    handleUpdateAsset(assetToEdit.idAsset, pendingEditData);
+    // Cerramos el modal de confirmación
+    setIsConfirmOpen(false);
+    // Limpieza
+    setAssetToEdit(null);
+    setPendingEditData({});
+  };
+
+  /** El usuario cancela la confirmación */
+  const handleCancelUpdate = () => {
+    setIsConfirmOpen(false);
   };
 
   /** Cambiar estado (ejemplo) */
   const handleStateChange = (asset: AssetType) => {
     console.log("Cambiar estado del activo:", asset);
-    // Tu lógica de estado
   };
 
   // Render fila
@@ -87,24 +105,12 @@ const AssetTable: React.FC = () => {
           : "bg-white text-gray-800 hover:bg-gray-200"
       } transition-colors`}
     >
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.assetName}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.serialNumber}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.plate}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.originalCost}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.location}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.assetCondition}
-      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.assetName}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.serialNumber}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.plate}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.originalCost}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.location}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.assetCondition}</td>
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         <button
           onClick={() => handleEdit(asset)}
@@ -170,7 +176,7 @@ const AssetTable: React.FC = () => {
         </table>
       </div>
 
-      {/* Controles de Paginación */}
+      {/* Paginación */}
       <div className="flex justify-center items-center mt-6 space-x-4">
         <button
           onClick={handlePreviousPage}
@@ -179,11 +185,9 @@ const AssetTable: React.FC = () => {
         >
           <FaArrowLeft />
         </button>
-
         <span className={`${isDarkMode ? "text-white" : "text-gray-800"}`}>
           Página {pageNumber} de {totalPages}
         </span>
-
         <button
           onClick={handleNextPage}
           disabled={pageNumber === totalPages}
@@ -199,9 +203,19 @@ const AssetTable: React.FC = () => {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           initialAsset={assetToEdit}
-          onSave={handleSaveChanges}
+          onDraftSave={handleDraftSave} // En vez de onSave
         />
       )}
+
+      {/* Modal de Confirmación */}
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={handleCancelUpdate}
+        onConfirm={handleConfirmUpdate}
+        title="Confirmar Edición"
+        message="¿Seguro que deseas actualizar los datos de este activo?"
+        confirmText="Confirmar"
+      />
     </div>
   );
 };
