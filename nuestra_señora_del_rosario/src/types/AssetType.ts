@@ -13,6 +13,8 @@ export interface AssetType {
     categoryName: string;
     modelName: string;
     brandName: string;
+    lawName: string;
+    idLaw: number;
   }
   
   export interface PagedAssetsResponse {
@@ -22,3 +24,16 @@ export interface AssetType {
     pageSize: number;
   }
   
+
+  export interface CreateAssetType {
+    assetName: string;
+    serialNumber: string;
+    plate: string;
+    originalCost: number;
+    purchaseDate: string; // Ejemplo: "2025-03-18T03:41:59.796Z"
+    location: string;
+    assetCondition: string;
+    idAssetCategory: number;
+    idModel: number;
+    idLaw: number;
+  }

@@ -4,3 +4,4 @@ export interface ModelType {
    idBrand : number;
    brandName : string;
 }
+

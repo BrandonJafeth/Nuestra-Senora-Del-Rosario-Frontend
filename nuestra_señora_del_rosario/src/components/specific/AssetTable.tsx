@@ -1,5 +1,3 @@
-// components/AssetTable.tsx
-
 import React, { useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -11,11 +9,15 @@ import { useManageAsset } from "../../hooks/useManagmentAsset";
 import AssetEditModal from "../microcomponents/AssetEditModal";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import { useToggleAssetCondition } from "../../hooks/useToggleAssetCondition";
+import CreateAssetModal from "../microcomponents/CreateAssetModal";
 
 const AssetTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 10;
+
+  // Modal de creación de activo
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -94,7 +96,6 @@ const AssetTable: React.FC = () => {
 
   /** Inicia el proceso de cambiar estado (toggle-condition) */
   const handleStateChange = (asset: AssetType) => {
-    // Guardamos el activo y abrimos modal de confirmación
     setAssetToToggle(asset);
     setIsConfirmToggleOpen(true);
   };
@@ -128,9 +129,6 @@ const AssetTable: React.FC = () => {
       </td>
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         {asset.serialNumber}
-      </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-        {asset.plate}
       </td>
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         {asset.originalCost}
@@ -175,6 +173,16 @@ const AssetTable: React.FC = () => {
         rounded-[20px] shadow-2xl
       `}
     >
+      {/* Botón Agregar Activo - ubicado en la parte superior izquierda */}
+      <div className="flex justify-start ml-4 mt-2">
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+        >
+          Agregar Activo
+        </button>
+      </div>
+
       <h2
         className={`text-3xl font-bold mb-6 text-center font-poppins ${
           isDarkMode ? "text-white" : "text-gray-800"
@@ -193,7 +201,6 @@ const AssetTable: React.FC = () => {
             >
               <th className="p-4 border dark:border-gray-500">Nombre</th>
               <th className="p-4 border dark:border-gray-500">Número de Serie</th>
-              <th className="p-4 border dark:border-gray-500">Placa</th>
               <th className="p-4 border dark:border-gray-500">Costo Original</th>
               <th className="p-4 border dark:border-gray-500">Ubicación</th>
               <th className="p-4 border dark:border-gray-500">Condición</th>
@@ -226,6 +233,12 @@ const AssetTable: React.FC = () => {
           <FaArrowRight />
         </button>
       </div>
+
+      {/* Modal de Creación de Activo */}
+      <CreateAssetModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
 
       {/* Modal de Edición */}
       {assetToEdit && (

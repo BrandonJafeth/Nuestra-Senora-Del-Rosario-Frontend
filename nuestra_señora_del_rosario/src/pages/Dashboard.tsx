@@ -49,6 +49,7 @@ import TableBrands from '../components/specific/TableBrands';
 import TableModels from '../components/specific/TableModels';
 import TableAssetCategories from '../components/specific/TableAssetCategories';
 import AssetTable from '../components/specific/AssetTable';
+import TableLaws from '../components/specific/TableLaws';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -114,6 +115,7 @@ function Dashboard() {
               <Route path="Configuracion/sistema/marca" element={<TableBrands/>} />
               <Route path="Configuracion/sistema/modelo" element={<TableModels/>} />
               <Route path="Configuracion/sistema/categoria-activo" element={<TableAssetCategories/>} />
+              <Route path="Configuracion/sistema/leyes" element={<TableLaws />} />
               <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
