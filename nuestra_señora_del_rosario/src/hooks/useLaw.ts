@@ -7,7 +7,6 @@ export const useLaw = () => {
     "Law",
     async () => {
       const response = await LawService.getAllLaws();
-      console.log("🚀 ~ response:", response);
 
       if (!response.data?.data || !Array.isArray(response.data.data)) {
         console.error("🚨 Error: Datos de leyes no válidos", response);
