@@ -17,7 +17,7 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     private api: AxiosInstance;
 
     constructor() {
-        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
+        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/' });
     }
     //https://localhost:7066/api
     //https://nuestra-senora-del-rosario-backend.onrender.com/api
@@ -60,6 +60,10 @@ public async createWithParams<R>(endpoint: string, params: Record<string, any>):
 
     public async patch(endpoint: string, id: string | number, data: Partial<T>): Promise<AxiosResponse<T>> {
         return this.api.patch<T>(`${endpoint}/${id}`, data);
+    }
+
+    public async patchWithoutId(endpoint: string, data: Partial<T>): Promise<AxiosResponse<T>> {
+        return this.api.patch<T>(endpoint, data);
     }
 
     public async delete(endpoint: string, id: string | number): Promise<AxiosResponse<void>> {

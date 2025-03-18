@@ -31,6 +31,11 @@ class AssetService extends ApiService<AssetType> {
   public deleteAsset(id: number) {
     return this.delete(`/Asset`, id);
   }
+
+  public toggleAssetCondition(id: number) {
+    // Llamamos a patch pasando la ruta y el id, el payload puede ser un objeto vacío
+    return this.patchWithoutId(`/Asset/${id}/toggle-condition`, {});
+  }
 }
 
 const assetService = new AssetService();
