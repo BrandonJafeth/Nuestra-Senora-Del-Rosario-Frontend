@@ -84,7 +84,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
     >
       <div
         className={`p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto ${
-          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+          isDarkMode ? "bg-gray-800 text-gray-500" : "bg-white text-gray-900"
         }`}
       >
         <h2 className="text-2xl font-semibold mb-4">
