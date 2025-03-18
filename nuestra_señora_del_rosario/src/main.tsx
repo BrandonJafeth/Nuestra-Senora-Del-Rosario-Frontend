@@ -11,7 +11,7 @@ import ToggleProvider from './context/ToggleProvider';
 import { ThemeProvider } from './context/ThemeProvider';
 import { QueryClient, QueryClientProvider } from 'react-query'; // Importa React Query
 
-// Crea una instancia de QueryClient
+// Crea una instancia de QueryClients
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
