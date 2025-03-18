@@ -1,4 +1,5 @@
 // components/AssetTable.tsx
+
 import React, { useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -9,7 +10,7 @@ import { AssetType } from "../../types/AssetType";
 import { useManageAsset } from "../../hooks/useManagmentAsset";
 import AssetEditModal from "../microcomponents/AssetEditModal";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
-
+import { useToggleAssetCondition } from "../../hooks/useToggleAssetCondition";
 
 const AssetTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -20,13 +21,19 @@ const AssetTable: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<AssetType | null>(null);
 
-  // Modal de confirmación
+  // Modal de confirmación para la edición
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  // Guardamos los cambios que vienen desde el modal de edición
   const [pendingEditData, setPendingEditData] = useState<Partial<AssetType>>({});
 
-  // Hook para manejar la mutación PUT
+  // Hook para actualizar un activo (PUT)
   const { handleUpdateAsset } = useManageAsset();
+
+  // Hook para cambiar la condición (PATCH)
+  const { handleToggleCondition } = useToggleAssetCondition();
+
+  // Modal de confirmación para toggle condition
+  const [isConfirmToggleOpen, setIsConfirmToggleOpen] = useState(false);
+  const [assetToToggle, setAssetToToggle] = useState<AssetType | null>(null);
 
   // Datos
   const { data, isLoading, error } = useAssets(pageNumber, pageSize);
@@ -67,32 +74,43 @@ const AssetTable: React.FC = () => {
 
   /** Recibe el borrador de cambios desde el modal de edición */
   const handleDraftSave = (draftData: Partial<AssetType>) => {
-    // Guardamos los cambios en pendingEditData
     setPendingEditData(draftData);
-    // Abrimos el modal de confirmación
     setIsConfirmOpen(true);
   };
 
-  /** El usuario confirma la actualización */
+  /** El usuario confirma la actualización (edición) */
   const handleConfirmUpdate = () => {
     if (!assetToEdit) return;
-    // Llamamos a la mutación PUT
     handleUpdateAsset(assetToEdit.idAsset, pendingEditData);
-    // Cerramos el modal de confirmación
     setIsConfirmOpen(false);
-    // Limpieza
     setAssetToEdit(null);
     setPendingEditData({});
   };
 
-  /** El usuario cancela la confirmación */
+  /** El usuario cancela la confirmación (edición) */
   const handleCancelUpdate = () => {
     setIsConfirmOpen(false);
   };
 
-  /** Cambiar estado (ejemplo) */
+  /** Inicia el proceso de cambiar estado (toggle-condition) */
   const handleStateChange = (asset: AssetType) => {
-    console.log("Cambiar estado del activo:", asset);
+    // Guardamos el activo y abrimos modal de confirmación
+    setAssetToToggle(asset);
+    setIsConfirmToggleOpen(true);
+  };
+
+  /** El usuario confirma el toggle-condition */
+  const handleConfirmToggle = () => {
+    if (!assetToToggle) return;
+    handleToggleCondition(assetToToggle.idAsset);
+    setIsConfirmToggleOpen(false);
+    setAssetToToggle(null);
+  };
+
+  /** El usuario cancela el toggle-condition */
+  const handleCancelToggle = () => {
+    setIsConfirmToggleOpen(false);
+    setAssetToToggle(null);
   };
 
   // Render fila
@@ -105,12 +123,24 @@ const AssetTable: React.FC = () => {
           : "bg-white text-gray-800 hover:bg-gray-200"
       } transition-colors`}
     >
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.assetName}</td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.serialNumber}</td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.plate}</td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.originalCost}</td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.location}</td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">{asset.assetCondition}</td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.assetName}
+      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.serialNumber}
+      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.plate}
+      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.originalCost}
+      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.location}
+      </td>
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+        {asset.assetCondition}
+      </td>
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         <button
           onClick={() => handleEdit(asset)}
@@ -203,17 +233,27 @@ const AssetTable: React.FC = () => {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           initialAsset={assetToEdit}
-          onDraftSave={handleDraftSave} // En vez de onSave
+          onDraftSave={handleDraftSave}
         />
       )}
 
-      {/* Modal de Confirmación */}
+      {/* Modal de Confirmación (Edición) */}
       <ConfirmationModal
         isOpen={isConfirmOpen}
         onClose={handleCancelUpdate}
         onConfirm={handleConfirmUpdate}
         title="Confirmar Edición"
         message="¿Seguro que deseas actualizar los datos de este activo?"
+        confirmText="Confirmar"
+      />
+
+      {/* Modal de Confirmación (Toggle Condition) */}
+      <ConfirmationModal
+        isOpen={isConfirmToggleOpen}
+        onClose={handleCancelToggle}
+        onConfirm={handleConfirmToggle}
+        title="Cambiar Estado"
+        message="¿Seguro que deseas cambiar la condición de este activo?"
         confirmText="Confirmar"
       />
     </div>
