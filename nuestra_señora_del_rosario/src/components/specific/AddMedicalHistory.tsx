@@ -5,11 +5,13 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useMedicalHistory } from "../../hooks/useCreateMedicalHistory";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import Toast from "../common/Toast";
+import { useThemeDark } from "../../hooks/useThemeDark";
 
 const AddMedicalHistoryForm: React.FC = () => {
   const { residentId } = useParams();
   const resident_Id = Number(residentId);
   const navigate = useNavigate();
+  const { isDarkMode } = useThemeDark();
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -22,17 +24,15 @@ const AddMedicalHistoryForm: React.FC = () => {
 
   const mutation = useMedicalHistory();
 
-  // 🔥 Estado para manejar los mensajes del Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
 
-  // ✅ Manejador de envío del formulario
   const onSubmit = (data: any) => {
     mutation.mutate(data, {
       onSuccess: () => {
         setToastMessage("Historial médico agregado con éxito!");
         setToastType("success");
-        reset(); // ✅ Resetea el formulario después del éxito
+        reset();
         setTimeout(() => navigate(`/dashboard/historial-medico/${resident_Id}`), 2000);
       },
       onError: () => {
@@ -43,8 +43,11 @@ const AddMedicalHistoryForm: React.FC = () => {
   };
 
   return (
-    <div className="p-8 rounded-xl shadow-xl w-full max-w-3xl mx-auto bg-white text-gray-900">
-      {/* 🔥 Componente Toast (solo si hay mensaje) */}
+    <div
+      className={`p-8 rounded-xl shadow-xl w-full max-w-3xl mx-auto ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+      }`}
+    >
       {toastMessage && <Toast message={toastMessage} type={toastType} />}
 
       <div className="flex justify-between items-center mb-6">
@@ -57,42 +60,43 @@ const AddMedicalHistoryForm: React.FC = () => {
         <h2 className="text-2xl font-bold">Agregar Historial Médico</h2>
       </div>
 
-      {/* Formulario */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Diagnóstico */}
         <div>
           <label className="block text-lg font-semibold mb-2">Diagnóstico</label>
           <textarea
             {...register("diagnosis", { required: true })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
+            }`}
             placeholder="Ingrese el diagnóstico del paciente..."
           />
         </div>
 
-        {/* Tratamiento */}
         <div>
           <label className="block text-lg font-semibold mb-2">Tratamiento</label>
           <textarea
             {...register("treatment", { required: true })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
+            }`}
             placeholder="Ingrese el tratamiento a seguir..."
           />
         </div>
 
-        {/* Observaciones */}
         <div>
           <label className="block text-lg font-semibold mb-2">Observaciones</label>
           <textarea
             {...register("observations", { required: true })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
+            }`}
             placeholder="Ingrese observaciones adicionales..."
           />
         </div>
 
-        {/* Botones */}
         <div className="flex justify-center gap-5 mt-6">
           <button
             type="submit"
