@@ -17,11 +17,11 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     private api: AxiosInstance;
 
     constructor() {
-        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/' });
+        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
     }
     //https://localhost:7066/api
     //https://nuestra-senora-del-rosario-backend.onrender.com/api
-    //https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/
+    //https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api
 
     // Methods from IReadService
     public async getAll(endpoint: string): Promise<AxiosResponse<T[]>> {
