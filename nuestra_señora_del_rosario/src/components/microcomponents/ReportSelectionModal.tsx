@@ -63,7 +63,7 @@ const ReportSelectionModal: React.FC<ReportSelectionModalProps> = ({
 
       {/* Dropdown de Categoría */}
       <div className="mb-4">
-        <CategoryDropdown onCategorySelect={handleCategorySelect} />
+        <CategoryDropdown onCategorySelect={handleCategorySelect} selectedCategory={0} />
       </div>
 
       {/* Dropdown de Productos (filtrado por categoría) */}

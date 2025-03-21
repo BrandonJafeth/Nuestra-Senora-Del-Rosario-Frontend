@@ -25,13 +25,11 @@ const InventoryTable: React.FC = () => {
 
   // Llamada a la query, pero solo si categoryId != 0
   const { data, isLoading: productsLoading, isError: productsError } =
-    useProductsByCategory(categoryId, pageNumber, pageSize, {
-      // Si tu hook lo permite, puedes usar 'enabled' para no hacer la query cuando categoryId=0
-      // enabled: categoryId !== 0
-    });
+    useProductsByCategory(categoryId, pageNumber, pageSize);
 
   const products = data?.item1 || [];
   const totalPages = data?.item2 || 1;
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Manejo de modales...
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,6 +47,11 @@ const InventoryTable: React.FC = () => {
     [id: number]: { unitOfMeasure: string; totalQuantity: number };
   }>({});
 
+  const filteredProducts = searchTerm.trim()
+  ? products.filter((asset: Product) =>
+      asset.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : products;
   // Función para actualizar el producto con datos convertidos
   const handleConversionComplete = (updatedData: ConvertedData) => {
     setConvertedProducts((prevState) => ({
@@ -98,6 +101,7 @@ const InventoryTable: React.FC = () => {
     setConvertData(null);
   };
 
+
   // Paginación
   const handleNextPage = () => {
     if (pageNumber < totalPages) setPageNumber(pageNumber + 1);
@@ -120,36 +124,53 @@ const InventoryTable: React.FC = () => {
         rounded-[20px] shadow-2xl
       `}
     >
-      {/* Sección superior */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-        {/* Botón "Agregar Producto" */}
-        <button
-          onClick={openProductModal}
-          className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
-        >
-          Agregar Producto
-        </button>
+     {/* Fila 1: Título, Botón, Dropdown y Visor de Reportes */}
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+  {/* Sección izquierda: Título + Botón */}
+  <div className="flex items-center gap-4">
+    <button
+      onClick={openProductModal}
+      className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+    >
+      Agregar Producto
+    </button>
+    <h2
+      className={`text-3xl ml-64 font-bold font-poppins ${
+        isDarkMode ? "text-white" : "text-gray-800"
+      }`}
+    >
+      Inventario
+    </h2>
+  </div>
 
-        {/* Dropdown y visor de reportes */}
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          <CategoryDropdown
-            selectedCategory={categoryId}
-            onCategorySelect={handleCategorySelect}
-          />
-          <InventoryReportViewer
-            month={new Date().getMonth() + 1}
-            year={new Date().getFullYear()}
-          />
-        </div>
-      </div>
+  {/* Sección derecha: Dropdown y visor de reportes */}
+  <div className="flex flex-col sm:flex-row items-center gap-3">
+    <CategoryDropdown
+      selectedCategory={categoryId}
+      onCategorySelect={handleCategorySelect}
+    />
+    <InventoryReportViewer
+      month={new Date().getMonth() + 1}
+      year={new Date().getFullYear()}
+    />
+  </div>
+</div>
 
-      <h2
-        className={`text-3xl font-bold mb-6 text-center font-poppins ${
-          isDarkMode ? 'text-white' : 'text-gray-800'
-        }`}
-      >
-        Inventario
-      </h2>
+{/* Fila 2: Input de Búsqueda */}
+<div className="mb-4 flex justify-center">
+  <input
+    type="text"
+    placeholder="Buscar por nombre"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+      isDarkMode
+        ? "bg-gray-700 text-white focus:ring-blue-400"
+        : "bg-white text-gray-700 focus:ring-blue-600"
+    }`}
+  />
+</div>
+
       {categoryId === 0 ? (
         <p className="text-center mt-4 font-medium text-lg">
           Seleccione una categoría para ver los productos.
@@ -213,7 +234,7 @@ const InventoryTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="text-center">
-                {products.map((item: Product) => {
+                {filteredProducts.map((item: Product) => {
                   // Si existe conversión para este producto, se muestran los datos convertidos
                   const converted = convertedProducts[item.productID];
                   return (

@@ -16,41 +16,35 @@ import { useToast } from "../../hooks/useToast";
 const AssetTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 10;
+  const pageSize = 6; // Máximo 6 activos por página
 
-  // Modal de creación de activo
+  // Estado para filtrar activos por nombre (puedes extenderlo a otros campos)
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Modal de creación, edición, etc.
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const {message, type, showToast} = useToast ();
-
-  // Modal de edición
+  const { message, type, showToast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState<AssetType | null>(null);
-
-  // Modal de confirmación para la edición
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingEditData, setPendingEditData] = useState<Partial<AssetType>>({});
 
-  // Hook para actualizar un activo (PUT)
   const { handleUpdateAsset } = useManageAsset();
-
-  // Hook para cambiar la condición (PATCH)
   const { handleToggleCondition } = useToggleAssetCondition();
-
-  // Modal de confirmación para toggle condition
   const [isConfirmToggleOpen, setIsConfirmToggleOpen] = useState(false);
   const [assetToToggle, setAssetToToggle] = useState<AssetType | null>(null);
 
-  // Datos
+  // Obtención de datos de activos
   const { data, isLoading, error } = useAssets(pageNumber, pageSize);
 
   if (isLoading) {
     return (
       <div className="overflow-x-auto px-4 sm:px-2">
-        {/* ... tabla con Skeleton ... */}
+        {/* Aquí podrías poner un Skeleton o mensaje de carga */}
+        <p>Cargando activos...</p>
       </div>
     );
   }
-
   if (error) {
     return (
       <p className={`px-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
@@ -59,9 +53,16 @@ const AssetTable: React.FC = () => {
     );
   }
 
+  // Asumimos que el hook useAssets devuelve un objeto con totalRecords, totalPages y los activos en una propiedad (por ejemplo, assets)
   const totalRecords = data?.totalRecords || 0;
   const totalPages = totalRecords > 0 ? Math.ceil(totalRecords / pageSize) : 1;
-  const assets = Array.isArray(data) ? data : [];
+  // Aquí asumimos que los activos están en data.assets; si data es directamente el array, ajusta en consecuencia:
+  const assets: AssetType[] = Array.isArray(data) ? data : [];
+
+  // Filtrado de activos (en la página actual) por searchTerm (por nombre)
+  const filteredAssets = assets.filter((asset) =>
+    asset.assetName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (assets.length === 0) {
     return (
@@ -71,19 +72,17 @@ const AssetTable: React.FC = () => {
     );
   }
 
-  /** Abre el modal de edición con datos del activo */
+  // Handlers para modales y edición
   const handleEdit = (asset: AssetType) => {
     setAssetToEdit(asset);
     setIsEditModalOpen(true);
   };
 
-  /** Recibe el borrador de cambios desde el modal de edición */
   const handleDraftSave = (draftData: Partial<AssetType>) => {
     setPendingEditData(draftData);
     setIsConfirmOpen(true);
   };
 
-  /** El usuario confirma la actualización (edición) */
   const handleConfirmUpdate = async () => {
     try {
       if (assetToEdit) {
@@ -98,12 +97,10 @@ const AssetTable: React.FC = () => {
     setPendingEditData({});
   };
 
-  /** El usuario cancela la confirmación (edición) */
   const handleCancelUpdate = () => {
     setIsConfirmOpen(false);
   };
 
-  /** Inicia el proceso de cambiar estado (toggle-condition) */
   const handleStateChange = (asset: AssetType) => {
     setAssetToToggle(asset);
     setIsConfirmToggleOpen(true);
@@ -121,13 +118,12 @@ const AssetTable: React.FC = () => {
     setAssetToToggle(null);
   };
 
-  /** El usuario cancela el toggle-condition */
   const handleCancelToggle = () => {
     setIsConfirmToggleOpen(false);
     setAssetToToggle(null);
   };
 
-  // Render fila
+  // Render de cada fila en la tabla
   const renderAssetRow = (asset: AssetType) => (
     <tr
       key={asset.idAsset}
@@ -152,10 +148,10 @@ const AssetTable: React.FC = () => {
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         {asset.assetCondition}
       </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500 space-y-2">
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500 space-y-2 space-x-2">
         <button
           onClick={() => handleEdit(asset)}
-          className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+          className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
         >
           Detalles
         </button>
@@ -169,7 +165,7 @@ const AssetTable: React.FC = () => {
     </tr>
   );
 
-  // Paginación
+  // Handlers de paginación
   const handlePreviousPage = () => {
     if (pageNumber > 1) setPageNumber(pageNumber - 1);
   };
@@ -180,30 +176,44 @@ const AssetTable: React.FC = () => {
 
   return (
     <div
-      className={`
-        relative w-full max-w-[1169px] mx-auto px-4 py-6 sm:px-2 sm:py-4
-        ${isDarkMode ? "bg-[#0D313F]" : "bg-white"} 
-        rounded-[20px] shadow-2xl
-      `}
+      className={`relative w-full max-w-[1169px] mx-auto px-4 py-6 sm:px-2 sm:py-4 ${
+        isDarkMode ? "bg-[#0D313F]" : "bg-white"
+      } rounded-[20px] shadow-2xl`}
     >
-      {/* Botón Agregar Activo - ubicado en la parte superior izquierda */}
-      <div className="flex justify-start ml-4 mt-2">
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
-        >
-          Agregar Activo
-        </button>
-      </div>
+       {/* Fila superior: Título y Botón */}
+  <div className="flex flex-col sm:flex-row sm:justify-between mr-5 ml-5 mt-2 sm:items-center mb-4">
+    <button
+      onClick={() => setIsCreateModalOpen(true)}
+      className="mt-2 sm:mt-0 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+    >
+      Agregar Activo
+    </button>
+    <h2 className={`text-3xl font-bold font-poppins ${isDarkMode ? "text-white" : "text-gray-800"}`}>
+      Lista de Activos
+    </h2>
+  <button
+      className="mt-2 sm:mt-0 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+    >
+      Descargar Reporte
+    </button>
+  </div>
 
-      <h2
-        className={`text-3xl font-bold mb-6 text-center font-poppins ${
-          isDarkMode ? "text-white" : "text-gray-800"
-        }`}
-      >
-        Lista de Activos
-      </h2>
+  {/* Filtro debajo de la fila superior */}
+  <div className="mb-4 flex justify-center">
+    <input
+      type="text"
+      placeholder="Buscar por nombre"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+        isDarkMode
+          ? "bg-gray-700 text-white focus:ring-blue-400"
+          : "bg-white text-gray-700 focus:ring-blue-600"
+      }`}
+    />
+  </div>
 
+      {/* Tabla de activos */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-transparent rounded-lg shadow-md">
           <thead>
@@ -221,12 +231,12 @@ const AssetTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {assets.map(renderAssetRow)}
+            {filteredAssets.map(renderAssetRow)}
           </tbody>
         </table>
       </div>
 
-      {/* Paginación */}
+      {/* Controles de paginación */}
       <div className="flex justify-center items-center mt-6 space-x-4">
         <button
           onClick={handlePreviousPage}

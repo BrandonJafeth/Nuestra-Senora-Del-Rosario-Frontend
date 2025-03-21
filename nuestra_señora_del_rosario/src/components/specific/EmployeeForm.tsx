@@ -162,6 +162,8 @@ setTypeOfSalaryId(0);
               className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
               onChange={(e) => setProfession(parseInt(e.target.value))}
             >
+              <option value={0}>Seleccione una profesión</option>
+              {/* Mapeo de profesiones para llenar el select */}
               {professionData?.map((type: any) => (
                 <option key={type.id_Profession} value={type.id_Profession}>
                   {type.name_Profession}
@@ -179,6 +181,8 @@ setTypeOfSalaryId(0);
               className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
               onChange={(e) => setTypeOfSalaryId(parseInt(e.target.value))}
             >
+              <option value={0}>Seleccione un tipo de salario</option>
+              {/* Mapeo de tipos de salario para llenar el select */}
               {typeSalaryData?.map((type: any) => (
                 <option key={type.id_TypeOfSalary} value={type.id_TypeOfSalary}>
                   {type.name_TypeOfSalary}
