@@ -10,6 +10,8 @@ import AssetEditModal from "../microcomponents/AssetEditModal";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 import { useToggleAssetCondition } from "../../hooks/useToggleAssetCondition";
 import CreateAssetModal from "../microcomponents/CreateAssetModal";
+import Toast from "../common/Toast";
+import { useToast } from "../../hooks/useToast";
 
 const AssetTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -18,6 +20,7 @@ const AssetTable: React.FC = () => {
 
   // Modal de creación de activo
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const {message, type, showToast} = useToast ();
 
   // Modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -81,9 +84,15 @@ const AssetTable: React.FC = () => {
   };
 
   /** El usuario confirma la actualización (edición) */
-  const handleConfirmUpdate = () => {
-    if (!assetToEdit) return;
-    handleUpdateAsset(assetToEdit.idAsset, pendingEditData);
+  const handleConfirmUpdate = async () => {
+    try {
+      if (assetToEdit) {
+        await handleUpdateAsset(assetToEdit.idAsset, pendingEditData);
+      }
+      showToast("Se ha editado el activo con éxito", "success");
+    } catch (error) {
+      showToast("Error al editar el activo", "error");
+    }
     setIsConfirmOpen(false);
     setAssetToEdit(null);
     setPendingEditData({});
@@ -100,10 +109,14 @@ const AssetTable: React.FC = () => {
     setIsConfirmToggleOpen(true);
   };
 
-  /** El usuario confirma el toggle-condition */
-  const handleConfirmToggle = () => {
+  const handleConfirmToggle = async () => {
     if (!assetToToggle) return;
-    handleToggleCondition(assetToToggle.idAsset);
+    try {
+      await handleToggleCondition(assetToToggle.idAsset);
+      showToast("Condición del activo cambiada con éxito", "success");
+    } catch (error) {
+      showToast("Error al cambiar la condición del activo", "error");
+    }
     setIsConfirmToggleOpen(false);
     setAssetToToggle(null);
   };
@@ -139,12 +152,12 @@ const AssetTable: React.FC = () => {
       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
         {asset.assetCondition}
       </td>
-      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
+      <td className="py-2 px-4 border border-gray-300 dark:border-gray-500 space-y-2">
         <button
           onClick={() => handleEdit(asset)}
-          className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition duration-200"
+          className="px-4 py-2 mr-2 mb-2 sm:mb-0 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
         >
-          Editar
+          Detalles
         </button>
         <button
           onClick={() => handleStateChange(asset)}
@@ -269,6 +282,8 @@ const AssetTable: React.FC = () => {
         message="¿Seguro que deseas cambiar la condición de este activo?"
         confirmText="Confirmar"
       />
+
+      <Toast message={message} type={type} />
     </div>
   );
 };
