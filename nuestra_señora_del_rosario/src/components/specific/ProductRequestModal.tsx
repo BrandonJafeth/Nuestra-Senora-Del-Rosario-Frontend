@@ -48,7 +48,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
     []
   );
 
-  const { data, isLoading } = useProducts(1, 10);
+  const { data, isLoading } = useProducts(1, 100);
   const createInventoryMovement = useCreateInventoryMovement();
   const { showToast, message, type } = useToast();
 
@@ -201,7 +201,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
                       <td className="border border-gray-300 px-2 py-1">
                         <button
                           onClick={() => handleRemoveProduct(index)}
-                          className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition"
+                          className=" text-white px-2 py-1 rounded-md hover:bg-red-100 transition"
                         >
                           ❌
                         </button>

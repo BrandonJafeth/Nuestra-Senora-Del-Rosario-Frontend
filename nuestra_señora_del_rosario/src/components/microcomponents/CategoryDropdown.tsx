@@ -1,26 +1,25 @@
 // FILE: components/CategoryDropdown.tsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
 import { useAuth } from '../../hooks/useAuth';
 import { Category } from '../../types/CategoryType';
 
 interface CategoryDropdownProps {
+  selectedCategory: number; // Valor controlado desde el padre
   onCategorySelect: (categoryId: number) => void;
 }
 
-const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect }) => {
+const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ selectedCategory, onCategorySelect }) => {
   const { data: categories, isLoading, isError } = useCategories();
   const { selectedRole } = useAuth();
 
-  // Definición de roles y las categorías permitidas
+  // Roles y categorías permitidas
   const allowedCategoriesByRole: { [key: string]: number[] } = {
     Admin: [1, 2, 3, 4],
     Enfermeria: [4],
     Fisioterapia: [4],
-    // Si hay otros roles, agrégalos
   };
 
-  // Si existe un mapping para el rol, se usan esas categorías; sino, se muestran todas.
   const allowedCategoryIds =
     selectedRole && allowedCategoriesByRole[selectedRole]
       ? allowedCategoriesByRole[selectedRole]
@@ -32,22 +31,8 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
     ? categories.filter((cat) => allowedCategoryIds.includes(cat.categoryID))
     : [];
 
-  // Estado local para controlar la categoría seleccionada
-  const [selectedCategory, setSelectedCategory] = useState<number | "">("");
-
-  // Cuando se carguen las categorías permitidas, selecciona la primera si aún no hay seleccionada
-  useEffect(() => {
-    if (filteredCategories.length > 0 && selectedCategory === "") {
-      const defaultCategory = filteredCategories[0].categoryID;
-      setSelectedCategory(defaultCategory);
-      onCategorySelect(defaultCategory);
-    }
-  }, [filteredCategories, selectedCategory, onCategorySelect]);
-
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    event.preventDefault(); 
     const selectedCategoryId = Number(event.target.value);
-    setSelectedCategory(selectedCategoryId);
     onCategorySelect(selectedCategoryId);
   };
 
@@ -56,14 +41,12 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-      {/* Etiqueta opcional: se puede ocultar en móviles si quieres */}
       <label
         htmlFor="category-select"
         className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block"
       >
         Categoría:
       </label>
-
       <select
         id="category-select"
         onChange={handleChange}
@@ -75,7 +58,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
           dark:bg-gray-700 dark:text-white dark:border-gray-600
         "
       >
-        <option value="">Seleccione una categoría</option>
+        <option value={0}>Seleccione una categoría</option>
         {filteredCategories.map((category) => (
           <option key={category.categoryID} value={category.categoryID}>
             {category.categoryName}

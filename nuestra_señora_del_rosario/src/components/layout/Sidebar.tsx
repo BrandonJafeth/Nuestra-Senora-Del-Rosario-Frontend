@@ -115,7 +115,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <span className="flex items-center justify-center w-5 h-5">
                       {getIcon('Lista de productos')}
                     </span>
-                    <span className="ml-2">Lista de productos</span>
+                    <span className="ml-2">Ingreso de productos</span>
                   </Link>
                 </li>
                 <li>
@@ -128,7 +128,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <span className="flex items-center justify-center w-5 h-5">
                       {getIcon('Consumo de Productos')}
                     </span>
-                    <span className="ml-2">Consumo de Productos</span>
+                    <span className="ml-2">Egreso de Productos</span>
                   </Link>
                 </li>
                 <li>
