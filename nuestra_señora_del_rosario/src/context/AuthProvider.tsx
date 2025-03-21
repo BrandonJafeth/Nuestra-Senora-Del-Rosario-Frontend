@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsAuthenticated(true);
 
     // Guardar token en cookies
-    Cookies.set("authToken", newToken, { expires: 7, secure: true, sameSite: "Strict" });
+    Cookies.set("authToken", newToken, { expires: 1, secure: true, sameSite: "Strict" });
   };
 
   const logout = () => {
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const setRole = (role: string) => {
     setSelectedRole(role);
-    Cookies.set("selectedRole", role, { expires: 7, secure: true, sameSite: "Strict" });
+    Cookies.set("selectedRole", role, { expires: 1, secure: true, sameSite: "Strict" });
   };
 
   return (

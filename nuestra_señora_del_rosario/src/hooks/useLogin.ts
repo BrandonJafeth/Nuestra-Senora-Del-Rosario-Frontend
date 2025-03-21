@@ -21,23 +21,28 @@ const useLogin = () => {
           password,
         });
 
+        // Si el backend envía un token, usamos login y mostramos mensaje de éxito.
         const token = response.data?.token;
 
         if (token) {
           login(token);
-
           showToast('Inicio de sesión exitoso', 'success');
-
           // Esperar 2 segundos antes de redirigir al dashboard
           setTimeout(() => {
             navigate('/seleccionar-rol');
           }, 2000);
         } else {
-          showToast('Error: No se recibió el token.', 'error');
+          // Si no se recibió token, mostramos el mensaje que venga desde el backend.
+          const backendMessage = response.data?.message;
+          showToast(backendMessage || 'Error: No se recibió el token.', 'error');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error iniciando sesión:', error);
-        showToast('Credenciales Incorrectas. Por favor, intente nuevamente.', 'error');
+        // Intentamos obtener el mensaje de error desde la respuesta del backend
+        const backendErrorMsg =
+          error.response?.data?.message ||
+          'Credenciales Incorrectas. Por favor, intente nuevamente.';
+        showToast(backendErrorMsg, 'error');
       } finally {
         setIsLoading(false); // Ocultar loading
       }
