@@ -83,7 +83,7 @@ const ResidentDetail: React.FC = () => {
                 <div>
                   <strong>{med.name_MedicamentSpecific}</strong> - {med.prescribedDose} {med.unitOfMeasureName}
                   <br />
-                  <small className="text-gray-600">Notas: {med.notes}</small>
+                  <small className="text-gray-600 dark:text-gray-300">Notas: {med.notes}</small>
                 </div>
                 <button
                   className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"
@@ -121,7 +121,7 @@ const ResidentDetail: React.FC = () => {
                 <div>
                   <strong>{path.name_Pathology}</strong> : {path.resume_Pathology}
                   <br />
-                  <small className="text-gray-600">Notas : {path.notes}</small>
+                  <small className="text-gray-600 dark:text-gray-300">Notas : {path.notes}</small>
                 </div>
                 <button
                   className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"

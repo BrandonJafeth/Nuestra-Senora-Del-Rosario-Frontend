@@ -12,6 +12,7 @@ import { useToggleAssetCondition } from "../../hooks/useToggleAssetCondition";
 import CreateAssetModal from "../microcomponents/CreateAssetModal";
 import Toast from "../common/Toast";
 import { useToast } from "../../hooks/useToast";
+import AssetReportButton from "../microcomponents/AssetReportButton";
 
 const AssetTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -191,11 +192,7 @@ const AssetTable: React.FC = () => {
     <h2 className={`text-3xl font-bold font-poppins ${isDarkMode ? "text-white" : "text-gray-800"}`}>
       Lista de Activos
     </h2>
-  <button
-      className="mt-2 sm:mt-0 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
-    >
-      Descargar Reporte
-    </button>
+    <AssetReportButton assets={assets} />
   </div>
 
   {/* Filtro debajo de la fila superior */}

@@ -1,14 +1,13 @@
 import { useQuery } from "react-query";
 import { Pathology } from "../types/PathologyType";
-import ApiService from "../services/GenericService/ApiService";
-
-const apiService = new ApiService<Pathology>();
+import pathologysService from "../services/PathologyService";
+import { ApiResponse } from "../types/AssetsCategoryType";
 
 export const usePathologies = () => {
   return useQuery<Pathology[], Error>(
-    "Pathology", // ✅ Debe coincidir con la key en `invalidateQueries`
+    "/Pathology", // ✅ Debe coincidir con la key en `invalidateQueries`
     async () => {
-      const response = await apiService.getAll("Pathology");
+      const response = await pathologysService.getAllPathologies() as unknown as { data: ApiResponse<Pathology[]> };
 
       if (!response.data || !Array.isArray(response.data)) {
         console.error("🚨 Error: Datos de patologías no válidos", response);
