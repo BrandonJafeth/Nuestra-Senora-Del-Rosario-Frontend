@@ -50,6 +50,8 @@ import TableModels from '../components/specific/TableModels';
 import TableAssetCategories from '../components/specific/TableAssetCategories';
 import AssetTable from '../components/specific/AssetTable';
 import TableLaws from '../components/specific/TableLaws';
+import TableMedicationSpecific from '../components/specific/TableMedication';
+import TableAdministrationRoute from '../components/specific/TableAdministrationRoute';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -116,6 +118,8 @@ function Dashboard() {
               <Route path="Configuracion/sistema/modelo" element={<TableModels/>} />
               <Route path="Configuracion/sistema/categoria-activo" element={<TableAssetCategories/>} />
               <Route path="Configuracion/sistema/leyes" element={<TableLaws />} />
+              <Route path="Configuracion/sistema/medicamento" element={<TableMedicationSpecific />} />
+              <Route path="Configuracion/sistema/via-administracion" element={<TableAdministrationRoute />} />
               <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
               <Route path="NuevoResidente" element={<NewResidentForm />} />
             </Routes>
