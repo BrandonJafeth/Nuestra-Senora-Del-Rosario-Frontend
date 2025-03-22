@@ -1,25 +1,38 @@
+// hooks/GenericHook/CRUDGeneric.ts
 import { useMutation, useQueryClient } from "react-query";
 import { useState } from "react";
 import ApiService from "../../services/GenericService/ApiService";
+import Cookies from "js-cookie";
 
 export const useCRUDGeneric = <T>(endpoint: string) => {
   const queryClient = useQueryClient();
   const apiService = new ApiService<T>();
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "warning" | "info" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" | "warning" | "info") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
 
-  // 📌 Crear una entidad
+  // Obtiene el token
+  const getTokenHeader = () => {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return { Authorization: `Bearer ${token}` };
+  };
+
+  // 📌 Crear una entidad (POST)
   const createEntity = useMutation(
     async (data: T) => {
-      return await apiService.create(endpoint, data);
+      // Llamamos a createWithHeaders
+      return await apiService.postWithHeaders(`${endpoint}`, data, getTokenHeader());
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(endpoint); // 🔄 Refresca la lista después de agregar
+        queryClient.invalidateQueries(endpoint);
         showToast("✅ Registro agregado correctamente!", "success");
       },
       onError: () => {
@@ -32,11 +45,12 @@ export const useCRUDGeneric = <T>(endpoint: string) => {
   const updateEntity = useMutation(
     async (data: Partial<T> & { id?: string | number }) => {
       if (!data.id) throw new Error("ID requerido para la actualización");
-      return await apiService.update(endpoint, data.id, data);
+      // Usamos updateWithHeaders (o patchWithHeaders si tu backend usa PATCH)
+      return await apiService.updateWithHeaders(`${endpoint}/${data.id}`, data, getTokenHeader());
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(endpoint); // 🔄 Refresca la lista después de actualizar
+        queryClient.invalidateQueries(endpoint);
         showToast("✅ Registro actualizado correctamente!", "success");
       },
       onError: () => {
@@ -45,14 +59,14 @@ export const useCRUDGeneric = <T>(endpoint: string) => {
     }
   );
 
-  // 📌 Eliminar una entidad
+  // 📌 Eliminar una entidad (DELETE)
   const deleteEntity = useMutation(
     async (id: string | number) => {
-      return apiService.delete(endpoint, id);
+      return apiService.deleteWithHeaders(endpoint, id.toString(), getTokenHeader());
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(endpoint); // 🔄 Refresca la lista después de eliminar
+        queryClient.invalidateQueries(endpoint);
         showToast("✅ Registro eliminado correctamente!", "success");
       },
       onError: (error) => {
