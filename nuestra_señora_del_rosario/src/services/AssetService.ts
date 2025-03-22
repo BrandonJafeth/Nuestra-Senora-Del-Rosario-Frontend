@@ -1,5 +1,6 @@
 // services/AssetService.ts
 
+import Cookies from "js-cookie";
 import { AssetType } from "../types/AssetType";
 import ApiService from "./GenericService/ApiService";
 
@@ -8,33 +9,71 @@ class AssetService extends ApiService<AssetType> {
     super();
   }
 
-
+  // GET /api/Asset?paged?pageNumber=...&pageSize=...
   public getAllAssetsPaged(pageNumber: number, pageSize: number) {
-    return this.getAll(
-      `/Asset?paged?pageNumber=${pageNumber}&pageSize=${pageSize}`
-    );
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Envía Authorization: Bearer <token> con getWithHeaders
+    return this.getWithHeaders<{
+      data: AssetType[];
+      totalRecords: number;
+      pageNumber: number;
+      pageSize: number;
+    }>(`/Asset?paged?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET /api/Asset/{id}
   public getAssetById(id: number) {
-    return this.getOne(`/Asset`, id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<AssetType>(`/Asset/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/Asset
   public createAsset(data: AssetType) {
-    return this.create(`/Asset`, data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<AssetType>(`/Asset`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PUT /api/Asset/{id}
   public updateAsset(id: number, data: Partial<AssetType>) {
-    // Ajusta la ruta según tu API (ej. /Asset/{id})
-    return this.putWithoutId(`/Asset/${id}`, data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.updateWithHeaders(`/Asset/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/Asset/{id}
   public deleteAsset(id: number) {
-    return this.delete(`/Asset`, id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>(`/Asset`, id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PATCH /api/Asset/{id}/toggle-condition
   public toggleAssetCondition(id: number) {
-    // Llamamos a patch pasando la ruta y el id, el payload puede ser un objeto vacío
-    return this.patchWithoutId(`/Asset/${id}/toggle-condition`, {});
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Envía un patch con payload vacío o con la data que requiera tu API
+    return this.patchWithHeaders(`/Asset/${id}/toggle-condition`, {}, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 
