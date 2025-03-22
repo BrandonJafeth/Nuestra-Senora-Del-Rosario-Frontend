@@ -1,31 +1,61 @@
 // services/AssetCategoryService.ts
-import { AssetsCategoryType } from '../types/AssetsCategoryType';
-import ApiService from './GenericService/ApiService';
-
+import Cookies from "js-cookie";
+import { AssetsCategoryType } from "../types/AssetsCategoryType";
+import ApiService from "./GenericService/ApiService";
 
 class AssetCategoryService extends ApiService<AssetsCategoryType> {
   constructor() {
-    super(); // Usa la URL base desde el genérico
+    super();
   }
 
+  // GET /api/AssetCategory
   public getAllAssetCategorys() {
-    return this.getAll('/AssetCategory');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<AssetsCategoryType[]>("/AssetCategory", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET /api/AssetCategory/{id}
   public getAssetCategoryById(id: number) {
-    return this.getOne('/AssetCategory', id); 
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<AssetsCategoryType>(`/AssetCategory/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/AssetCategory
   public createAssetCategory(data: AssetsCategoryType) {
-    return this.create('/AssetCategory', data); 
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<AssetsCategoryType>("/AssetCategory", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PATCH /api/AssetCategory/{id} (o PUT, según tu backend)
   public updateAssetCategory(id: number, data: Partial<AssetsCategoryType>) {
-    return this.patch(`/AssetCategory/${id}`, id, data); // Cambia la ruta según tu API
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.updateWithHeaders(`/AssetCategory/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/AssetCategory/{id}
   public deleteAssetCategory(id: number) {
-    return this.delete('/AssetCategory', id); // Cambia la ruta según tu API
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/AssetCategory", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

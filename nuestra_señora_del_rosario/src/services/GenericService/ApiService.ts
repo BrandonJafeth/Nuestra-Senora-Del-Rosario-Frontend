@@ -78,8 +78,16 @@ public async createWithParams<R>(endpoint: string, params: Record<string, any>):
         return this.api.put(url, data, { headers });
       }
 
+      public async patchWithHeaders(url: string, data: Partial<T>, headers: Record<string, string>) {
+        return this.api.patch(url, data, { headers });
+        }
+
       public async postWithHeaders<R>(endpoint: string, data: any, headers: Record<string, string>): Promise<AxiosResponse<R>> {
         return axios.post<R>(`${this.api.defaults.baseURL}${endpoint}`, data, { headers });
+      }
+
+      public deleteWithHeaders<T>(url: string, id: string, headers?: any): Promise<AxiosResponse<T>> {
+        return this.api.delete<T>(`${url}/${id}`, { headers });
       }
 
 }

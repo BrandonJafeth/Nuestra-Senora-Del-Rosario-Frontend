@@ -1,15 +1,13 @@
 import { useQuery } from "react-query";
 import { BrandType } from "../types/BrandType";
-import ApiService from "../services/GenericService/ApiService";
 import { ApiResponse } from "../types/AssetsCategoryType";
-
-const apiService = new ApiService<BrandType>();
+import brandService from "../services/BrandService";
 
 export const useBrand = () => {
   return useQuery<BrandType[], Error>(
-    "Brand",
+    "/Brand",
     async () => {
-      const response = await apiService.getAll("Brand") as unknown as { data: ApiResponse<BrandType[]> };
+      const response = await brandService.getAllBrands(1, 10) as unknown as { data: ApiResponse<BrandType[]> };
       if (!response.data?.data || !Array.isArray(response.data.data)) {
         console.error("🚨 Error: Datos de marcas no válidos", response);
         return [];

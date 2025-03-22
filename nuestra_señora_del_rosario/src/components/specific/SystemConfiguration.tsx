@@ -70,31 +70,43 @@ const cardsData = [
     title: "Categorías",
     description: "Gestiona las categorías para el inventario.",
     route: "/dashboard/Configuracion/sistema/categoria",
-    roles: ["Enfermeria", "Admin"],
+    roles: [ "Admin"],
   },
   {
     title: "Marcas de Activos",
     description: "Gestiona las marcas de los activos.",
     route: "/dashboard/Configuracion/sistema/marca",
-    roles: ["Enfermeria", "Admin", "Fisioterapia"],
+    roles: ["Admin" ],
   },
   {
     title: "Modelos de las marcas",
     description: "Gestiona los modelos de las marcas.",
     route: "/dashboard/Configuracion/sistema/modelo",
-    roles: ["Enfermeria", "Admin", "Fisioterapia"],
+    roles: [ "Admin"],
   },
   {
     title: "Categorias de los activos",
     description: "Gestiona las categorías de los activos.",
     route: "/dashboard/Configuracion/sistema/categoria-activo",
-    roles: ["Enfermeria", "Admin", "Fisioterapia"],
+    roles: [ "Admin"],
   },
   {
     title: "Leyes",
     description: "Gestiona las leyes aplicables.",
     route: "/dashboard/Configuracion/sistema/leyes",
-    roles: ["Enfermeria", "Admin", "Fisioterapia"],
+    roles: ["Admin"],
+  },
+  {
+    title: "Medicamentos",
+    description: "Gestiona los medicamentos.",
+    route: "/dashboard/Configuracion/sistema/medicamento",
+    roles: ["Enfermeria"],
+  },
+  {
+    title: "Vías de Administración",
+    description: "Gestiona las vías de administración de medicamentos.",
+    route: "/dashboard/Configuracion/sistema/via-administracion",
+    roles: ["Enfermeria"],
   },
 ];
 
