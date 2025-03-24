@@ -8,7 +8,7 @@ export const useAssignRole = () => {
       const response = await assignRoleService.assignRoleToUser(roleData);
       return {
         success: true, // Asumimos éxito si la petición no lanza error
-        message: response.data.message
+        message: (response.data as AssignRoleResponse).message
       };
     }
   );

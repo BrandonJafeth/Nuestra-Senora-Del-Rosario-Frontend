@@ -1,5 +1,6 @@
-import { AssignRoleRequest } from '../types/UserType';
-import ApiService from './GenericService/ApiService';
+import Cookies from "js-cookie";
+import { AssignRoleRequest } from "../types/UserType";
+import ApiService from "./GenericService/ApiService";
 
 class AssignRoleService extends ApiService<AssignRoleRequest> {
   constructor() {
@@ -7,9 +8,13 @@ class AssignRoleService extends ApiService<AssignRoleRequest> {
   }
 
   public assignRoleToUser(data: AssignRoleRequest) {
-    return this.create('/users/assign-role', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders("/users/assign-role", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 
-const assignRoleService = new AssignRoleService();
-export default assignRoleService;
+export default new AssignRoleService();

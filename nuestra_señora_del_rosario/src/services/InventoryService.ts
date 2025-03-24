@@ -26,9 +26,6 @@ class InventoryService extends ApiService<InventoryReport> {
       `/Inventory/report/category/month?month=${month}&year=${year}&categoryId=${categoryId}&productIds=${productIdsParam}&targetUnits=${targetUnitsParam}`
     );
   }
-  
-  
-  
 }
 
 const inventoryService = new InventoryService();

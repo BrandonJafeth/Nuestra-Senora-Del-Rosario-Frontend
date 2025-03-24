@@ -28,7 +28,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const menuItems = [
     { name: 'Residentes', link: '/dashboard/residentes', roles: ['Admin'] },
     { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['Admin'] },
-    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Enfermeria', 'Admin', 'Fisioterapia'] },
+    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
     { name: 'Cardex', link: '/dashboard/cardex', roles: ['Enfermeria'] }, 
   ];
 
@@ -138,7 +138,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
       )}
 
       {/* Lista de activos solo para Enfermería, Admin y Fisioterapia */}
-      {['Enfermeria', 'Admin', 'Fisioterapia'].includes(rol) && (
+      {[ 'Admin', 'Fisioterapia'].includes(rol) && (
         <li>
           <Link
             to="inventario/lista-activos"
