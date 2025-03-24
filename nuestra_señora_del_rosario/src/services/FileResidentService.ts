@@ -2,6 +2,7 @@
 import { ResidentDocument } from '../types/FileResidentType';
 import ApiService from './GenericService/ApiService';
 import { AxiosResponse } from 'axios';
+import Cookies from 'js-cookie';
 
 class ResidentDocumentService extends ApiService<ResidentDocument> {
   constructor() {
@@ -13,7 +14,12 @@ class ResidentDocumentService extends ApiService<ResidentDocument> {
    * @param cedula Cédula del residente
    */
   public getDocumentsByCedula(cedula: string): Promise<AxiosResponse<ResidentDocument[]>> {
-    return this.getAll(`/FileUpload/list/${cedula}`);
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+
+    return this.getWithHeaders<ResidentDocument[]>(`/FileUpload/list/${cedula}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

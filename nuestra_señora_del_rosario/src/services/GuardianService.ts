@@ -1,38 +1,56 @@
-
-
-
 // services/GuardianService.ts
 import ApiService from './GenericService/ApiService';
 import { Guardian } from '../types/GuardianType';
+import Cookies from 'js-cookie';
 
 class GuardianService extends ApiService<Guardian> {
   constructor() {
-    super(); // Utilizar el constructor base de ApiService
+    super();
   }
 
-  // Obtener todos los guardianes
+  // Obtener todos los guardianes con token
   public getAllGuardians() {
-    return this.getAll('/Guardian');
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<Guardian[]>('/Guardian', {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Obtener un guardián por ID
+  // Obtener un guardián por ID con token
   public getGuardianById(id: number) {
-    return this.getOne('/Guardian', id);
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<Guardian>(`/Guardian/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Crear un nuevo guardián
+  // Crear un nuevo guardián con token
   public createGuardian(data: Guardian) {
-    return this.create('/Guardian', data);
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.postWithHeaders('/Guardian', data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Actualizar un guardián existente
+  // Actualizar un guardián existente con token
   public updateGuardian(id: number, data: Partial<Guardian>) {
-    return this.patch(`/Guardian/${id}`, id, data); // Usar patch para actualizaciones parciales
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.patchWithHeaders(`/Guardian/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Eliminar un guardián
+  // Eliminar un guardián con token
   public deleteGuardian(id: number) {
-    return this.delete('/Guardian', id);
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.deleteWithHeaders('/Guardian', id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

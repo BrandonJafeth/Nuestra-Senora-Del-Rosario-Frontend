@@ -1,39 +1,51 @@
-
-
-
-// services/RoomService.ts
-
-import ApiService from './GenericService/ApiService'; // Asegúrate de que la ruta sea correcta
-import { RoomType } from '../types/RoomType'; // Asegúrate de que la ruta sea correcta
+// src/services/RoomService.ts
+import ApiService from './GenericService/ApiService';
+import { RoomType } from '../types/RoomType';
+import Cookies from 'js-cookie';
 
 class RoomService extends ApiService<RoomType> {
   constructor() {
-    super(); // Usa la URL base desde el genérico
+    super();
   }
 
-  // Obtener todas las habitaciones
   public getAllRooms() {
-    return this.getAll('/Room'); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<RoomType[]>('/Room', {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Obtener una habitación por ID
   public getRoomById(id: number) {
-    return this.getOne('/Room', id); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<RoomType>(`/Room/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Crear una nueva habitación
   public createRoom(data: RoomType) {
-    return this.create('/Room', data); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.postWithHeaders('/Room', data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Actualizar una habitación existente
   public updateRoom(id: number, data: Partial<RoomType>) {
-    return this.patch(`/Room/${id}`, id, data); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.patchWithHeaders(`/Room/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Eliminar una habitación
   public deleteRoom(id: number) {
-    return this.delete('/Room', id); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.deleteWithHeaders('/Room', id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

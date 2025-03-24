@@ -1,32 +1,47 @@
-// services/DependencyLevelService.ts
-
+// src/services/DependencyLevelService.ts
 import ApiService from './GenericService/ApiService';
 import { DependencyLevel } from '../types/DependencyLevelType';
+import Cookies from 'js-cookie';
 
 class DependencyLevelService extends ApiService<DependencyLevel> {
-
   public getAllDependencyLevels() {
-    return this.getAll('/DependencyLevel'); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<DependencyLevel[]>('/DependencyLevel', {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Obtener un nivel de dependencia por su ID
   public getDependencyLevelById(id: number) {
-    return this.getOne('/DependencyLevel', id); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<DependencyLevel>(`/DependencyLevel/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Crear un nuevo nivel de dependencia
   public createDependencyLevel(data: DependencyLevel) {
-    return this.create('/DependencyLevel', data); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.postWithHeaders('/DependencyLevel', data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Actualizar un nivel de dependencia existente
   public updateDependencyLevel(id: number, data: Partial<DependencyLevel>) {
-    return this.update('/DependencyLevel', id, data); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.updateWithHeaders(`/DependencyLevel/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  // Eliminar un nivel de dependencia por su ID
   public deleteDependencyLevel(id: number) {
-    return this.delete('/DependencyLevel', id); // Cambia la ruta según tu API
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.deleteWithHeaders('/DependencyLevel', id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

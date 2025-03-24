@@ -4,6 +4,7 @@ import { useGuardianMutation } from '../../hooks/useGuardian';
 import { useToast } from '../../hooks/useToast'; 
 import { useThemeDark } from '../../hooks/useThemeDark'; 
 import Toast from '../common/Toast'; 
+import Cookies from 'js-cookie';
 import { Guardian } from '../../types/GuardianType';
 
 interface AddGuardianFormProps {
@@ -35,7 +36,13 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   useEffect(() => {
     const fetchGuardians = async () => {
       try {
-        const response = await fetch('https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Guardian');
+        const token = Cookies.get('authToken');
+        if (!token) throw new Error('No se encontró un token de autenticación');
+        const response = await fetch('https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Guardian', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setGuardians(data);
       } catch (error) {
@@ -45,8 +52,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
     };
 
     fetchGuardians();
-  }, []);
-
+  }, [showToast]);
   // Filtrar guardianes mientras el usuario escribe
   const handleSearchByName = (name: string) => {
     const filtered = guardians.filter(g => 
