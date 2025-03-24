@@ -19,7 +19,11 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
+      <div 
+        className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-xl relative"
+        style={{ maxHeight: '90vh', overflowY: 'auto' }} 
+        // ↑ Opcional: limitas la altura y agregas scroll
+      >
         {/* Botón de cierre */}
         <button
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-3xl font-bold"
@@ -29,10 +33,19 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
         </button>
 
         {/* Título */}
-        <h3 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">{title}</h3>
+        <h3 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
+          {title}
+        </h3>
 
         {/* Contenido dinámico */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-6 text-lg text-gray-700 dark:text-gray-300">
+        <div 
+          className="
+            grid grid-cols-1 sm:grid-cols-2 
+            gap-x-8 gap-y-4 mb-6 
+            text-lg text-gray-700 dark:text-gray-300 
+            break-words
+          "
+        >
           {children}
         </div>
 

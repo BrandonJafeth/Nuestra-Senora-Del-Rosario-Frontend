@@ -55,10 +55,11 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
   // Agregar producto a la lista de egreso
   const handleAddProduct = () => {
     if (selectedProductID && quantity > 0) {
+      
       const newProduct: InventoryMovement = {
         productID: selectedProductID,
         quantity,
-        date: new Date().toISOString(),
+        date: new Date().toISOString().split("T")[0],
         movementType: "Egreso",
       };
 

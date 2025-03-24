@@ -1,37 +1,70 @@
-import ApiService from './GenericService/ApiService'; // Asegúrate de que la ruta sea correcta
-import { DonationRequest } from '../types/DonationType';
+import Cookies from "js-cookie";
+import ApiService from "./GenericService/ApiService";
+import { DonationRequest } from "../types/DonationType";
 
 class DonationService extends ApiService<DonationRequest> {
-  getAllDonationService() {
-    throw new Error('Method not implemented.');
-  }
   constructor() {
     super(); // Usa la URL base desde el genérico
   }
 
-  // Métodos específicos del voluntariado
+  // GET /api/FormDonation
   public getAllDonationRequests() {
-    return this.getAll('/FormDonation');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    
+    return this.getWithHeaders<DonationRequest[]>("/FormDonation", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET con paginación usando el método que permite enviar headers
   public getAllDonationsPages(page: number, pageSize: number) {
-    return this.getAllPages('/FormDonation', page, pageSize);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getAllPagesWithHeaders("/FormDonation", page, pageSize, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET /api/FormDonation/{id}
   public getDonationRequestById(id: number) {
-    return this.getOne('/FormDonation', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<DonationRequest>(`/FormDonation/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/FormDonation
   public createDonationRequest(data: DonationRequest) {
-    return this.create('/FormDonation', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<DonationRequest>("/FormDonation", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PATCH /api/FormDonation/{id}/status
   public updateDonationRequest(id: number, data: Partial<DonationRequest>) {
-    return this.patch(`/FormDonation/${id}/status`, id, data); 
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.patchWithHeaders(`/FormDonation/${id}/status`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/FormDonation/{id}
   public deleteDonationRequest(id: number) {
-    return this.delete('/FormDonation', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/FormDonation", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

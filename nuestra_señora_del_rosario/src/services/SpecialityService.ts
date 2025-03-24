@@ -1,18 +1,35 @@
+// services/SpecialtyService.ts
 import { Specialty } from "../types/SpecialityType";
 import ApiService from "./GenericService/ApiService";
+import Cookies from 'js-cookie';
 
 class SpecialtyService extends ApiService<Specialty> {
-    public getAllSpecialties() {
-        return this.getAll('/Specialty');
-    }
+  // Obtener todas las especialidades con token
+  public getAllSpecialties() {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.getWithHeaders<Specialty[]>('/Specialty', {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
-    public createSpecialty(data: Specialty) {
-        return this.create('/Specialty', data);
-    }
+  // Crear una especialidad con token
+  public createSpecialty(data: Specialty) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.postWithHeaders('/Specialty', data, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
-    public deleteSpecialty(id: number) {
-        return this.delete('/Specialty', id);
-    }
+  // Eliminar una especialidad con token
+  public deleteSpecialty(id: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.deleteWithHeaders('/Specialty', id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const specialtyService = new SpecialtyService();

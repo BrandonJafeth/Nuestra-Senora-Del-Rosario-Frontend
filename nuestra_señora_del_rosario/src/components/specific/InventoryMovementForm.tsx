@@ -16,12 +16,14 @@ interface InventoryMovementFormProps {
 }
 
 const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, onClose, productID }) => {
+  const currentDate = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState<InventoryMovement>({
     productID,
     quantity: 1,
-    date: new Date().toISOString(),
+    date: currentDate,
     movementType: 'Ingreso',
   });
+  
 
   const { isDarkMode } = useThemeDark();
   const { showToast, message, type } = useToast();

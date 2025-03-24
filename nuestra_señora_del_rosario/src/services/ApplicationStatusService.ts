@@ -1,4 +1,4 @@
-// FILE: services/ApplicationStatusService.ts
+import Cookies from 'js-cookie';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ApplicationRequest } from '../types/ApplicationType';
 
@@ -10,10 +10,23 @@ class ApplicationStatusService {
   }
 
   // Método para actualizar el estado de una solicitud de ingreso
-  public updateStatus(id_ApplicationForm: ApplicationRequest['id_ApplicationForm'], statusId: number): Promise<AxiosResponse<void>> {
-    return this.api.patch<void>(`/ApplicationForm/${id_ApplicationForm}/status`, statusId, {
-      headers: { 'Content-Type': 'application/json-patch+json' },
-    });
+  public updateStatus(
+    id_ApplicationForm: ApplicationRequest['id_ApplicationForm'], 
+    statusId: number
+  ): Promise<AxiosResponse<void>> {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.api.patch<void>(
+      `/ApplicationForm/${id_ApplicationForm}/status`,
+      statusId,
+      {
+        headers: {
+          'Content-Type': 'application/json-patch+json',
+          'Authorization': `Bearer ${token}`
+        },
+      }
+    );
   }
 }
 

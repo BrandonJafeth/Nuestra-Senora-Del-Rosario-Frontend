@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { VolunteerRequest } from '../types/VolunteerType';
+import Cookies from "js-cookie";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { VolunteerRequest } from "../types/VolunteerType";
 
 class VolunteerStatusService {
   private api: AxiosInstance;
@@ -8,10 +9,16 @@ class VolunteerStatusService {
     this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
   }
 
-  // Método para actualizar el estado de una solicitud de voluntariado
-  public updateStatus(id_FormVoluntarie: VolunteerRequest['id_FormVoluntarie'], statusId: number): Promise<AxiosResponse<void>> {
+  // PATCH /api/FormVoluntarie/{id}/status
+  public updateStatus(id_FormVoluntarie: VolunteerRequest["id_FormVoluntarie"], statusId: number): Promise<AxiosResponse<void>> {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
     return this.api.patch<void>(`/FormVoluntarie/${id_FormVoluntarie}/status`, statusId, {
-      headers: { 'Content-Type': 'application/json-patch+json' },
+      headers: {
+        "Content-Type": "application/json-patch+json",
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 }

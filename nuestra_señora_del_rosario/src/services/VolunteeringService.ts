@@ -1,37 +1,71 @@
-import ApiService from './GenericService/ApiService'; // Asegúrate de que la ruta sea correcta
-import { VolunteerRequest } from '../types/VolunteerType'; // Asegúrate de que la ruta sea correcta
+import Cookies from "js-cookie";
+import ApiService from "./GenericService/ApiService";
+import { VolunteerRequest } from "../types/VolunteerType";
 
 class VolunteeringService extends ApiService<VolunteerRequest> {
-  getAllVolunteeringService() {
-    throw new Error('Method not implemented.');
-  }
   constructor() {
-    super(); // Usa la URL base desde el genérico
+    super();
   }
 
-  // Métodos específicos del voluntariado
+  // GET /api/FormVoluntarie
   public getAllVolunteerRequests() {
-    return this.getAll('/FormVoluntarie');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<VolunteerRequest[]>("/FormVoluntarie", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET con paginación
   public getAllVolunteerPages(page: number, pageSize: number) {
-    return this.getAllPages('/FormVoluntarie', page, pageSize);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Asumimos que getAllPages acepta un objeto de headers
+    return this.getAllPagesWithHeaders("/FormVoluntarie", page, pageSize, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET /api/FormVoluntarie/{id}
   public getVolunteerRequestById(id: number) {
-    return this.getOne('/FormVoluntarie', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<VolunteerRequest>(`/FormVoluntarie/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/FormVoluntarie
   public createVolunteerRequest(data: VolunteerRequest) {
-    return this.create('/FormVoluntarie', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<VolunteerRequest>("/FormVoluntarie", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PATCH /api/FormVoluntarie/{id}/status
   public updateVolunteerRequest(id: number, data: Partial<VolunteerRequest>) {
-    return this.patch(`/FormVoluntarie/${id}/status`, id, data); 
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.patchWithHeaders(`/FormVoluntarie/${id}/status`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/FormVoluntarie/{id}
   public deleteVolunteerRequest(id: number) {
-    return this.delete('/FormVoluntarie', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/FormVoluntarie", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

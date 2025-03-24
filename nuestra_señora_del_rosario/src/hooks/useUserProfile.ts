@@ -8,7 +8,7 @@ import { useAuth } from "./useAuth";
 const fetchUserProfile = async (token: string | null): Promise<User> => {
   if (!token) throw new Error("No se encontró un token de autenticación");
 
-  const response = await userManagmentService.getUserProfile(token);
+  const response = await userManagmentService.getUserProfile();
   return response.data;
 };
 

@@ -9,7 +9,6 @@ class AppointmentService extends ApiService<Appointment> {
 
   public getAllAppointments() {
     const token = Cookies.get("authToken");
-    console.log("authToken:", token);
     if (!token) throw new Error("No se encontró un token de autenticación");
     return this.getWithHeaders<Appointment[]>('/Appointment', {
       Authorization: `Bearer ${token}`,

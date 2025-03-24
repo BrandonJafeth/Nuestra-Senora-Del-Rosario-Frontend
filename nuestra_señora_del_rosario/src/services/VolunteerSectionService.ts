@@ -1,14 +1,20 @@
-import ApiService from './GenericService/ApiService'; // Asegúrate de que la ruta sea correcta
-import { VoluntarieType } from '../types/VoluntarieType'; // Asegúrate de que la ruta sea correcta
+import Cookies from "js-cookie";
+import ApiService from "./GenericService/ApiService";
+import { VoluntarieType } from "../types/VoluntarieType";
 
 class VolunteerSectionService extends ApiService<VoluntarieType> {
   constructor() {
-    super(); // Usa la URL base desde el genérico
+    super();
   }
 
-  // Método específico para obtener todos los tipos de voluntariado
+  // GET /api/VoluntarieType
   public getAllVolunteerTypes() {
-    return this.getAll('/VoluntarieType');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<VoluntarieType[]>("/VoluntarieType", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

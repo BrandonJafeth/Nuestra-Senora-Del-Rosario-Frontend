@@ -1,19 +1,35 @@
+// services/HealthcareCenterService.ts
 import { HealthcareCenter } from "../types/HealthcareCenter";
 import ApiService from "./GenericService/ApiService";
+import Cookies from 'js-cookie';
 
 class HealthcareCenterService extends ApiService<HealthcareCenter> {
-    public getAllHealthcareCenters() {
-        return this.getAll('/HealthcareCenter');
-    }
+  // Obtener todos los centros de atención con token
+  public getAllHealthcareCenters() {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.getWithHeaders<HealthcareCenter[]>('/HealthcareCenter', {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
-    public createHealthcareCenter(data: HealthcareCenter) {
-        return this.create('/HealthcareCenter', data);
-      }
+  // Crear un centro de atención con token
+  public createHealthcareCenter(data: HealthcareCenter) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.postWithHeaders('/HealthcareCenter', data, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
-      public deleteHealthcareCenter(id: number) {
-        return this.delete('/HealthcareCenter', id);
-      }
-    
+  // Eliminar un centro de atención con token
+  public deleteHealthcareCenter(id: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.deleteWithHeaders('/HealthcareCenter', id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const healthcareCenterService = new HealthcareCenterService();
