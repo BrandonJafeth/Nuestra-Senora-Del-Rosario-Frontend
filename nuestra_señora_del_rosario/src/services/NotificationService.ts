@@ -1,5 +1,5 @@
-// src/services/notificationService.ts
-import axios from 'axios';
+import axios, { } from 'axios';
+import Cookies from 'js-cookie';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import { NotificationGetDto } from '../types/NotificationType';
 
@@ -17,6 +17,7 @@ class NotificationService {
   private initializeConnection() {
     this.connection = new HubConnectionBuilder()
       .withUrl(this.hubUrl, {
+        accessTokenFactory: () => Cookies.get('authToken') || '', // Obtener el token de acceso
         skipNegotiation: true, // Omitir la negociación
         transport: HttpTransportType.WebSockets, // Forzar uso de WebSocket
         withCredentials: true, // Enviar credenciales si es necesario
@@ -30,46 +31,48 @@ class NotificationService {
   }
 
   // Registra los eventos relevantes de la conexión
-  // Registro de eventos de conexión con tipo explícito para error
-private registerConnectionEvents() {
-  if (!this.connection) return;
+  private registerConnectionEvents() {
+    if (!this.connection) return;
 
-  this.connection.onreconnecting(() => {
-    //console.warn(`🔄 Reconectando con SignalR... Intento #${this.reconnectAttempts}`, error);
-  });
+    this.connection.onreconnecting(() => {
+      // Aquí podrías notificar que se está reconectando, si lo deseas.
+    });
 
-  this.connection.onreconnected(() => {
-  
-    this.reconnectAttempts = 0; // Reiniciar contador de intentos
-  });
+    this.connection.onreconnected(() => {
+      this.reconnectAttempts = 0; // Reiniciar contador de intentos
+    });
 
-  this.connection.onclose(async () => {
-    //console.error('❌ Conexión cerrada. Intentando reconectar...', error);
-    await this.reconnectWithBackoff(); // Intentar reconexión controlada
-  });
-}
+    this.connection.onclose(async () => {
+      await this.reconnectWithBackoff(); // Intentar reconexión controlada
+    });
+  }
 
-  // Intentar iniciar la conexión
+  // Inicia la conexión con el Hub
   private async startConnection() {
     try {
       if (this.connection?.state === HubConnectionState.Disconnected) {
         await this.connection.start();
-        //console.log('🔗 Conectado a SignalR');
+        // Conexión iniciada correctamente.
       }
     } catch (err) {
-      console.error('⚠️ Error al conectar con SignalR:', err);
-      setTimeout(() => this.startConnection(), 5000); // Reintentar en 5 segundos
+      console.error('Error al conectar con SignalR:', err);
+      setTimeout(() => this.startConnection(), 5000);
     }
   }
 
-  // Maneja la reconexión controlada con un backoff limitado
+  // Mecanismo de reconexión con backoff
   private async reconnectWithBackoff() {
     this.reconnectAttempts++;
     const delay = Math.min(this.reconnectAttempts * 2000, 30000); // Máximo de 30 segundos
-
-    console.warn(`🔄 Intentando reconectar en ${delay / 1000} segundos...`);
+    console.warn(`Intentando reconectar en ${delay / 1000} segundos...`);
     await new Promise((resolve) => setTimeout(resolve, delay));
     this.startConnection();
+  }
+
+  // Método para obtener el token y generar los headers
+  private getAuthHeaders() {
+    const token = Cookies.get('authToken'); // O, si lo prefieres, localStorage.getItem('token')
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
   }
 
   // Escuchar notificaciones en tiempo real
@@ -77,7 +80,6 @@ private registerConnectionEvents() {
     if (!this.connection) return;
 
     this.connection.on('ReceiveNotification', (notification: NotificationGetDto) => {
-    //  console.log('📩 Notificación recibida:', notification);
       callback(notification);
     });
   }
@@ -88,7 +90,7 @@ private registerConnectionEvents() {
       const response = await axios.get<NotificationGetDto[]>(this.apiUrl, this.getAuthHeaders());
       return response.data;
     } catch (error) {
-      console.error('❌ Error al obtener notificaciones:', error);
+      console.error('Error al obtener notificaciones:', error);
       throw error;
     }
   }
@@ -97,25 +99,16 @@ private registerConnectionEvents() {
   public async markAsRead(notificationId: number): Promise<void> {
     try {
       await axios.put(`${this.apiUrl}/${notificationId}`, null, this.getAuthHeaders());
-     // console.log(`✅ Notificación ${notificationId} marcada como leída.`);
     } catch (error) {
-      console.error('❌ Error al marcar la notificación como leída:', error);
+      console.error('Error al marcar la notificación como leída:', error);
       throw error;
     }
-  }
-
-  // Generar headers de autenticación
-  private getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return token
-      ? { headers: { Authorization: `Bearer ${token}` } }
-      : {};
   }
 
   // Desconectar la conexión de SignalR
   public disconnect() {
     if (this.connection) {
-      this.connection.stop().then(() => console.log('🔌 Conexión de SignalR detenida.'));
+      this.connection.stop().then(() => console.log('Conexión de SignalR detenida.'));
     }
   }
 }

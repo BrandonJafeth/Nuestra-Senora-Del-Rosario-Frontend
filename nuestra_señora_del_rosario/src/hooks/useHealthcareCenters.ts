@@ -1,20 +1,17 @@
+// hooks/useHealthcareCenters.ts
 import { useQuery } from "react-query";
 import { HealthcareCenter } from "../types/HealthcareCenter";
-import ApiService from "../services/GenericService/ApiService";
-
-const apiService = new ApiService<HealthcareCenter>();
+import healthcareCenterService from "../services/HealthcareCenterService";
 
 export const useHealthcareCenters = () => {
   return useQuery<HealthcareCenter[], Error>(
-    "HealthcareCenter", // ✅ Debe coincidir con la key en `invalidateQueries`
+    "HealthcareCenter",
     async () => {
-      const response = await apiService.getAll("HealthcareCenter");
-
+      const response = await healthcareCenterService.getAllHealthcareCenters();
       if (!response.data || !Array.isArray(response.data)) {
         console.error("🚨 Error: Datos de centros de atención no válidos", response);
         return [];
       }
-
       return response.data.map((item) => ({
         id_HC: item.id_HC ?? 0,
         name_HC: item.name_HC || "Sin nombre",
