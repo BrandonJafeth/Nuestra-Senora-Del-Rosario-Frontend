@@ -1,26 +1,46 @@
-// FILE: services/UnitOfMeasureService.ts
-import { UnitOfMeasure } from '../types/UnitOfMeasureType';
-import ApiService from './GenericService/ApiService';
+import Cookies from "js-cookie";
+import { UnitOfMeasure } from "../types/UnitOfMeasureType";
+import ApiService from "./GenericService/ApiService";
 
 class UnitOfMeasureService extends ApiService<UnitOfMeasure> {
   constructor() {
     super();
   }
 
-  getAllUnits() {
-    return this.getAll('/UnitOfMeasure');
+  public getAllUnits() {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<UnitOfMeasure[]>("/UnitOfMeasure", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
   public createUnit(unit: UnitOfMeasure) {
-    return this.create('/UnitOfMeasure', unit);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<UnitOfMeasure>("/UnitOfMeasure", unit, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
   public updateUnit(id: number, unit: UnitOfMeasure) {
-    return this.update('/UnitOfMeasure', id, unit);
+    const token = Cookies.get("authAuthToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.updateWithHeaders(`/UnitOfMeasure/${id}`, unit, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
   public deleteUnit(id: number) {
-    return this.delete('/UnitOfMeasure', id);
+    const token = Cookies.get("authAuthToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/UnitOfMeasure", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 
