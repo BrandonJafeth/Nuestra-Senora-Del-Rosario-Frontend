@@ -6,7 +6,10 @@
   import { useThemeDark } from '../../hooks/useThemeDark'; // Hook para manejar el modo oscuro
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
-  
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
+
   const PaymentReceiptForm: React.FC = () => {
     const { showToast,  message,
       type, } = useToast();
@@ -42,11 +45,49 @@ import Toast from '../common/Toast';
   
     const [generatedReceiptId, setGeneratedReceiptId] = useState<number | null>(null); // Estado para almacenar el ID del comprobante generado
     const { mutate: createPaymentReceipt, isLoading } = useCreatePaymentReceipt();
+    const [downloadLoading, setDownloadLoading] = useState(false);
+
+    const handleDownloadPDF = async () => {
+      if (!generatedReceiptId) return;
   
-    // Enlace para descargar el comprobante en formato PDF
-    const downloadLink = generatedReceiptId
-      ? `https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`
-      : null;
+      const token = Cookies.get("authToken");
+      if (!token) {
+        showToast("No se encontró un token de autenticación", "error");
+        return;
+      }
+  
+      try {
+        setDownloadLoading(true);
+        // Solicitud con Axios para obtener el PDF en formato blob
+        const response = await axios.get(
+          `https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            responseType: "blob",
+          }
+        );
+  
+        // Crear un Blob con la data del PDF
+        const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+        // Generar un URL temporal
+        const url = URL.createObjectURL(pdfBlob);
+        // Crear un enlace <a> y simular clic para descargar
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "comprobante.pdf";
+        link.click();
+        // Revocar el URL después de 1 segundo
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (error) {
+        console.error("Error al descargar PDF:", error);
+        showToast("Error al descargar el PDF.", "error");
+      } finally {
+        setDownloadLoading(false);
+      }
+    };
+  
   
     // Manejar cambios en el formulario
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -285,14 +326,14 @@ import Toast from '../common/Toast';
   
             {/* Botón Descargar PDF */}
             {generatedReceiptId && (
-              <a
-                href={downloadLink!}
+              <button
+                type="button"
+                onClick={handleDownloadPDF}
                 className="px-6 py-3 text-lg font-semibold rounded-lg shadow-md bg-blue-500 hover:bg-blue-600 text-white transition-all duration-300"
-                target="_blank"
-                rel="noopener noreferrer"
+              disabled={downloadLoading}
               >
-                Descargar PDF
-              </a>
+            {downloadLoading ? <LoadingSpinner/> : 'Descargar PDF'}
+              </button>
             )}
   
             {/* Botón Enviar Comprobante */}

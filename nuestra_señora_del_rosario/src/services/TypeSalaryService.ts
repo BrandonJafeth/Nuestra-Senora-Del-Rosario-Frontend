@@ -1,30 +1,47 @@
-import { TypeSalaryData } from "../types/TypeSalaryType";
+import Cookies from "js-cookie";
 import ApiService from "./GenericService/ApiService";
+import { TypeSalaryData } from "../types/TypeSalaryType";
 
 class TypeSalaryService extends ApiService<TypeSalaryData> {
+  // GET /api/TypeOfSalary
   public getAllTypeSalary() {
-    return this.getAll('/TypeOfSalary');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.getWithHeaders<TypeSalaryData[]>("/TypeOfSalary", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/TypeOfSalary
   public createTypeSalary(data: TypeSalaryData) {
-    return this.create('/TypeOfSalary', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.postWithHeaders<TypeSalaryData>("/TypeOfSalary", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PUT /api/TypeOfSalary/{id}
   public updateTypeSalary(id: number, data: Partial<TypeSalaryData>) {
-    return this.putWithoutId(`/TypeOfSalary/${id}`, data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.updateWithHeaders(`/TypeOfSalary/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/TypeOfSalary/{id}
   public deleteTypeSalary(id: number) {
     if (!id) {
       return Promise.reject("ID inválido");
     }
-    return this.delete('/TypeOfSalary', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    return this.deleteWithHeaders<null>("/TypeOfSalary", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
-  
-  
 }
 
 const typeSalaryService = new TypeSalaryService();
-
 export default typeSalaryService;
-
