@@ -1,35 +1,70 @@
-// services/ApplicationService.ts
-import ApiService from './GenericService/ApiService'; // Asegúrate de que la ruta sea correcta
-import { ApplicationRequest } from '../types/ApplicationType'; // Asegúrate de que la ruta sea correcta
+import Cookies from "js-cookie";
+import ApiService from "./GenericService/ApiService";
+import { ApplicationRequest } from "../types/ApplicationType";
 
 class ApplicationService extends ApiService<ApplicationRequest> {
   constructor() {
-    super(); // Usa la URL base desde el genérico
+    super();
   }
 
-  // Métodos específicos para solicitudes de ingreso
+  // GET /api/ApplicationForm
   public getAllApplicationRequests() {
-    return this.getAll('/ApplicationForm');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<ApplicationRequest[]>("/ApplicationForm", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET /api/ApplicationForm/{id}
   public getApplicationRequestById(id: number) {
-    return this.getOne('/ApplicationForm', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<ApplicationRequest>(`/ApplicationForm/${id}`, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // GET con paginación usando el método getAllPagesWithHeaders
   public getAllAplicationPages(page: number, pageSize: number) {
-    return this.getAllPages('/ApplicationForm', page, pageSize);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getAllPagesWithHeaders("/ApplicationForm", page, pageSize, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/ApplicationForm
   public createApplicationRequest(data: ApplicationRequest) {
-    return this.create('/ApplicationForm', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<ApplicationRequest>("/ApplicationForm", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // PATCH /api/ApplicationForm/{id}
   public updateApplicationRequest(id: number, data: Partial<ApplicationRequest>) {
-    return this.patch(`/ApplicationForm/${id}`, id, data); 
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.patchWithHeaders(`/ApplicationForm/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/ApplicationForm/{id}
   public deleteApplicationRequest(id: number) {
-    return this.delete('/ApplicationForm', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/ApplicationForm", id.toString(), {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 

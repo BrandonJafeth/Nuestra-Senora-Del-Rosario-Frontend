@@ -1,6 +1,6 @@
-// FILE: services/DonationStatusService.ts
+import Cookies from "js-cookie";
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { DonationRequest } from '../types/DonationType'; // Asegúrate de que la ruta sea correcta
+import { DonationRequest } from '../types/DonationType';
 
 class DonationStatusService {
   private api: AxiosInstance;
@@ -10,10 +10,23 @@ class DonationStatusService {
   }
 
   // Método para actualizar el estado de una solicitud de donación
-  public updateStatus(id_FormDonation: DonationRequest['id_FormDonation'], statusId: number): Promise<AxiosResponse<void>> {
-    return this.api.patch<void>(`/FormDonation/${id_FormDonation}/status`, statusId, {
-      headers: { 'Content-Type': 'application/json-patch+json' },
-    });
+  public updateStatus(
+    id_FormDonation: DonationRequest['id_FormDonation'], 
+    statusId: number
+  ): Promise<AxiosResponse<void>> {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.api.patch<void>(
+      `/FormDonation/${id_FormDonation}/status`,
+      statusId,
+      {
+        headers: {
+          'Content-Type': 'application/json-patch+json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
   }
 }
 

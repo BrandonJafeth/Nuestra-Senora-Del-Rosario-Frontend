@@ -17,7 +17,7 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
     private api: AxiosInstance;
 
     constructor() {
-        this.api = axios.create({ baseURL: 'https://localhost:7066/api' });
+        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
     }
     //https://localhost:7066/api
     //https://nuestra-senora-del-rosario-backend.onrender.com/api
@@ -32,6 +32,15 @@ class ApiService<T> implements IReadService<T>, IWriteService<T> {
 public async getAllPages(endpoint: string, pageNumber: number, pageSize: number): Promise<AxiosResponse<any>> {
     return this.api.get(endpoint, { params: { pageNumber, pageSize } });
 }
+
+public async getAllPagesWithHeaders(
+    endpoint: string,
+    pageNumber: number,
+    pageSize: number,
+    headers: Record<string, string>
+  ): Promise<AxiosResponse<any>> {
+    return this.api.get(endpoint, { params: { pageNumber, pageSize }, headers });
+  }
 
 
     public async getOne(endpoint: string, id: string | number): Promise<AxiosResponse<T>> {
