@@ -85,7 +85,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
     const formattedMovements = productsToEgress.map((product) => ({
       productID: product.productID,
       quantity: product.quantity,
-      date: new Date().toISOString(), // ✅ Asegurar formato correcto
+      date: new Date().toISOString().split("T")[0], // ✅ Asegurar formato correcto
       movementType: "Egreso", // ✅ Tipo de movimiento fijo
     }));
   
