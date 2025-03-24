@@ -1,10 +1,11 @@
+// src/hooks/useLaw.ts
 import { useQuery } from "react-query";
 import { LawType } from "../types/LawType";
 import LawService from "../services/LawService";
 
 export const useLaw = () => {
   return useQuery<LawType[], Error>(
-    "Law",
+    "/Law",
     async () => {
       const response = await LawService.getAllLaws();
 

@@ -1,6 +1,8 @@
+// src/services/LawService.ts
 import { ApiResponse } from "../types/AssetsCategoryType";
 import { LawType } from "../types/LawType";
 import ApiService from "./GenericService/ApiService";
+import Cookies from "js-cookie";
 
 class LawService extends ApiService<LawType> {
   constructor() {
@@ -8,11 +10,22 @@ class LawService extends ApiService<LawType> {
   }
 
   public getAllLaws() {
-    return this.getAll("Law") as unknown as Promise<{ data: ApiResponse<LawType[]> }>;
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Se usa getWithHeaders para incluir el token
+    return this.getWithHeaders<LawType[]>("/Law", {
+      Authorization: `Bearer ${token}`,
+    }) as unknown as Promise<{ data: ApiResponse<LawType[]> }>;
   }
 
   public getLawById(id: number) {
-    return this.getOne("Law", id) as Promise<{ data: LawType }>;
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<LawType>(`/Law/${id}`, {
+      Authorization: `Bearer ${token}`,
+    }) as Promise<{ data: LawType }>;
   }
 }
 
