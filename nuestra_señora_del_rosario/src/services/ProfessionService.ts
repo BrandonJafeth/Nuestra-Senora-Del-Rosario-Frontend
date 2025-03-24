@@ -1,24 +1,48 @@
+import Cookies from "js-cookie";
 import { ProfessionData } from "../types/ProfessionType";
 import ApiService from "./GenericService/ApiService";
 
 class ProfessionService extends ApiService<ProfessionData> {
+  // GET /api/Profession
   public getAllProfession() {
-    return this.getAll('/Profession');
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<ProfessionData[]>("/Profession", {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // POST /api/Profession
   public createProfession(data: ProfessionData) {
-    return this.create('/Profession', data);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.postWithHeaders<ProfessionData>("/Profession", data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
-  public updateProfession(id : number, data: ProfessionData) {
-    return this.putWithoutId(`/Profession/${id}`, data);
+  // PUT /api/Profession/{id}
+  public updateProfession(id: number, data: ProfessionData) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.updateWithHeaders(`/Profession/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 
+  // DELETE /api/Profession/{id}
   public deleteProfession(id: string) {
-    return this.delete('/Profession', id);
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.deleteWithHeaders<null>("/Profession", id, {
+      Authorization: `Bearer ${token}`,
+    });
   }
 }
 
 const professionService = new ProfessionService();
 export default professionService;
-

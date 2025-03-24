@@ -6,12 +6,14 @@ import { useResidentInfoById } from "../../hooks/useResidentInfoById";
 import { ResidentPathology } from "../../types/ResidentPathology";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import Toast from "../common/Toast";
+import { useThemeDark } from "../../hooks/useThemeDark";
 
 const EditResidentPathology: React.FC = () => {
   const { id, id_ResidentPathology } = useParams<{ id: string; id_ResidentPathology: string }>(); 
   const residentId = Number(id);
   const pathologyID = Number(id_ResidentPathology);
   const navigate = useNavigate();
+  const { isDarkMode } = useThemeDark();
 
   const { register, handleSubmit, setValue } = useForm<Partial<ResidentPathology>>();
   const mutation = useUpdateResidentPathology();
@@ -75,7 +77,7 @@ const EditResidentPathology: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className={`max-w-lg mx-auto p-6 rounded-lg shadow-md ${isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"}`}>
       <h2 className="text-2xl font-bold mb-4 text-center">Editar Patología</h2>
 
       {/* Componente Toast */}
@@ -84,11 +86,11 @@ const EditResidentPathology: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Nombre de la Patología (Solo visual, se envía el ID) */}
         <div>
-          <label className="block text-gray-700">Nombre de la Patología</label>
+          <label className="block">Nombre de la Patología</label>
           <input
             type="text"
             value={pathologyName} // Muestra el nombre de la patología
-            className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
             disabled
           />
           <input type="hidden" {...register("id_Pathology")} /> {/* Enviar el ID real */}
@@ -98,10 +100,10 @@ const EditResidentPathology: React.FC = () => {
         {/* Resumen */}
         {/* Resumen (Textarea más grande) */}
 <div>
-  <label className="block text-gray-700">Resumen</label>
+  <label className="block">Resumen</label>
   <textarea
     {...register("resume_Pathology")}
-    className="w-full px-3 py-2 border rounded-md resize-none"
+    className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
     rows={4} // Hace el campo más grande
   ></textarea>
 </div>
@@ -109,11 +111,11 @@ const EditResidentPathology: React.FC = () => {
 
         {/* Fecha de Diagnóstico (No editable, siempre es hoy) */}
         <div>
-          <label className="block text-gray-700">Fecha de Diagnóstico</label>
+          <label className="block">Fecha de Diagnóstico</label>
           <input
             type="date"
             value={todayDate} // Muestra la fecha de hoy
-            className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
             disabled
           />
           <input type="hidden" {...register("diagnosisDate")} value={todayDate} /> {/* Enviar la fecha actual */}
@@ -121,11 +123,11 @@ const EditResidentPathology: React.FC = () => {
 
         {/* Fecha de Registro (No editable, usa la que ya está registrada) */}
         <div>
-          <label className="block text-gray-700">Fecha de Registro</label>
+          <label className="block">Fecha de Registro</label>
           <input
             type="date"
             value={registerDate} // Muestra la fecha registrada o la actual si era null
-            className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
             disabled
           />
           <input type="hidden" {...register("registerDate")} value={registerDate} /> {/* Se envía la fecha registrada */}
@@ -133,10 +135,10 @@ const EditResidentPathology: React.FC = () => {
 
         {/* Notas */}
         <div>
-          <label className="block text-gray-700">Notas</label>
+          <label className="block">Notas</label>
           <textarea
             {...register("notes")}
-            className="w-full px-3 py-2 border rounded-md"
+            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           ></textarea>
         </div>
 
