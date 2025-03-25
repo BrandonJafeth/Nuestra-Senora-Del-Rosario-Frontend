@@ -36,7 +36,7 @@ export const useUpdateAppointment = () => {
       // Manejo de errores
       onError: (error) => {
         console.error('Error al actualizar la cita:', error);
-        alert('Hubo un problema al actualizar la cita. Verifica los datos.');
+        
       },
 
       // Comportamiento cuando la mutación se completa, sin importar el resultado
