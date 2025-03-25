@@ -159,10 +159,9 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
             </button>
           </div>
         </form>
-      </Modal>
-
       {/* Mostrar el Toast */}
       {message && <Toast message={message} type={type} />}
+      </Modal>
     </>
   );
 };
