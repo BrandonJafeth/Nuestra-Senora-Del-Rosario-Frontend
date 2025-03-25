@@ -26,16 +26,16 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
 
   // Definimos los ítems de menú con condiciones basadas en el rol
   const menuItems = [
-    { name: 'Residentes', link: '/dashboard/residentes', roles: ['Admin'] },
-    { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['Admin'] },
-    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
-    { name: 'Cardex', link: '/dashboard/cardex', roles: ['Enfermeria'] }, 
+    { name: 'Residentes', link: '/dashboard/residentes', roles: ['SuperAdmin','Admin'] },
+    { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['SuperAdmin','Admin'] },
+    { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['SuperAdmin','Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
+    { name: 'Cardex', link: '/dashboard/cardex', roles: ['SuperAdmin','Enfermeria'] }, 
   ];
 
   const settingsItems = [
     { name: 'Ajustes del Usuario', link: '/dashboard/Configuracion/usuario' },
-    { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['Admin', 'Enfermeria'] },
-    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina', roles:['Admin'] },
+    { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['SuperAdmin','Admin', 'Enfermeria'] },
+    { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina', roles:['SuperAdmin','Admin'] },
     { name: 'Página Central', link: '/dashboard' },
 
   ];
@@ -106,7 +106,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   {isInventoryDropdownOpen && (
     <ul className="pl-8 mt-2 space-y-1 py-2">
       {/* Ingreso y Egreso de Productos solo para Enfermería, Inventario y Admin */}
-      {['Enfermeria', 'Inventario', 'Admin'].includes(rol) && (
+      {['SuperAdmin','Enfermeria', 'Inventario', 'Admin'].includes(rol) && (
         <>
           <li>
             <Link
@@ -138,7 +138,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
       )}
 
       {/* Lista de activos solo para Enfermería, Admin y Fisioterapia */}
-      {[ 'Admin', 'Fisioterapia'].includes(rol) && (
+      {['SuperAdmin', 'Admin', 'Fisioterapia'].includes(rol) && (
         <li>
           <Link
             to="inventario/lista-activos"
@@ -160,7 +160,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
 
 
           {/* Dropdown de Solicitudes, solo visible para Admin */}
-          {rol === 'Admin' && (
+          {['Admin', 'SuperAdmin'].includes(rol) && (
             <li className="relative">
               <button
                 onClick={toggleDropdown}
@@ -238,7 +238,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
           )}
 
           {/* Dropdown de Personal, solo visible para Admin */}
-          {rol === 'Admin' && (
+          {(rol === 'Admin' || rol === 'SuperAdmin') && (
             <li className="relative">
               <button
                 onClick={togglePersonalDropdown}
