@@ -24,5 +24,8 @@ export interface Deduction {
     deductionsList: Deduction[];
     totalDeductions: number;
     notes: string;
+    employeeName: string;
+    employeeLastName: string;
+    netIncome: number;
   }
   
