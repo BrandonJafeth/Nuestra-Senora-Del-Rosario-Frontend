@@ -21,28 +21,30 @@ const ProductDropdownByCategory: React.FC<ProductDropdownProps> = ({ selectedPro
 
   // Mapeo de roles a categoría para roles distintos a Admin
   const roleToCategoryId: { [key: string]: number } = {
-    Enfermeria: 4,
-    Inventario: 2,
+    Enfermeria: 4
   };
-
-  // Para Admin: usaremos el hook que trae TODOS los productos
-  // Para los demás roles: se usa el ID correspondiente del mapeo.
-  const categoryId = selectedRole === 'Admin'
-    ? 0
-    : (roleToCategoryId[selectedRole ?? ''] ?? 0);
 
   // Variables para almacenar los datos, estado de carga y error.
   let productsData: Product[] | undefined;
   let isLoading: boolean, isError: boolean;
 
+  // Lógica para Admin, Inventario y Enfermeria
   if (selectedRole === 'Admin') {
-    // Para Admin usamos el hook que trae todos los productos (useProducts)
-    const result = useProducts(1, 100); // Ajusta página según necesites
+    const result = useProducts(1, 1000);
     productsData = result.data?.products;
     isLoading = result.isLoading;
     isError = result.isError;
+  } else if (selectedRole === 'Inventario') {
+    const result = useProducts(1, 1000);
+    const allowedCategories = ['Limpieza', 'Alimentos'];
+productsData = result.data?.products?.filter(product =>
+  allowedCategories.includes(product.categoryName)
+);
+
+    isLoading = result.isLoading;
+    isError = result.isError;
   } else {
-    // Para otros roles usamos el hook que filtra por categoría
+    const categoryId = roleToCategoryId[selectedRole ?? ''] ?? 0;
     const result = useAllProductsByCategory(categoryId);
     productsData = result.data;
     isLoading = result.isLoading;

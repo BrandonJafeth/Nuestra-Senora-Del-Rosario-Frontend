@@ -136,7 +136,7 @@ const AppointmentCalendar = () => {
             <div className="flex justify-between items-center mb-4">
               <div className="flex justify-start items-center space-x-4 mb-4">
                 {/* Mostrar estos botones solo para Enfermería */}
-                {selectedRole === 'Enfermeria' && (
+                {(selectedRole === 'Enfermeria' || selectedRole === 'SuperAdmin') && (
                   <>
                     <button
                       onClick={handleAddAppointment}
@@ -178,7 +178,7 @@ const AppointmentCalendar = () => {
                   Siguiente
                 </button>
                 {/* Mostrar botón de notificaciones solo para Enfermería */}
-                {selectedRole === 'Enfermeria' && (
+                {(selectedRole === 'Enfermeria' || selectedRole === 'SuperAdmin') && (
                   <button
                     onClick={goToNotifications}
                     className={`relative px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}

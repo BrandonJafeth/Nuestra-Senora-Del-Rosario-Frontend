@@ -13,7 +13,7 @@ const SystemPageSettings = () =>  {
 
       {/* 📌 GRID de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AdminCard title="Imagenes de la Pagina Informativa" description="Gestiona las imagenes de la pagina informativa." route="/dashboard/Configuracion/pagina/imagenes" roles={["Admin"]} isDarkMode={isDarkMode}/>
+        <AdminCard title="Imagenes de la Pagina Informativa" description="Gestiona las imagenes de la pagina informativa." route="/dashboard/Configuracion/pagina/imagenes" roles={["Admin", "SuperAdmin"]} isDarkMode={isDarkMode}/>
      </div>
     </div>
   );
