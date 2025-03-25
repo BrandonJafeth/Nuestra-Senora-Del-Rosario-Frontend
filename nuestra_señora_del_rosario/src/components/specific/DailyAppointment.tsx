@@ -4,18 +4,19 @@ import { AppointmentUpdateDto } from '../../types/AppointmentType';
 import { useUpdateAppointment } from '../../hooks/useUpdateAppointment';
 import { formatDate, formatLongDate, formatTime } from '../../utils/formatDate';
 import { EmployeeType } from '../../types/EmployeeType';
-import { useToast } from '../../hooks/useToast'; // Hook de Toast
+import { useToast } from '../../hooks/useToast';
 import { useAppointmentStatuses } from '../../hooks/useappointmentStatus';
 import Toast from '../common/Toast';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
+import { useAuth } from '../../hooks/useAuth'; // <-- Importa el hook de autenticación
 
 interface DailyAppointmentsModalProps {
   modalIsOpen: boolean;
   setModalIsOpen: (open: boolean) => void;
   selectedDate: Date | null;
   dailyAppointments: any[];
-  setDailyAppointments: React.Dispatch<React.SetStateAction<any[]>>; // Prop para actualizar citas
+  setDailyAppointments: React.Dispatch<React.SetStateAction<any[]>>;
   isDarkMode: boolean;
   onSave: () => void;
 }
@@ -29,36 +30,58 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
   isDarkMode,
   onSave,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0); // Índice actual de la cita
+  const [currentIndex, setCurrentIndex] = useState(0); // Índice de la cita actual
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
   const [formData, setFormData] = useState<AppointmentUpdateDto | null>(null);
   const [originalData, setOriginalData] = useState<AppointmentUpdateDto | null>(null);
 
+  // Obtener el rol del usuario
+  const { selectedRole } = useAuth();
+
+  // Estados y acompañantes
   const { data: statusesResponse, error: statusesError } = useAppointmentStatuses();
-  const { data: companionsResponse } = useEmployeesByProfession(5);
+  const { data: companionsResponse } = useEmployeesByProfession(5); // Profesión ID=5 para acompañantes
 
   const statuses = statusesResponse || [];
   const companions: EmployeeType[] = companionsResponse || [];
 
+  // Hook para actualizar la cita
   const { mutate: updateAppointment, isLoading: updating } = useUpdateAppointment();
-  const { showToast, message, type } = useToast(); // Hook de Toast
+  const { showToast, message, type } = useToast();
 
+  // Abre el modal de edición SOLO si el rol es "Enfermeria"
   const handleOpenEditModal = (appointment: any) => {
+    // Si el rol NO es "Enfermeria", no permitimos edición
+    if (selectedRole !== 'Enfermeria') {
+      showToast('No tienes permiso para editar citas.', 'warning');
+      return;
+    }
+  
+    // Convierte la fecha completa en "YYYY-MM-DD"
+    const isoDate = new Date(appointment.date).toISOString().split('T')[0];
+  
+    // Si el backend te envía la hora como "08:25" está bien para el input type="time"
+    // pero si necesitas "HH:mm:ss", puedes concatenar ":00" cuando sea necesario.
+    const parsedTime = appointment.time; // "08:25"
+  
     const initialData: AppointmentUpdateDto = {
       id_Appointment: appointment.id_Appointment,
-      date: appointment.date.split('T')[0], // Extraer solo la fecha
-      time: appointment.time, // Mantener el formato 'HH:mm:ss'
+      // Aquí extraemos la fecha (YYYY-MM-DD)
+      date: isoDate,
+      // Y asignamos la hora que venga del backend
+      time: parsedTime, // e.g. "08:25"
       id_Companion: appointment.id_Companion || 0,
       id_StatusAP: appointment.id_StatusAP || 0,
       notes: appointment.notes || '',
     };
-
+  
     setSelectedAppointment(appointment);
     setFormData(initialData);
     setOriginalData(initialData);
-    setEditModalIsOpen(true); // Abrir modal de edición
+    setEditModalIsOpen(true);
   };
+  
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -67,17 +90,12 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     setFormData((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
-  const getUpdatedFields = (
-    original: AppointmentUpdateDto,
-    updated: AppointmentUpdateDto
-  ): Partial<AppointmentUpdateDto> => {
+  // Determina qué campos cambiaron para enviar al backend
+  const getUpdatedFields = (original: AppointmentUpdateDto, updated: AppointmentUpdateDto) => {
     const changes: Partial<AppointmentUpdateDto> = {};
-
     for (const key in updated) {
       const originalValue = original[key as keyof AppointmentUpdateDto];
       const updatedValue = updated[key as keyof AppointmentUpdateDto];
-
-      // Validación y conversión de tipo explícita para evitar el error
       if (updatedValue !== originalValue) {
         (changes as any)[key] = updatedValue;
       }
@@ -85,6 +103,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     return changes;
   };
 
+  // Envía la actualización al backend
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData && originalData) {
@@ -93,11 +112,11 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         showToast('No se detectaron cambios.', 'warning');
         return;
       }
-
       updateAppointment(
         { id: formData.id_Appointment, data: changes },
         {
           onSuccess: (updatedAppointment) => {
+            // Actualiza el arreglo local de citas
             setDailyAppointments((prev) =>
               prev.map((appt) =>
                 appt.id_Appointment === updatedAppointment.id_Appointment
@@ -107,7 +126,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
             );
             showToast('¡Cita actualizada con éxito!', 'success');
             setEditModalIsOpen(false);
-            onSave(); // Refrescar citas
+            onSave(); // Vuelve a refrescar las citas en el componente padre
           },
           onError: (error) => {
             console.error('Error al actualizar la cita:', error);
@@ -120,7 +139,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
 
   if (statusesError) return <p>Error al cargar los estados. Inténtalo de nuevo más tarde.</p>;
 
-  // Funciones para manejar la paginación de citas
+  // Paginación de las citas diarias
   const handleNextAppointment = () => {
     if (currentIndex < dailyAppointments.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -133,12 +152,13 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     }
   };
 
-  const currentAppointment = dailyAppointments[currentIndex]; // Cita actual
+  const currentAppointment = dailyAppointments[currentIndex];
 
   return (
     <>
       <Toast message={message} type={type} />
 
+      {/* Modal principal: lista de citas del día */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
@@ -148,7 +168,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         }`}
         overlayClassName={`fixed inset-0 ${
           isDarkMode ? 'bg-black bg-opacity-75' : 'bg-black bg-opacity-50'
-        } z-50`}
+        } z-50 flex items-center justify-center`}
       >
         <h2 className="text-xl font-bold mb-4">
           Citas del {selectedDate ? formatLongDate(selectedDate.toISOString()) : ''}
@@ -156,8 +176,16 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         {currentAppointment ? (
           <div className="space-y-4">
             <div
-              className={`p-4 rounded-lg shadow ${isDarkMode ? 'bg-[#374151]' : 'bg-gray-100'}`}
-              onClick={() => handleOpenEditModal(currentAppointment)}
+              className={`p-4 rounded-lg shadow ${
+                isDarkMode ? 'bg-[#374151] text-white' : 'bg-gray-100 text-gray-800'
+              } ${
+                selectedRole === 'Enfermeria' ? 'cursor-pointer' : 'cursor-not-allowed'
+              }`}
+              onClick={
+                selectedRole === 'Enfermeria'
+                  ? () => handleOpenEditModal(currentAppointment)
+                  : undefined
+              }
             >
               <p className="font-semibold">Residente: {currentAppointment.residentFullName}</p>
               <p>Fecha: {formatDate(currentAppointment.date)}</p>
@@ -167,6 +195,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
               <p>Centro: {currentAppointment.healthcareCenterName}</p>
               <p>Estado: {currentAppointment.statusName}</p>
             </div>
+
             <div className="flex justify-center items-center mt-4 space-x-4">
               <button
                 onClick={handlePreviousAppointment}
@@ -201,6 +230,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         </button>
       </Modal>
 
+      {/* Modal secundario: edición de cita */}
       <Modal
         isOpen={editModalIsOpen}
         onRequestClose={() => setEditModalIsOpen(false)}
@@ -212,6 +242,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
           <form onSubmit={handleSubmit}>
             <h2 className="text-2xl font-semibold text-center mb-6">Editar Cita</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Residente (solo lectura) */}
               <div>
                 <label>Residente:</label>
                 <input
@@ -221,6 +252,8 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                   className="w-full mt-1 p-2 border rounded-lg bg-gray-100"
                 />
               </div>
+
+              {/* Fecha */}
               <div>
                 <label>Fecha:</label>
                 <input
@@ -231,6 +264,8 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                   className="w-full mt-1 p-2 border rounded-lg"
                 />
               </div>
+
+              {/* Hora */}
               <div>
                 <label>Hora:</label>
                 <input
@@ -241,6 +276,8 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                   className="w-full mt-1 p-2 border rounded-lg"
                 />
               </div>
+
+              {/* Estado */}
               <div>
                 <label>Estado:</label>
                 <select
@@ -257,6 +294,8 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                   ))}
                 </select>
               </div>
+
+              {/* Acompañante */}
               <div>
                 <label>Acompañante:</label>
                 <select
@@ -267,12 +306,14 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 >
                   <option value="">Selecciona un acompañante</option>
                   {companions.map((comp) => (
-                    <option key={comp.dni} value={comp.dni}>
+                    <option key={comp.id_Employee} value={comp.id_Employee}>
                       {comp.fullName}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {/* Notas */}
               <div className="col-span-2">
                 <label>Notas:</label>
                 <textarea
@@ -283,9 +324,11 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
                 />
               </div>
             </div>
+
             <div className="flex justify-end mt-6 space-x-4">
               <button
                 type="submit"
+                disabled={updating}
                 className={`px-4 py-2 rounded-lg ${
                   updating ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
