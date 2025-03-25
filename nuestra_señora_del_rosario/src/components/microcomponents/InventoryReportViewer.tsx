@@ -4,9 +4,10 @@ import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import InventoryReportPDF from '../specific/InventoryReport';
 import ReportSelectionModal from './ReportSelectionModal';
-import inventoryService from '../../services/InventoryService'; // Importa el servicio
-
+import CategoryReportModal from './CategoryReportModal';
+import inventoryService from '../../services/InventoryService';
 import { InventoryReport } from '../../types/InventoryType';
+import { useAuth } from '../../hooks/useAuth';
 
 interface InventoryReportViewerProps {
   month: number;
@@ -16,32 +17,36 @@ interface InventoryReportViewerProps {
 const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, year }) => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { selectedRole } = useAuth();
 
   const openReportModal = () => setIsReportModalOpen(true);
   const closeReportModal = () => setIsReportModalOpen(false);
 
   /**
-   * Se invoca cuando se confirma la selección de filtros en el modal.
-   * Llama al endpoint con { categoryId, productId, measure } para obtener el reporte,
-   * mapea la data (si es necesario) y genera el PDF.
+   * Se invoca al confirmar la selección en cualquiera de los modales.
+   * Si productId y measure no fueron proporcionados (caso de usuarios que no son de inventario),
+   * se envían arreglos vacíos para evitar errores.
    */
   const handleConfirmReport = async (selection: {
     categoryId: number;
-    productId: number;
-    measure: string;
+    productId?: number;
+    measure?: string;
   }) => {
-    setIsReportModalOpen(false);
+    closeReportModal();
     setLoading(true);
     try {
-      // Llama al método del servicio de forma imperativa
+      // Si productId o measure no se proporcionan, se envían arreglos vacíos
+      const productIds = selection.productId ? [selection.productId] : [];
+      const targetUnits = selection.measure ? [selection.measure] : [];
+      
       const response = await inventoryService.getReportByCategory(
         month,
         year,
         selection.categoryId,
-        [selection.measure],
-        [selection.productId]
+        targetUnits,
+        productIds
       );
-      // Suponemos que la respuesta tiene el formato { item1: InventoryReport[], item2: number }
+      // Se asume que la respuesta tiene el formato { item1: InventoryReport[], item2: number }
       const reportData: InventoryReport[] = response.data;
       const blob = await pdf(<InventoryReportPDF report={reportData} />).toBlob();
       saveAs(blob, `Reporte_Mensual_Inventario_${month}_${year}.pdf`);
@@ -62,11 +67,25 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
       </button>
 
       {isReportModalOpen && (
-        <ReportSelectionModal
-          isOpen={isReportModalOpen}
-          onRequestClose={closeReportModal}
-          onConfirm={handleConfirmReport}
-        />
+        <>
+          {selectedRole && selectedRole.toLowerCase() === 'inventario' ? (
+            // Modal completo para usuarios de inventario
+            <ReportSelectionModal
+              isOpen={isReportModalOpen}
+              onRequestClose={closeReportModal}
+              onConfirm={handleConfirmReport}
+            />
+          ) : (
+            // Modal simple para otros usuarios, donde solo se selecciona la categoría.
+            <CategoryReportModal
+              isOpen={isReportModalOpen}
+              onRequestClose={closeReportModal}
+              onConfirm={(categoryId: number) =>
+                handleConfirmReport({ categoryId, productId: undefined, measure: '' })
+              }
+            />
+          )}
+        </>
       )}
     </div>
   );

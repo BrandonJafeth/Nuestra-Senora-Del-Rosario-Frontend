@@ -11,7 +11,8 @@ import {
   FaListUl,       // Icono para "Lista de productos"
   FaBoxOpen,       // Icono para "Consumo de Productos"
   FaLaptop,
-  FaArrowAltCircleLeft
+  FaArrowAltCircleLeft,
+  FaCog
 } from 'react-icons/fa'; 
 import IconContext from './IconsContext';
 
@@ -34,6 +35,7 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
     'Página Central': <FaArrowAltCircleLeft />,
     Cedula: <FaIdCard />, 
     Contraseña: <FaLock />,
+    'Configuracion': <FaCog />,
     'Lista de productos': <FaListUl />,     // Icono para "Lista de productos"
     'Consumo de Productos': <FaBoxOpen />   // Icono para "Consumo de Productos"
   };
