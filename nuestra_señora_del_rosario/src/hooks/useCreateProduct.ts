@@ -9,7 +9,7 @@ export const useCreateProduct = () => {
     (data: Product) => productService.createProduct(data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('products');
+        queryClient.invalidateQueries('productsByCategory');
       },
     }
   );

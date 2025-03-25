@@ -6,6 +6,7 @@ import { useCreateInventoryMovement } from '../../hooks/useInventoryMovement';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 Modal.setAppElement('#root');
 
@@ -28,6 +29,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
   const { isDarkMode } = useThemeDark();
   const { showToast, message, type } = useToast();
   const mutation = useCreateInventoryMovement();
+  const isLoading = mutation.isLoading;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -108,7 +110,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
               className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
               tabIndex={0}
             >
-              Confirmar
+              {isLoading ? <LoadingSpinner/> : 'Agregar'}
             </button>
             <button
               type="button"

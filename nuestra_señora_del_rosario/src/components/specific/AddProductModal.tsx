@@ -26,6 +26,14 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
   const [unitOfMeasureID, setUnitOfMeasureID] = useState(0);
   const [initialQuantity, setInitialQuantity] = useState(0);
 
+  // Función para reiniciar el formulario
+  const resetForm = () => {
+    setName('');
+    setCategoryID(0);
+    setUnitOfMeasureID(0);
+    setInitialQuantity(0);
+  };
+
   const handleSubmit = () => {
     if (name && categoryID && unitOfMeasureID && initialQuantity > 0) {
       const newProduct: Product = { 
@@ -42,7 +50,12 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
       createProductMutation.mutate(newProduct, {
         onSuccess: () => {
           showToast('Producto agregado exitosamente.', 'success');
-          setTimeout(onRequestClose, 2000);
+          name && categoryID && unitOfMeasureID && initialQuantity > 0 && resetForm();
+          // Reinicia el formulario y cierra el modal después de 2 segundos
+          setTimeout(() => {
+            resetForm();
+            onRequestClose();
+          }, 2000);
         },
         onError: () => {
           showToast('Hubo un error al agregar el producto.', 'error');
@@ -53,11 +66,16 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
     }
   };
 
+  const handleCancel = () => {
+    resetForm();
+    onRequestClose();
+  };
+
   return (
     <>
       <Modal
         isOpen={isOpen}
-        onRequestClose={onRequestClose}
+        onRequestClose={handleCancel}
         contentLabel="Agregar Producto"
         className={`relative z-50 w-full max-w-md mx-auto p-6 rounded-lg shadow-lg ${
           isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
@@ -94,7 +112,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
               }`}
               required
             >
-              <option value="" disabled>Selecciona una categoría</option>
+              <option value="">Selecciona una categoría</option>
               {categories?.map((category) => (
                 <option key={category.categoryID} value={category.categoryID}>
                   {category.categoryName}
@@ -115,7 +133,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
               }`}
               required
             >
-              <option value="" disabled>Selecciona una unidad</option>
+              <option value="">Selecciona una unidad</option>
               {unitsOfMeasure?.map((unit) => (
                 <option key={unit.unitOfMeasureID} value={unit.unitOfMeasureID}>
                   {unit.nombreUnidad}
@@ -141,26 +159,26 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
 
           {/* Botones alineados horizontalmente */}
           <div className="flex justify-center mt-4">
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
-                  tabIndex={0}
-                  >
-                    Agregar Producto
-                  </button>
             <button
               type="button"
-              onClick={onRequestClose}
+              onClick={handleSubmit}
+              className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
+              tabIndex={0}
+            >
+              Agregar Producto
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
               className="ml-4 px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition duration-200"
-            tabIndex={1}
+              tabIndex={1}
             >
               Cancelar
             </button>
           </div>
         </form>
-      {/* Mostrar el Toast */}
-      {message && <Toast message={message} type={type} />}
+        {/* Mostrar el Toast */}
+        {message && <Toast message={message} type={type} />}
       </Modal>
     </>
   );
