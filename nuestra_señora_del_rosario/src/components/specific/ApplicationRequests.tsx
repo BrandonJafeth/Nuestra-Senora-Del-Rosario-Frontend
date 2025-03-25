@@ -40,10 +40,15 @@ function ApplicationRequests() {
 
   // Función para aceptar una solicitud
   const handleAccept = (application: ApplicationRequest) => {
+    if (application.status_Name === 'Aprobado') {
+      showToast('La solicitud ya está aprobada', 'warning');
+      return;
+    }
     updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 }); // Estado "Aprobado"
     showToast('Solicitud de ingreso aceptada', 'success');
     setTimeout(() => setSelectedApplication(null), 2000);
   };
+  
 
   // Función para rechazar una solicitud
   const handleReject = (application: ApplicationRequest) => {

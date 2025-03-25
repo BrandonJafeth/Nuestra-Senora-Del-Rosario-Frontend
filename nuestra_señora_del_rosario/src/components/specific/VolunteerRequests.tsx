@@ -56,13 +56,16 @@ function VolunteerRequests() {
   };
 
   const handleAccept = (volunteer: VolunteerRequest) => {
-    if (volunteer) {
+    if (volunteer.status_Name === "Aprobado") {
+      showToast("Esta solicitud ya ha sido aceptada", "warning");
+      return;
+    } {
       updateVolunteerStatus(
         { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 },
         {
           onSuccess: () => {
             showToast("Solicitud de voluntario aceptada", "success");
-          setTimeout(() => setSelectedVolunteer(null), 2000);
+            setTimeout(() => setSelectedVolunteer(null), 2000);
           },
           onError: () => {
             showToast("Error al aceptar la solicitud", "error");
