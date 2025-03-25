@@ -14,13 +14,12 @@ import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
 interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (newAppointment: any) => void; // Cambiar aquí para aceptar un parámetro
+  onSave: (newAppointment: any) => void;
   residents: any[];
   healthcareCenters: any[];
   specialties: any[];
   companions: any[];
 }
-
 
 const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   isOpen,
@@ -31,7 +30,8 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByProfession([5]);
-  const {showToast, message, type} = useToast();
+  
+  const { showToast, message, type } = useToast();
   
   const [loading, setLoading] = useState(false);
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
@@ -42,7 +42,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     time: '',
     id_HC: 0,
     id_Specialty: 0,
-    id_Companion: '',
+    id_Companion: '', // Si es requerido, conviene validar
     notes: undefined,
     residentFullName: '',
     residentCedula: '',
@@ -61,18 +61,35 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
-  
-      // Validar que se haya seleccionado fecha y hora
-      if (!formData.date || !formData.time) {
-        throw new Error('Por favor, selecciona una fecha y hora válidas.');
+
+      // Validar campos requeridos:
+      if (
+        !formData.id_Resident ||
+        !formData.date ||
+        !formData.time ||
+        !formData.id_HC ||
+        !formData.id_Specialty ||
+        !formData.id_Companion
+      ) {
+        showToast('Por favor, completa todos los campos requeridos.', 'error');
+        setLoading(false);
+        return;
       }
-  
-      // Construir el objeto de la cita con los tipos correctos
+
+      // Validar que fecha y hora no sean anteriores a la actual (opcional):
+      const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
+      if (selectedDateTime < new Date()) {
+        showToast('La fecha y hora seleccionadas ya pasaron.', 'error');
+        setLoading(false);
+        return;
+      }
+
+      // Construir el objeto de la cita
       const appointmentData = {
-        id_Appointment: 0, // or some default value
+        id_Appointment: 0,
         id_Resident: Number(formData.id_Resident),
-        date: formData.date, 
-        time: formData.time + ':00', 
+        date: formData.date,
+        time: formData.time + ':00',
         id_HC: Number(formData.id_HC),
         id_Specialty: Number(formData.id_Specialty),
         id_Companion: Number(formData.id_Companion),
@@ -84,20 +101,22 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         companionName: '',
         statusName: ''
       };
-  
-      // Llamar a onSave con los datos de la cita
+
+      // Guardar en el backend
       await appointmentService.createAppointment(appointmentData);
-      onSave(appointmentData); // Pasar el objeto de cita a onSave
+      
+      // Notificar al componente padre y mostrar toast
+      onSave(appointmentData);
       showToast('Cita creada exitosamente', 'success');
-    setTimeout(() => onClose(), 3000);
+      
+      setTimeout(() => onClose(), 3000);
     } catch (error) {
       showToast('Error al crear la cita.', 'error');
     } finally {
       setLoading(false);
     }
   };
-  
-  
+
   const openHealthcareCenterModal = () => setHealthcareCenterModalOpen(true);
   const closeHealthcareCenterModal = () => setHealthcareCenterModalOpen(false);
 
@@ -127,34 +146,35 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Residente */}
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Residente:
             </label>
             <ResidentDropdown
-  value={formData.id_Resident}
-  onChange={(value) => setFormData({ ...formData, id_Resident: value })}
-/>
-
+              value={formData.id_Resident}
+              onChange={(value) => setFormData({ ...formData, id_Resident: value })}
+            />
           </div>
 
+          {/* Fecha */}
           <div>
-  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-    Fecha:
-  </label>
-  <input
-    type="date"
-    name="date"
-    value={formData.date}
-    min={new Date().toISOString().split('T')[0]} // Establecer la fecha mínima como hoy
-    onChange={handleInputChange}
-    className={`w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-      formData.date && new Date(formData.date) < new Date() ? 'bg-red-500 text-white' : ''
-    }`}
-  />
-</div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha:
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              min={new Date().toISOString().split('T')[0]} // Establecer la fecha mínima como hoy
+              onChange={handleInputChange}
+              className={`w-full mt-1 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                formData.date && new Date(formData.date) < new Date() ? 'bg-red-500 text-white' : ''
+              }`}
+            />
+          </div>
 
-
+          {/* Hora */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Hora:
@@ -168,6 +188,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             />
           </div>
 
+          {/* Centro Médico */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Centro Médico:
@@ -187,6 +208,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
+          {/* Especialidad */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Especialidad:
@@ -206,7 +228,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
-          {/* Dropdown de Acompañante */}
+          {/* Acompañante */}
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Acompañante:
@@ -218,7 +240,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               className="w-full mt-1 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Selecciona un acompañante</option>
-              {employees?.map((employee : any) => (
+              {employees?.map((employee: any) => (
                 <option key={employee.id_Employee} value={employee.id_Employee}>
                   {employee.fullName}
                 </option>
@@ -226,6 +248,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </select>
           </div>
 
+          {/* Notas */}
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Notas:
@@ -257,13 +280,13 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             </button>
           </div>
         </div>
+        <Toast message={message} type={type} />
       </Modal>
 
       <AddHealthcareCenterModal
         isOpen={healthcareCenterModalOpen}
         onClose={closeHealthcareCenterModal}
       />
-      <Toast message={message} type={type} />
     </>
   );
 };
