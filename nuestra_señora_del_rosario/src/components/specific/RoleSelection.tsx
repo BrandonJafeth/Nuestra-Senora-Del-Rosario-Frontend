@@ -1,19 +1,31 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 const RoleSelection: React.FC = () => {
-  const { payload, setRole, logout } = useAuth(); // Obtener roles del usuario y método para asignar el rol seleccionado
+  const { payload, setRole, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Convertir userRoles en un array de forma segura
-  const userRoles: string[] = Array.isArray(payload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"])
+  // Convertir el rol o roles en un array seguro.
+  const userRoles: string[] = Array.isArray(
+    payload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+  )
     ? payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
     : payload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
     ? [payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]]
     : [];
 
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  // Si solo hay un rol, se asigna automáticamente y se redirige.
+  useEffect(() => {
+    if (userRoles.length === 1) {
+      const singleRole = userRoles[0];
+      setSelectedRole(singleRole);
+      setRole(singleRole);
+      navigate("/dashboard");
+    }
+  }, [userRoles, setRole, navigate]);
 
   const handleSelectRole = () => {
     if (!selectedRole) return;
@@ -22,16 +34,25 @@ const RoleSelection: React.FC = () => {
   };
 
   const handleCancel = () => {
-logout();
+    logout();
     navigate("/");
+  };
+
+  // Si el usuario solo tiene un rol, mostramos un mensaje de redirección.
+  if (userRoles.length === 1) {
+    return <div className="flex items-center justify-center min-h-screen">Redirigiendo...</div>;
   }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-md max-w-md w-full">
-        
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <img src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png" alt="Logo" className="h-16" />
+          <img
+            src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png"
+            alt="Logo"
+            className="h-16"
+          />
         </div>
 
         {/* Título */}
@@ -45,7 +66,10 @@ logout();
         {/* Lista de roles */}
         <div className="space-y-3">
           {userRoles.map((role) => (
-            <label key={role} className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition">
+            <label
+              key={role}
+              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+            >
               <input
                 type="radio"
                 name="role"
@@ -67,7 +91,6 @@ logout();
           >
             Cancelar
           </button>
-
           <button
             onClick={handleSelectRole}
             disabled={!selectedRole}
@@ -76,7 +99,6 @@ logout();
             Confirmar
           </button>
         </div>
-
       </div>
     </div>
   );
