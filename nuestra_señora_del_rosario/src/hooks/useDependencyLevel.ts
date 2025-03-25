@@ -6,7 +6,7 @@ import { ApiResponse } from '../types/AssetsCategoryType';
 
 export const useDependencyLevel = () => {
   return useQuery<DependencyLevel[], Error>(
-    'DependencyLevel',
+    '/DependencyLevel',
     async () => {
       const response = await dependencyLevelService.getAllDependencyLevels() as unknown as { data: ApiResponse<DependencyLevel[]> };
       if (!response.data?.data || !Array.isArray(response.data.data)) {

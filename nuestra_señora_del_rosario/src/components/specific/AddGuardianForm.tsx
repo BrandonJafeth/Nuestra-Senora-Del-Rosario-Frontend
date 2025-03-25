@@ -135,19 +135,20 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
             onChange={(e) => handleSearchByName(e.target.value)}
           />
 
-          {filteredGuardians.length > 0 && (
-            <ul className="mt-2 border rounded-md bg-white shadow-md">
-              {filteredGuardians.map((guardian) => (
-                <li
-                  key={guardian.id_Guardian}
-                  onClick={() => handleSelectGuardian(guardian)}
-                  className="p-2 text-black hover:bg-gray-100 cursor-pointer"
-                >
-                  {guardian.name_GD} {guardian.lastname1_GD} {guardian.lastname2_GD} {guardian.cedula_GD}
-                </li>
-              ))}
-            </ul>
-          )}
+{filteredGuardians.length > 0 && (
+  <ul className="mt-2 border rounded-md bg-white shadow-md max-h-48 overflow-y-auto">
+    {filteredGuardians.map((guardian) => (
+      <li
+        key={guardian.id_Guardian}
+        onClick={() => handleSelectGuardian(guardian)}
+        className="p-2 text-black hover:bg-gray-100 cursor-pointer"
+      >
+        {guardian.name_GD} {guardian.lastname1_GD} {guardian.lastname2_GD} {guardian.cedula_GD}
+      </li>
+    ))}
+  </ul>
+)}
+
         </div>
       ) : (
         // Formulario de creación de nuevo encargado

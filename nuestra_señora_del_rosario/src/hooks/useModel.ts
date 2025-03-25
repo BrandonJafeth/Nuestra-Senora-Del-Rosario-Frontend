@@ -5,7 +5,7 @@ import { ApiResponse } from "../types/AssetsCategoryType";
 
 export const useModel = () => {
   return useQuery<ModelType[], Error>(
-    "Model",
+    "/Model",
     async () => {
       const response = await modelService.getAllModels() as unknown as { data: ApiResponse<ModelType[]> };
 
