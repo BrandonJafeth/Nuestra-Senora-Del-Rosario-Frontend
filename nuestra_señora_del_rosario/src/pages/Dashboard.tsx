@@ -1,10 +1,11 @@
+// FILE: src/pages/Dashboard.tsx
 import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
+import HomeDashboard from '../components/specific/HomeDashboard';
 import EmployeeForm from '../components/specific/EmployeeForm';
 import VolunteerRequests from '../components/specific/VolunteerRequests';
-import HomeDashboard from '../components/specific/HomeDashboard';
 import ApplicationRequests from '../components/specific/ApplicationRequests';
 import DonationRequests from '../components/specific/DonationRequests';
 import EmployeeList from '../components/specific/EmployeeList';
@@ -52,13 +53,12 @@ import AssetTable from '../components/specific/AssetTable';
 import TableLaws from '../components/specific/TableLaws';
 import TableMedicationSpecific from '../components/specific/TableMedication';
 import TableAdministrationRoute from '../components/specific/TableAdministrationRoute';
+import RoleBasedRoute from '../components/layout/RoleBasedRoute';
+import PageNotFound from '../components/layout/PageNotFound';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="flex min-h-screen bg-[#E0E0E0]">
@@ -70,58 +70,316 @@ function Dashboard() {
         <Header toggleSidebar={toggleSidebar} />
         <main className={`p-4 mt-16 transition-all ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
           <div className="p-4 rounded-lg">
-            {/* Aquí van las rutas dinámicas */}
             <Routes>
               <Route path="/" element={<HomeDashboard />} />
-              <Route path="personal/registro" element={<EmployeeForm />} />
-              <Route path="usuarios" element={<UserList />} />
-              <Route path="usuarios/crear" element={<CreateUserForm />} />
-              <Route path="usuarios/crear-por-empleado" element={<CreateUserFromEmployeeForm />} />
-              <Route path="personal/lista" element={<EmployeeList />} />
-              <Route path="comprobante-pago" element={<PaymentReceiptForm />} />
-              <Route path="cronograma-citas" element={<AppointmentCalendar />} />
-              <Route path="solicitudes/voluntariado" element={<VolunteerRequests />} />
-              <Route path="solicitudes/ingreso" element={<ApplicationRequests />} />
-              <Route path="solicitudes/donaciones" element={<DonationRequests />} />
-              <Route path="Residentes" element={<ResidentList/>} />
-              <Route path='inventario/lista-productos' element={<InventoryTable />} />
-              <Route path='inventario/lista-activos' element={<AssetTable />} />
-              <Route path='inventario/consumo-productos' element={<ProductCalendar />} />
-              <Route path="SolicitudesAprobadas" element={<ApprovedRequests />} />
-              <Route path="cardex" element={<ResidentTableMedical/>} />
-              <Route path="residente-info/:id" element={<ResidentDetail/>}/>
-              <Route path="residente/:id/agregar-medicamento" element={<AddMedicationPage/>}/>
-              <Route path="residente-info/:id/editar-medicamento/:id_ResidentMedication" element={<EditResidentMedicationForm/>}/>
-              <Route path="residente/:id/agregar-patologia" element={<AddPathologyPage/>}/>
-              <Route path="residente/:id/editar-patologia/:id_ResidentPathology" element={<EditResidentPathology/>}/>
-              <Route path="historial-medico/:residentId" element={<MedicalHistory />} />
-              <Route path="residente/:residentId/editar-historial/:id_MedicalHistory" element={<UpdateMedicalHistory/>}/>
-              <Route path="residente/:residentId/agregar-historial" element={<AddMedicalHistoryForm/>}/>
-              <Route path="residente/documentos/:residentName" element={<ResidentDocumentsPage />} />
-              <Route path="notifications"  element={<NotificationMailbox />} />
+
+              {/* Residentes: solo SuperAdmin y Admin */}
+              <Route 
+                path="residentes" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                    <ResidentList />
+                  </RoleBasedRoute>
+                } 
+              />
+
+              {/* Usuarios: solo SuperAdmin y Admin */}
+              <Route 
+                path="usuarios" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                    <UserList />
+                  </RoleBasedRoute>
+                } 
+              />
+
+              {/* Cronograma de Citas: permitido para varios roles */}
+              <Route 
+                path="cronograma-citas" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria','Admin','Fisioterapia','Encargado']}>
+                    <AppointmentCalendar />
+                  </RoleBasedRoute>
+                } 
+              />
+
+              {/* Cardex: solo SuperAdmin y Enfermeria */}
+              <Route 
+                path="cardex" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                    <ResidentTableMedical />
+                  </RoleBasedRoute>
+                } 
+              />
+              <Route path="personal/registro" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <EmployeeForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="usuarios/crear" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <CreateUserForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="usuarios/crear-por-empleado" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <CreateUserFromEmployeeForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="personal/lista" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <EmployeeList />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="comprobante-pago" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <PaymentReceiptForm />
+                </RoleBasedRoute>
+                } />
+            
+              <Route path="solicitudes/voluntariado" element={
+               <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}> 
+               <VolunteerRequests />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="solicitudes/ingreso" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <ApplicationRequests />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="solicitudes/donaciones" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <DonationRequests />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="inventario/lista-productos" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin', 'Enfermeria', 'Inventario']}>
+                <InventoryTable />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="inventario/lista-activos" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin', 'Fisioterapia']}>
+                <AssetTable />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="inventario/consumo-productos" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin', 'Enfermeria', 'Inventario']}>
+                <ProductCalendar />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="SolicitudesAprobadas" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <ApprovedRequests />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente-info/:id" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <ResidentDetail />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/:id/agregar-medicamento" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <AddMedicationPage />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente-info/:id/editar-medicamento/:id_ResidentMedication" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <EditResidentMedicationForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/:id/agregar-patologia" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <AddPathologyPage />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/:id/editar-patologia/:id_ResidentPathology" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <EditResidentPathology />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="historial-medico/:residentId" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <MedicalHistory />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/:residentId/editar-historial/:id_MedicalHistory" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <UpdateMedicalHistory />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/:residentId/agregar-historial" element={
+               <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+               <AddMedicalHistoryForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="residente/documentos/:residentName" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <ResidentDocumentsPage />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="notifications" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <NotificationMailbox />
+                </RoleBasedRoute>
+                } />
+
+              {/* Configuración: algunas rutas tienen restricciones */}
+              <Route path="Configuracion/usuario" element={<UserSettings />} />
               <Route path="Configuracion" element={<HomeConfig />} />
-              <Route path="Configuracion/usuario" element={<UserSettings/>} />
-              <Route path="Configuracion/sistema" element={<SystemConfiguration />} />
-              <Route path="Configuracion/pagina" element={<SystemPageSettings/>}/>
-              <Route path="Configuracion/sistema/tipo-salario" element={<TableTypeOfSalary/>}/>
-              <Route path="Configuracion/sistema/unidad-medida" element={<TableUnitOfMeasure/>}/>
-              <Route path="Configuracion/sistema/habitacion" element={<TableRooms/>}/>
-              <Route path="Configuracion/sistema/profesion" element={<TableProfessions/>}/>
-              <Route path="Configuracion/sistema/nivel-dependencia" element={<TableDependencyLevels />} />
-              <Route path="Configuracion/sistema/estado-citas" element={<TableAppointmentStatuses />} />
-              <Route path="Configuracion/sistema/patologia" element={<TablePathologies />} />
-              <Route path="Configuracion/sistema/notas" element={<TableNotes />} />
-              <Route path="Configuracion/sistema/especialidad" element={<TableSpecialities />} />
-              <Route path="Configuracion/sistema/centro-atencion" element={<TableHealtcareCenter/>}/>
-              <Route path="Configuracion/sistema/categoria" element={<TableCategories/>}/>
-              <Route path="Configuracion/sistema/marca" element={<TableBrands/>} />
-              <Route path="Configuracion/sistema/modelo" element={<TableModels/>} />
-              <Route path="Configuracion/sistema/categoria-activo" element={<TableAssetCategories/>} />
-              <Route path="Configuracion/sistema/leyes" element={<TableLaws />} />
-              <Route path="Configuracion/sistema/medicamento" element={<TableMedicationSpecific />} />
-              <Route path="Configuracion/sistema/via-administracion" element={<TableAdministrationRoute />} />
-              <Route path="Configuracion/pagina/imagenes" element={<Gallery/>}/>
-              <Route path="NuevoResidente" element={<NewResidentForm />} />
+
+              <Route 
+                path="Configuracion/sistema" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin','Admin','Enfermeria','Inventario']}>
+                    <SystemConfiguration />
+                  </RoleBasedRoute>
+                }
+              />
+              <Route 
+                path="Configuracion/pagina" 
+                element={
+                  <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                    <SystemPageSettings />
+                  </RoleBasedRoute>
+                }
+              />
+
+              <Route path="Configuracion/sistema/tipo-salario" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <TableTypeOfSalary />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/unidad-medida" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Inventario']}>
+                <TableUnitOfMeasure />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/habitacion" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <TableRooms />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/profesion" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <TableProfessions />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/nivel-dependencia" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <TableDependencyLevels />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/estado-citas" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableAppointmentStatuses />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/patologia" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TablePathologies />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/notas" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableNotes />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/especialidad" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableSpecialities />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/centro-atencion" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableHealtcareCenter />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/categoria" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Inventario']}>
+                <TableCategories />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/marca" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Fisioterapia']}>
+                <TableBrands />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/modelo" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Fisioterapia']}>
+                <TableModels />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/categoria-activo" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Fisioterapia']}>
+                <TableAssetCategories />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/leyes" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <TableLaws />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/medicamento" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableMedicationSpecific />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/sistema/via-administracion" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
+                <TableAdministrationRoute />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="Configuracion/pagina/imagenes" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <Gallery />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="NuevoResidente" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <NewResidentForm />
+                </RoleBasedRoute>
+                } />
+
+                <Route path="*" element={<PageNotFound/>} />
             </Routes>
           </div>
         </main>

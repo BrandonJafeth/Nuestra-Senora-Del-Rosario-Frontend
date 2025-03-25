@@ -1,4 +1,3 @@
-// FILE: components/CategoryDropdown.tsx
 import React from 'react';
 import { useCategories } from '../../hooks/useCategories';
 import { useAuth } from '../../hooks/useAuth';
@@ -11,17 +10,17 @@ interface CategoryDropdownProps {
 
 const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ selectedCategory, onCategorySelect }) => {
   const { data: categories, isLoading, isError } = useCategories();
+  console.log(categories);
   const { selectedRole } = useAuth();
 
-  // Roles y categorías permitidas
+  // Roles y categorías permitidas (excluimos Admin)
   const allowedCategoriesByRole: { [key: string]: number[] } = {
-    Admin: [1, 2, 3, 4],
     Enfermeria: [4],
-    Fisioterapia: [4],
+    Inventario: [2, 1],
   };
 
   const allowedCategoryIds =
-    selectedRole && allowedCategoriesByRole[selectedRole]
+    selectedRole !== 'Admin' && selectedRole && allowedCategoriesByRole[selectedRole]
       ? allowedCategoriesByRole[selectedRole]
       : categories
       ? categories.map((cat) => cat.categoryID)

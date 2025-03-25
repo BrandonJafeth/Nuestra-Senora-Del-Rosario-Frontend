@@ -53,6 +53,19 @@ class ProductService extends ApiService<Product> {
     });
   }
 
+  public getAllProductsByCategory(categoryId: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Construimos la URL con la categoría seleccionada
+    const url = `/Product/allbycategory?categoryId=${categoryId}`;
+
+    // Llamamos al método genérico getWithHeaders
+    return this.getWithHeaders<Product[]>(url, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
   // GET /api/Product/converted/{productId}?targetUnit=...
   public convertProductUnit(productId: number, targetUnit: string) {
     const token = Cookies.get("authToken");
