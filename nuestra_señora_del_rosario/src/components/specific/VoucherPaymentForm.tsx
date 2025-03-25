@@ -25,23 +25,27 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
       id: 0,
       id_Employee: id_EmployeeFromState,
       employeeDni: employeeDniFromState,
+      employeeName: employeeNameFromState,
+      employeeLastName: employeelastnameFromState,
       paymentDate: new Date().toISOString().split('T')[0],
       salary: 0,
       overtime: 0,
-      workedDays: 0,
-      grossIncome: 0,
-      totalExtraHoursAmount: 0,
-      extraHourRate: 0,
       doubleExtras: 0,
       nightHours: 0,
       adjustments: 0,
       incapacity: 0,
       absence: 0,
       vacationDays: 0,
-      deductionsList: [{ type: '', amount: 0 }], // Deducciones por defecto
+      workedDays: 0,
+      extraHourRate: 0,
+      grossIncome: 0,
+      totalExtraHoursAmount: 0,
       totalDeductions: 0,
+      deductionsList: [{ type: '', amount: 0 }],
+      netIncome: 0,
       notes: '',
     });
+    
   
     const [generatedReceiptId, setGeneratedReceiptId] = useState<number | null>(null); // Estado para almacenar el ID del comprobante generado
     const { mutate: createPaymentReceipt, isLoading } = useCreatePaymentReceipt();
@@ -183,18 +187,6 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
               />
             </div>
             <div>
-              <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                Monto Total Horas Extras
-              </label>
-              <input
-                type="number"
-                name="totalExtraHoursAmount"
-                value={formData.totalExtraHoursAmount}
-                onChange={handleChange}
-                className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
-              />
-            </div>
-            <div>
               <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Horas Dobles</label>
               <input
                 type="number"
@@ -268,7 +260,8 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
                 className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
               />
             </div>
-            <div>
+          </div>
+            <div className='flex flex-col justify-start w-full col-span-2 '>
               <label className={`text-lg font-poppins mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Notas</label>
               <textarea
                 name="notes"
@@ -277,7 +270,6 @@ import LoadingSpinner from '../microcomponents/LoadingSpinner';
                 className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
               />
             </div>
-          </div>
   
           {/* Deducciones */}
           <div className="col-span-2 space-y-6 mt-8">
