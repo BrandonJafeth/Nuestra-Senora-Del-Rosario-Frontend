@@ -6,7 +6,7 @@ import { ApiResponse } from '../types/AssetsCategoryType';
 
 export const useRoom = () => {
   return useQuery<RoomType[], Error>(
-    'Room',
+    '/Room',
     async () => {
       const response = await roomService.getAllRooms() as unknown as { data: ApiResponse<RoomType[]> };
       if (!response.data?.data || !Array.isArray(response.data.data)) {

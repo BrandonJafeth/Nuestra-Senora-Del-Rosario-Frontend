@@ -5,7 +5,7 @@ import { ApiResponse } from "../types/AssetsCategoryType";
 
 export const useCategories = () => {
   return useQuery<Category[], Error>(
-    "Category",
+    "/Category",
     async () => {
       const response = await categoryService.getAllCategories() as unknown as { data: ApiResponse<Category[]> };
 

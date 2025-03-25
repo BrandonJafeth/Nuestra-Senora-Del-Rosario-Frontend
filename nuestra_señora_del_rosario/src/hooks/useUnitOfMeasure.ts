@@ -5,7 +5,7 @@ import { ApiResponse } from "../types/AssetsCategoryType";
 
 export const useUnitOfMeasure = () => {
   return useQuery<UnitOfMeasure[], Error>(
-    "UnitOfMeasure",
+    "/UnitOfMeasure",
     async () => {
       const response = await unitOfMeasureService.getAllUnits() as unknown as { data: ApiResponse<UnitOfMeasure[]> };
 
