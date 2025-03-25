@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRoom } from '../../hooks/useRoom'; // Hook para cargar habitaciones
 import { useDependencyLevel } from '../../hooks/useDependencyLevel'; // Hook para cargar niveles de dependencia
@@ -39,29 +39,89 @@ const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
   const [isGuardianAdded, setIsGuardianAdded] = useState(false); // Verificar si se añadió guardián
   const [guardianId, setGuardianId] = useState<number | null>(null); // ID del guardián
 
+  // Este efecto limpia el toast 3 segundos después de mostrarlo
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+        setToastType(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+  
   // Manejo del envío del formulario
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log("handleFormSubmit ejecutado");
+  
+    // Verificar que se haya asignado un guardián
     if (guardianId === null) {
       showToast('Por favor añade un guardián antes de continuar.', 'error');
       return;
     }
-
+  
+    // Validar que se hayan completado todos los campos requeridos
+    if (
+      !residentData.name_RD ||
+      !residentData.lastname1_RD ||
+      !residentData.lastname2_RD ||
+      !residentData.cedula_RD ||
+      !residentData.fechaNacimiento ||
+      !residentData.entryDate ||
+      !residentData.location_RD ||
+      residentData.id_Room === 0 ||
+      residentData.id_DependencyLevel === 0
+    ) {
+      setToastMessage('Por favor completa todos los campos requeridos.');
+      setToastType('error');
+      return;
+    }
+  
+    // Validar que el residente tenga 65 años o más
+    const birthDate = new Date(residentData.fechaNacimiento);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    if (age < 65) {
+      setToastMessage('El residente debe ser mayor de 65 años.');
+      setToastType('error');
+      return;
+    }
+  
+    // Preparar el payload para enviar al backend
     const residentPayload = { ...residentData, id_Guardian: guardianId };
-
-    createResident(residentPayload, {
-      onSuccess: () => {
-        setToastMessage('Residente registrado exitosamente');
+  
+createResident(residentPayload, {
+  onSuccess: () => {
+    setToastMessage('Residente registrado exitosamente');
     setToastType('success');
     setTimeout(() => navigate('/dashboard/residentes'), 2000);
-      },
-      onError: (error: any) => {
-        setToastMessage(error.message || 'Error al registrar el residente.');
-        setToastType('error');
-      },
-    });
+  },
+  onError: (error: any) => {
+    // Muestra en consola la respuesta completa para ver su estructura
+    console.log('Error:', error);
+
+    // Intenta leer el mensaje de error del backend
+    const backendMessage = error.response?.data?.message;
+
+    if (backendMessage) {
+      setToastMessage(backendMessage);
+    } else {
+      // Si no existe 'message', usa el mensaje por defecto o el de axios
+      setToastMessage(error.message || 'Error al registrar el residente.');
+    }
+
+    setToastType('error');
+  },
+});
+  
   };
+  
 
   const navigateBack = () => {  
  window.history.back(); // Navegar hacia atrás
