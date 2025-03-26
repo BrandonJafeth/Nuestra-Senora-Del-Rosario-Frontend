@@ -30,6 +30,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['SuperAdmin','Admin'] },
     { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['SuperAdmin','Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
     { name: 'Cardex', link: '/dashboard/cardex', roles: ['SuperAdmin','Enfermeria'] }, 
+    { name : 'Configuracion', link : '/dashboard/Configuracion'},
   ];
 
   const settingsItems = [

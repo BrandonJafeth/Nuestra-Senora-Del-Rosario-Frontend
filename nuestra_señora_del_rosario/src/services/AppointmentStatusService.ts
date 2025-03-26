@@ -25,8 +25,6 @@ class AppointmentStatusService extends ApiService<AppointmentStatus> {
   public updateAppointmentStatus(id: number, appointmentStatus: AppointmentStatus) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
-
-    // Usar patchWithHeaders
     return this.updateWithHeaders(`/AppointmentStatus/${id}`, appointmentStatus, {
       Authorization: `Bearer ${token}`,
     });

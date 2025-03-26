@@ -5,7 +5,7 @@ import { NoteRequest } from '../types/NoteTypes';
 
 export const useNotes = () => {
   return useQuery<NoteRequest[], Error>(
-    "Note", // Clave consistente para la cache
+    "/Note", // Clave consistente para la cache
     async () => {
       const response = await notesService.getAllNotes();
       if (!response.data || !Array.isArray(response.data)) {

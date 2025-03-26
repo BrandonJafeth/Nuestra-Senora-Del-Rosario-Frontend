@@ -10,7 +10,7 @@ interface VolunteerData {
 
 export const useVolunteerRequests = (pageNumber: number, pageSize: number) => {
   return useQuery<VolunteerData, Error>(
-    ['formVoluntaries', pageNumber, pageSize],
+    ['volunteerRequests', pageNumber, pageSize],
     async () => {
       const response = await volunteeringService.getAllVolunteerPages(pageNumber, pageSize);
       console.log(response.data);

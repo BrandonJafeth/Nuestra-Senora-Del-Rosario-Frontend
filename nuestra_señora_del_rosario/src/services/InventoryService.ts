@@ -18,14 +18,17 @@ class InventoryService extends ApiService<InventoryReport> {
     targetUnits: string[],
     productIds: number[]
   ) {
-    // Convierte los arrays en strings separados por comas
-    const productIdsParam = productIds.join(',');
-    const targetUnitsParam = targetUnits.join(',');
+    // Si no hay productIds, mandamos '0'. Si hay, hacemos join.
+    const productIdsParam = productIds.length > 0 ? productIds.join(',') : '0';
+  
+    // Igual para targetUnits
+    const targetUnitsParam = targetUnits.length > 0 ? targetUnits.join(',') : '0';
   
     return this.getAll(
       `/Inventory/report/category/month?month=${month}&year=${year}&categoryId=${categoryId}&productIds=${productIdsParam}&targetUnits=${targetUnitsParam}`
     );
   }
+  
 }
 
 const inventoryService = new InventoryService();

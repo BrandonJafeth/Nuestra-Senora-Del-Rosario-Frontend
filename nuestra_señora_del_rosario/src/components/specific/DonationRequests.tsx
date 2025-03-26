@@ -40,9 +40,15 @@ function DonationRequests() {
     : [];
 
   const handleAccept = (donation: DonationRequest) => {
-    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });
-    showToast('Donación aceptada exitosamente', 'success');
-    setTimeout(() => setSelectedDonation(null), 2000);
+    if(donation.status_Name === 'Aprobado'){
+      showToast('Esta donación ya ha sido aceptada', 'warning');
+      return;
+    }
+    {
+      updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });
+      showToast('Donación aceptada exitosamente', 'success');
+      setTimeout(() => setSelectedDonation(null), 2000);
+    }
   };
 
   const handleReject = (donation: DonationRequest) => {

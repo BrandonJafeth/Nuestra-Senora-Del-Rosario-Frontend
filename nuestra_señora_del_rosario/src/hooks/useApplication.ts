@@ -10,7 +10,7 @@ interface AplicationData {
 
 export const useAplicationRequests = (pageNumber: number, pageSize: number) => {
   return useQuery<AplicationData, Error>(
-    ['forms', pageNumber, pageSize],
+    ['applicationRequests', pageNumber, pageSize],
     async () => {
       const response = await applicationService.getAllAplicationPages(pageNumber, pageSize);
       return response.data;

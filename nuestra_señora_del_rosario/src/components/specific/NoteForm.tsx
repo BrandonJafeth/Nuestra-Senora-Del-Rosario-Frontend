@@ -1,18 +1,18 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useCreateNote } from '../../hooks/useNotes';
 import { NoteRequest } from '../../types/NoteTypes';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
+import { useManagmentNote } from '../../hooks/useManagmentNote';
 
 const NoteForm: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<NoteRequest>();
-  const createNoteMutation = useCreateNote();
+  const {createEntity} = useManagmentNote();
 const {showToast, message, type} = useToast();
 
   // Manejador del envío del formulario
   const onSubmit: SubmitHandler<NoteRequest> = (data) => {
-    createNoteMutation.mutate(data, {
+    createEntity.mutate(data, {
       onSuccess: () => {
         reset(); // Limpiar formulario tras éxito
       showToast('Nota creada exitosamente', 'success');
@@ -89,14 +89,14 @@ const {showToast, message, type} = useToast();
         <div className="flex justify-end space-x-4 mt-6">
           <button
             type="submit"
-            disabled={createNoteMutation.isLoading}
+            disabled={createEntity.isLoading}
             className={`px-4 py-2 rounded-lg text-white ${
-              createNoteMutation.isLoading
+              createEntity.isLoading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'
             } transition`}
           >
-            {createNoteMutation.isLoading ? <LoadingSpinner /> : 'Guardar'}
+            {createEntity.isLoading ? <LoadingSpinner /> : 'Guardar'}
           </button>
         </div>
       </form>

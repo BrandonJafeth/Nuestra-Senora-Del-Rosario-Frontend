@@ -7,6 +7,7 @@ import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import { useCategories } from '../../hooks/useCategories';
 import { useUnitOfMeasure } from '../../hooks/useUnitOfMeasure';
+import LoadingSpinner from '../microcomponents/LoadingSpinner';
 
 interface ProductEditModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
   const [errors, setErrors] = useState<{ categoryID?: string; unitOfMeasureID?: string }>({});
   const [isEditing, setIsEditing] = useState(false);
   const updateProduct = useUpdateProduct();
+  const isLoading = updateProduct.isLoading;
   const { showToast, message, type } = useToast();
   const { data: categories } = useCategories();
   const { data: unitsOfMeasure } = useUnitOfMeasure();
@@ -238,7 +240,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
                   className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
                   tabIndex={0}
                 >
-                  Guardar
+                 {isLoading ? <LoadingSpinner/> : 'Guardar'}
                 </button>
                 <button
                   onClick={toggleEditMode}

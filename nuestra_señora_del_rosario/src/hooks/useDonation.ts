@@ -10,7 +10,7 @@ interface DonationData {
 
 export const useDonationRequests = (pageNumber: number, pageSize: number) => {
   return useQuery<DonationData, Error>(
-    ['donations', pageNumber, pageSize],
+    ['donationRequests', pageNumber, pageSize],
     async () => {
       const response = await donationService.getAllDonationsPages(pageNumber, pageSize);
       return response.data;
