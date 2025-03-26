@@ -52,27 +52,21 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
 
   // Abre el modal de edición SOLO si el rol es "Enfermeria"
   const handleOpenEditModal = (appointment: any) => {
-    // Si el rol NO es "Enfermeria", no permitimos edición
     if (selectedRole !== 'Enfermeria') {
       showToast('No tienes permiso para editar citas.', 'warning');
       return;
     }
   
-    // Convierte la fecha completa en "YYYY-MM-DD"
     const isoDate = new Date(appointment.date).toISOString().split('T')[0];
-  
-    // Si el backend te envía la hora como "08:25" está bien para el input type="time"
-    // pero si necesitas "HH:mm:ss", puedes concatenar ":00" cuando sea necesario.
-    const parsedTime = appointment.time; // "08:25"
+    const parsedTime = appointment.time; // e.g. "08:25"
   
     const initialData: AppointmentUpdateDto = {
       id_Appointment: appointment.id_Appointment,
-      // Aquí extraemos la fecha (YYYY-MM-DD)
       date: isoDate,
-      // Y asignamos la hora que venga del backend
-      time: parsedTime, // e.g. "08:25"
-      id_Companion: appointment.id_Companion || 0,
-      id_StatusAP: appointment.id_StatusAP || 0,
+      time: parsedTime,
+      // Si vienen como number o string, parsea si hace falta:
+      id_Companion: appointment.id_Companion ?? '', 
+      id_StatusAP: appointment.id_StatusAP ?? '',
       notes: appointment.notes || '',
     };
   
@@ -81,6 +75,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
     setOriginalData(initialData);
     setEditModalIsOpen(true);
   };
+  
   
 
   const handleInputChange = (
@@ -113,7 +108,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         return;
       }
       updateAppointment(
-        { id: formData.id_Appointment, data: changes },
+        { id: formData.id_Appointment, data: formData },
         {
           onSuccess: (updatedAppointment) => {
             // Actualiza el arreglo local de citas
@@ -156,7 +151,6 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
 
   return (
     <>
-      <Toast message={message} type={type} />
 
       {/* Modal principal: lista de citas del día */}
       <Modal
@@ -238,6 +232,7 @@ const DailyAppointment: React.FC<DailyAppointmentsModalProps> = ({
         className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
+      <Toast message={message} type={type} />
         {formData && (
           <form onSubmit={handleSubmit}>
             <h2 className="text-2xl font-semibold text-center mb-6">Editar Cita</h2>

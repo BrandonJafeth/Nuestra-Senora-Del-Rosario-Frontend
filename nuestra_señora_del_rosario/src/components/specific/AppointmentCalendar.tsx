@@ -99,8 +99,7 @@ const AppointmentCalendar = () => {
     setShowAddModal(true);
   };
 
-  const handleSaveAppointment = (newAppointment: any) => {
-    console.log('Nueva cita:', newAppointment);
+  const handleSaveAppointment = () => {
     refetch();
     setShowAddModal(false);
   };
