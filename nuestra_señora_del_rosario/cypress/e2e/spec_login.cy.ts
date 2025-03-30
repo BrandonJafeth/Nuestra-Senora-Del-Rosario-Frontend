@@ -11,7 +11,7 @@ describe('Pruebas de inicio de sesión', () => {
       cy.get('button').contains('Iniciar sesión').click();
   
       // Verificar que se muestra el mensaje de error en el toast
-      cy.contains('Credenciales Incorrectas. Por favor, intente nuevamente.', { timeout: 10000 }).should('be.visible');
+      cy.contains('Credenciales inválidas.', { timeout: 1000 }).should('be.visible');
     });
   
     it('Debería mostrar un mensaje de error si los campos están vacíos', () => {
@@ -24,8 +24,8 @@ describe('Pruebas de inicio de sesión', () => {
   
     it('Debería iniciar sesión correctamente con credenciales válidas', () => {
       // Rellenar formulario de inicio de sesión con credenciales válidas
-      cy.get('input[placeholder="Cédula"]').type('123456789');
-      cy.get('input[placeholder="Contraseña"]').type('ABCD1234');
+      cy.get('input[placeholder="Cédula"]').type('1234');
+      cy.get('input[placeholder="Contraseña"]').type('SA123');
       cy.get('button').contains('Iniciar sesión').click();
   
       // Verificar que se muestra un mensaje de éxito en el toast

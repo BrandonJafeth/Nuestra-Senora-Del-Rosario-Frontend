@@ -14,7 +14,7 @@ describe('Pruebas de solicitud de restablecimiento de contraseña', () => {
     cy.contains('a', '¿Olvidó su contraseña?').click();
     
     // Verificar que se ha navegado a la página de restablecimiento
-    cy.url().should('include', '/reset-password');
+    cy.url().should('include', '/solicitar-restablecimiento');
     
     // Intentar enviar el formulario sin rellenar el campo de correo electrónico
     cy.get('button[type="submit"]').click();
@@ -28,7 +28,7 @@ describe('Pruebas de solicitud de restablecimiento de contraseña', () => {
     cy.contains('a', '¿Olvidó su contraseña?').click();
     
     // Verificar que estamos en la página correcta
-    cy.url().should('include', '/reset-password');
+    cy.url().should('include', '/solicitar-restablecimiento');
     
     // Rellenar el campo de correo electrónico con un correo válido
     cy.get('input[type="email"]').type('brandoncarrilloalvarez2@gmail.com');
@@ -51,6 +51,6 @@ describe('Pruebas de solicitud de restablecimiento de contraseña', () => {
     cy.get('button[type="submit"]').click();
     
     // Verificar mensaje de error
-    cy.contains('Ingrese un correo electrónico válido').should('be.visible');
+    cy.contains("Incluye una '@' en la dirección de correo electrónico.").should('be.visible');
   });
 });
