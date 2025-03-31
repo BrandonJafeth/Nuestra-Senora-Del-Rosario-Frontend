@@ -1,7 +1,7 @@
 describe('VolunteerRequests', () => {
   beforeEach(() => {
     // Visita la URL principal primero
-    cy.visit('http://localhost:5173/');
+    cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/');
     
     // Iniciar sesión con credenciales válidas
     cy.get('input[placeholder="Cédula"]').type('1234');
@@ -12,25 +12,31 @@ describe('VolunteerRequests', () => {
     cy.contains('Inicio de sesión exitoso', { timeout: 5000 }).should('be.visible');
     
     // Navegar a la página de solicitudes de voluntariado
-    cy.visit('http://localhost:5173/dashboard/solicitudes/voluntariado');
+    cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/dashboard/solicitudes/voluntariado');
     
     // Esperar a que la página cargue completamente
     cy.contains('Solicitudes de Voluntarios', { timeout: 10000 }).should('be.visible');
   });
 
   it('debería mostrar las solicitudes de voluntariado', () => {
-    cy.contains('Ashly Vargas Gomez').should('be.visible');
+    cy.contains('Pedro Aguilar Serrano').should('be.visible');
   });
 
   it('debería filtrar las solicitudes por estado', () => {
-    cy.contains('Aceptada').click();
-    cy.contains('Ashly Vargas Gomez').should('not.exist');
+    cy.contains('Aprobado').click();
+    cy.contains('Pedro Aguilar Serrano').should('not.exist');
   });
 
   it('debería actualizar el estado de una solicitud a "Aceptada"', () => {
     cy.contains('Editar').click();
     cy.contains('Aceptar').click();
-    cy.contains('Solicitud de voluntariado aceptada exitosamente').should('be.visible');
+    cy.contains('Solicitud de voluntario aceptada').should('be.visible');
+  });
+  
+  it('debería mostrar un mensaje que la solicitud ya ha sido aceptada', () => {
+    cy.contains('Editar').click();
+    cy.contains('Aceptar').click();
+    cy.contains('Esta solicitud ya ha sido aceptada',{ timeout: 10000 }).should('be.visible');
   });
 
   it('debería actualizar el estado de una solicitud a "Rechazada"', () => {
@@ -38,4 +44,5 @@ describe('VolunteerRequests', () => {
     cy.contains('Rechazar').click();
     cy.contains('Solicitud de voluntario rechazada',{ timeout: 10000 }).should('be.visible');
   });
+
 });
