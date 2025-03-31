@@ -3,44 +3,73 @@ import Modal from "react-modal";
 import { useChangePassword } from "../../hooks/useChangePassword";
 import LoadingSpinner from "./LoadingSpinner";
 import Toast from "../common/Toast";
-import ConfirmationModal from "./ConfirmationModal"; // 🔹 Se importa el modal de confirmación
+import ConfirmationModal from "./ConfirmationModal"; // 🔹 Modal de confirmación
 import { useThemeDark } from "../../hooks/useThemeDark";
+import { useToast } from "../../hooks/useToast";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClose }) => {
   const { isDarkMode } = useThemeDark();
   const { changePassword, error, isLoading, success } = useChangePassword();
-  
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<"success" | "error" | null>(null);
-  
   const [isConfirmOpen, setIsConfirmOpen] = useState(false); // Estado del modal de confirmación
+
+  // Usamos useToast para gestionar los mensajes
+  const { showToast, message, type } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      setToastMessage("❌ Las contraseñas no coinciden");
-      setToastType("error");
+    // Validación de la contraseña actual: que no esté vacía y tenga al menos 6 caracteres
+    if (!currentPassword.trim()) {
+      showToast("La contraseña actual es requerida", "error");
+      return;
+    }
+    if (currentPassword.length < 6) {
+      showToast("La contraseña actual debe tener al menos 6 caracteres", "error");
       return;
     }
 
-    setIsConfirmOpen(true); // 🔹 Se abre el modal de confirmación antes de cambiar la contraseña
+    // Validación de la nueva contraseña: que no esté vacía, tenga al menos 6 caracteres y sea distinta de la actual
+    if (!newPassword.trim()) {
+      showToast("La nueva contraseña es requerida", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      showToast("La nueva contraseña debe tener al menos 6 caracteres", "error");
+      return;
+    }
+    if (newPassword === currentPassword) {
+      showToast("La nueva contraseña debe ser diferente a la actual", "error");
+      return;
+    }
+
+    // Validación de que las contraseñas coincidan
+    if (newPassword !== confirmPassword) {
+      showToast("❌ Las contraseñas no coinciden", "error");
+      return;
+    }
+
+    // Abre el modal de confirmación antes de ejecutar el cambio
+    setIsConfirmOpen(true);
   };
 
   // Confirmar el cambio de contraseña
   const handleConfirm = async () => {
-    setIsConfirmOpen(false); // Cerrar modal de confirmación antes de ejecutar acción
+    setIsConfirmOpen(false); // Cierra el modal de confirmación
 
     await changePassword({
-      currentPassword, newPassword, confirmPassword,
+      currentPassword,
+      newPassword,
+      confirmPassword,
       id_User: 0,
       dni: 0,
       email: "",
@@ -49,15 +78,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
       is_Active: false,
       isActive: false,
       roles: [],
-      id_Role: 0
+      id_Role: 0,
     });
   };
 
-  // Manejar éxito o error en el Toast
+  // Manejar el éxito o error del cambio de contraseña mediante Toast
   useEffect(() => {
     if (success) {
-      setToastMessage("✅ Contraseña actualizada correctamente");
-      setToastType("success");
+      showToast("✅ Contraseña actualizada correctamente", "success");
 
       setTimeout(() => {
         onClose();
@@ -70,29 +98,26 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
         const errorObj = JSON.parse(error);
         if (errorObj.errors) {
           const formattedErrors = Object.entries(errorObj.errors)
-            .map(([field, messages]) => `❌ ${field}: ${(messages as string[]).join(", ")}`)
+            .map(
+              ([field, messages]) =>
+                `❌ ${field}: ${(messages as string[]).join(", ")}`
+            )
             .join("\n");
-
-          setToastMessage(formattedErrors);
-          setToastType("error");
+          showToast(formattedErrors, "error");
         } else {
-          setToastMessage(`❌ ${errorObj.title || "Error desconocido"}`);
-          setToastType("error");
+          showToast(`❌ ${errorObj.title || "Error desconocido"}`, "error");
         }
       } catch {
-        setToastMessage(`❌ ${error}`);
-        setToastType("error");
+        showToast(`❌ ${error}`, "error");
       }
     }
-  }, [success, error]);
+  }, [success, error, showToast, onClose]);
 
   // Limpiar el formulario y cerrar el modal correctamente
   const handleClose = () => {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setToastMessage(null);
-    setToastType(null);
     onClose();
   };
 
@@ -106,10 +131,12 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
         }`}
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Cambiar Contraseña</h2>
+        <h2 className="text-2xl font-bold text-center mb-4">
+          Cambiar Contraseña
+        </h2>
 
-        {/* Toasts para mostrar errores o confirmaciones */}
-        {toastMessage && <Toast message={toastMessage} type={toastType || "error"} />}
+        {/* Mostrar el Toast si hay un mensaje */}
+        {message && <Toast message={message} type={type || "error"} />}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Contraseña Actual */}
@@ -153,7 +180,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             <button
               type="submit"
               className={`px-4 py-2 text-white rounded-lg shadow-md transition duration-200 ${
-                isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
               }`}
               disabled={isLoading}
             >
@@ -168,21 +197,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             </button>
           </div>
         </form>
-      {/* 🔹 Modal de Confirmación con un z-index superior */}
-      {isConfirmOpen && (
-        <ConfirmationModal
-          isOpen={isConfirmOpen}
-          onClose={() => setIsConfirmOpen(false)}
-          onConfirm={handleConfirm}
-          title="Confirmar Cambio de Contraseña"
-          message="¿Estás seguro de que quieres cambiar tu contraseña?"
-          confirmText="Confirmar"
-          cancelText="Cancelar"
-          isLoading={isLoading}
-        />
-      )}
-      </Modal>
 
+        {/* 🔹 Modal de Confirmación con z-index superior */}
+        {isConfirmOpen && (
+          <ConfirmationModal
+            isOpen={isConfirmOpen}
+            onClose={() => setIsConfirmOpen(false)}
+            onConfirm={handleConfirm}
+            title="Confirmar Cambio de Contraseña"
+            message="¿Estás seguro de que quieres cambiar tu contraseña?"
+            confirmText="Confirmar"
+            cancelText="Cancelar"
+            isLoading={isLoading}
+          />
+        )}
+      </Modal>
     </>
   );
 };

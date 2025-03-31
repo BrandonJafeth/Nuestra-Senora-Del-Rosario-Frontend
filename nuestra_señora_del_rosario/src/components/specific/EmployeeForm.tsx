@@ -8,24 +8,68 @@ function EmployeeForm() {
 
   // Obtener valores y funciones del hook personalizado `useEmployeeForm`
   const {
-    dni, firstName, lastName1, lastName2, phoneNumber, address, email, emergencyPhone,
+    dni, firstName, lastName1, lastName2, phoneNumber, address, email, emergencyPhone, id_Profession, id_TypeOfSalary,
     handleSubmit, setDni, setFirstName, setLastName1, setLastName2, setPhoneNumber, 
     setAddress, setEmail, setEmergencyPhone, setProfession, 
-    isDarkMode, message, type, setTypeOfSalaryId
+    isDarkMode, setTypeOfSalaryId
   } = useEmployeeForm();
 
   const { data: typeSalaryData } = useTypeSalary(); // Hook para obtener tipos de salario
   const { data: professionData } = useProfession(); // Hook para obtener profesiones
 
-  const { showToast } = useToast(); // Hook de Toast para mostrar mensajes
+  const { showToast, message, type } = useToast();
 
   // Manejador del envío del formulario
   const handleFormSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
+    
+     if (!firstName.trim()) {
+      showToast('El nombre es requerido', 'error');
+      return;
+    }
+    if (!lastName1.trim()) {
+      showToast('El primer apellido es requerido', 'error');
+      return;
+    }
+    if ((!dni.trim() || (dni.length < 9 || dni.length > 12) || !/^\d+$/.test(dni))) {
+      showToast('La cédula debe contener solo numeros entre 9 y 12 dígitos', 'error');
+      return;
+    }
+    if (!lastName2.trim()) {
+      showToast('El segundo apellido es requerido', 'error');
+      return;
+    }
+    if (!email.trim() || !email.includes('@') || !email.includes('.com')) {
+      showToast('Ingrese un correo electrónico válido', 'error');
+      return;
+    }
+    if ((!phoneNumber.trim()) || (phoneNumber.length !== 8) || (!/^\d+$/.test(phoneNumber))) {
+      showToast('El teléfono debe contener solo números y ser de 8 digitos', 'error');
+      return;
+    }
+    if (!address.trim()) {
+      showToast('La dirección es requerida', 'error');
+      return;
+    }
+    if (id_Profession === 0) {
+      showToast('Seleccione una profesión', 'error');
+      return;
+    }
+
+    // Validar que se haya seleccionado un tipo de salario
+    if (id_TypeOfSalary === 0) {
+      showToast('Seleccione un tipo de salario', 'error');
+      return;
+    }
+    if ((!emergencyPhone.trim()) || (emergencyPhone.length !== 8) || (!/^\d+$/.test(emergencyPhone))) {
+      showToast('El contacto de emergencia debe contener solo números y ser de 8 digitos', 'error');
+      return;
+    }
+    
     const success = await handleSubmit(e); // Verificar si el registro fue exitoso
     
     if (success) {
-      showToast('Empleado registrado exitosamente. Asigna un rol.', 'success');
+      showToast('Empleado registrado exitosamente', 'success');
     }
   };
 
