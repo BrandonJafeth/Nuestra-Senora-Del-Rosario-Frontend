@@ -5,6 +5,7 @@ import { useThemeDark } from '../../hooks/useThemeDark';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import Toast from '../common/Toast';
 import { useRoles } from '../../hooks/useRoles';
+import { useToast } from '../../hooks/useToast';
 
 const CreateUserForm: React.FC = () => {
   const navigate = useNavigate();
@@ -22,11 +23,7 @@ const CreateUserForm: React.FC = () => {
 
   const employeeDni = formData.dni; // Assuming you want to use the dni from formData
   const { roles, isLoadingRoles, isErrorRoles } = useRoles(Number(employeeDni)); // 📌 Obtenemos los roles
-  
-
-  // Estado para mensajes de Toast
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
+  const {message, showToast, type} = useToast (); // Hook para mostrar mensajes de Toast
 
   // Hook de creación de usuario
   const { mutate: createUser, isLoading, isError, error } = useCreateUser();
@@ -41,6 +38,26 @@ const CreateUserForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^\d+$/.test(formData.dni)) {
+      showToast('El DNI debe contener solo números', 'error');
+      return;
+    }
+    if ((formData.dni.length >= 9) && (formData.dni.length <= 12)) {
+      showToast('El DNI debe tener al menos 9 dígitos y no tener mas de 12', 'error');
+      return;
+    }
+    if (!formData.email.includes('@') || !formData.email.includes('.com')) {
+      showToast('El correo electrónico debe ser válido', 'error');
+      return;
+    }
+    if (formData.fullName.trim() === '') {
+      showToast('El nombre completo es requerido', 'error');
+      return;
+    }
+    if (Number(formData.id_Role) === 0) {
+      showToast('Debe seleccionar un rol', 'error');
+      return;
+    }
     createUser(
       {
         id_User: 0,
@@ -58,16 +75,16 @@ const CreateUserForm: React.FC = () => {
       },
       {
         onSuccess: () => {
-          setToastMessage('Usuario creado con éxito');
-          setToastType('success');
+          showToast('Usuario creado con éxito', 'success');
+        
 
           setTimeout(() => {
             navigate('/dashboard/usuarios'); // Redirige después de 3 segundos
           }, 3000);
         },
         onError: (err: any) => {
-          setToastMessage(err.response?.data?.message || 'Error al crear usuario');
-          setToastType('error');
+          showToast(err.response?.data?.message || 'Error al crear usuario', 'error');
+         
         },
       }
     );
@@ -75,8 +92,8 @@ const CreateUserForm: React.FC = () => {
 
   useEffect(() => {
     if (isError && error) {
-      setToastMessage(error.message || 'Error al crear usuario');
-      setToastType('error');
+      showToast(error.message || 'Error al crear usuario', 'error');
+   
     }
   }, [isError, error]);
 
@@ -88,8 +105,7 @@ const CreateUserForm: React.FC = () => {
     >
       <h2 className="text-3xl font-bold text-center mb-6">Registro de Usuario</h2>
 
-      {/* Mostrar el Toast */}
-      {toastMessage && <Toast message={toastMessage} type={toastType || 'error'} />}
+      {message && <Toast message={message} type={type || 'info'} />}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
         {/* DNI */}
