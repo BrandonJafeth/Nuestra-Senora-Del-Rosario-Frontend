@@ -103,23 +103,62 @@ createResident(residentPayload, {
     setTimeout(() => navigate('/dashboard/residentes'), 2000);
   },
   onError: (error: any) => {
-    // Muestra en consola la respuesta completa para ver su estructura
-    console.log('Error:', error);
-
-    // Intenta leer el mensaje de error del backend
-     // Check for different possible error message locations
-  const backendMessage = 
-  error.response?.data?.message ||  // Check for message property
-  error.response?.data?.error ||    // Check for error property
-  error.message ||                 // Check for axios error message
-  'Error al registrar el residente.'; // Default message
-  
-setToastMessage(backendMessage);
-setToastType('error');
-},
+    // Log para depuración
+    console.log('Error completo:', error);
+    console.log('Response data:', error.response?.data);
+    
+    let errorMessages: string[] = [];
+    
+    if (error.response?.data) {
+      // Caso 1: Error con mensaje simple
+      if (typeof error.response.data === 'string') {
+        errorMessages.push(error.response.data);
+      } 
+      // Caso 2: Error con propiedad 'error'
+      else if (error.response.data.error) {
+        errorMessages.push(error.response.data.error);
+      } 
+      // Caso 3: Error con propiedad 'message'
+      else if (error.response.data.message) {
+        errorMessages.push(error.response.data.message);
+      }
+      // Caso 4: Errores de validación con estructura anidada
+      else if (error.response.data.errors) {
+        // Recorre cada categoría de error
+        Object.keys(error.response.data.errors).forEach(key => {
+          const messages = error.response.data.errors[key];
+          if (Array.isArray(messages)) {
+            // Si son arrays, añade cada mensaje sin el prefijo
+            messages.forEach(msg => errorMessages.push(msg));
+          } else if (typeof messages === 'string') {
+            // Si es string directo, sin prefijo
+            errorMessages.push(messages);
+          }
+        });
+      }
+      // Caso 5: Si hay un título general
+      else if (error.response.data.title) {
+        errorMessages.push(error.response.data.title);
+      }
+    } 
+    // Fallback a mensaje genérico de error
+    else if (error.message) {
+      errorMessages.push(error.message);
+    }
+    
+    // Si no se encontró ningún mensaje específico
+    if (errorMessages.length === 0) {
+      errorMessages.push('Error al registrar el residente.');
+    }
+    
+    // Combina todos los mensajes en uno solo con saltos de línea
+    const combinedMessage = errorMessages.join('\n');
+    setToastMessage(combinedMessage);
+    setToastType('error');
+  },
 });
-  
   };
+  
   
 
   const navigateBack = () => {  
