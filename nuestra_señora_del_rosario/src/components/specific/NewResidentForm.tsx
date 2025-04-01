@@ -107,17 +107,16 @@ createResident(residentPayload, {
     console.log('Error:', error);
 
     // Intenta leer el mensaje de error del backend
-    const backendMessage = error.response?.data?.message;
-
-    if (backendMessage) {
-      setToastMessage(backendMessage);
-    } else {
-      // Si no existe 'message', usa el mensaje por defecto o el de axios
-      setToastMessage(error.message || 'Error al registrar el residente.');
-    }
-
-    setToastType('error');
-  },
+     // Check for different possible error message locations
+  const backendMessage = 
+  error.response?.data?.message ||  // Check for message property
+  error.response?.data?.error ||    // Check for error property
+  error.message ||                 // Check for axios error message
+  'Error al registrar el residente.'; // Default message
+  
+setToastMessage(backendMessage);
+setToastType('error');
+},
 });
   
   };
