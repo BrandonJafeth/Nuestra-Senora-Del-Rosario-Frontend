@@ -62,7 +62,6 @@ const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
       return;
     }
   
-    // Validar que se hayan completado todos los campos requeridos
     if (
       !residentData.name_RD ||
       !residentData.lastname1_RD ||
