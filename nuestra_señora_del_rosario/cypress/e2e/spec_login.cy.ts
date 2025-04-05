@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('Pruebas de inicio de sesión', () => {
     beforeEach(() => {
       // Visita la URL por defecto antes de cada prueba

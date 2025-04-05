@@ -1,0 +1,26 @@
+{
+    "data": [
+      {
+        "id": 1,
+        "date": "2025-04-01T00:00:00.000Z",
+        "time": "08:00",
+        "residentFullName": "Carlos Perez",
+        "companionName": "Ana Lopez",
+        "specialtyName": "Medicina General",
+        "healthcareCenterName": "Centro 1",
+        "statusName": "Pendiente"
+      },
+      {
+        "id": 2,
+        "date": "2025-04-01T00:00:00.000Z",
+        "time": "09:00",
+        "residentFullName": "Maria Garcia",
+        "companionName": "Juan Martinez",
+        "specialtyName": "Pediatría",
+        "healthcareCenterName": "Centro 2",
+        "statusName": "Pendiente"
+      }
+    ],
+    "totalPages": 1
+  }
+  

@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('RoleSelection Component', () => {
     // Antes de cada prueba, se limpian las cookies para evitar interferencias
     beforeEach(() => {
@@ -7,7 +9,7 @@ describe('RoleSelection Component', () => {
     context('cuando el usuario tiene un solo rol', () => {
         beforeEach(() => {
           // Simular el inicio de sesión visitando la URL principal
-          cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/');
+          cy.visit('http://localhost:5173/');
           cy.get('input[placeholder="Cédula"]').type('102340567');
           cy.get('input[placeholder="Contraseña"]').type('Trbn-2004');
           cy.get('button').contains('Iniciar sesión').click();
@@ -22,7 +24,7 @@ describe('RoleSelection Component', () => {
           );
     
           // Visitar la ruta donde se renderiza el componente para usuarios con un solo rol
-          cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/seleccionar-rol');
+          cy.visit('http://localhost:5173/seleccionar-rol');
           // Recargar para que el componente lea la cookie actualizada
           cy.reload();
         });
@@ -36,7 +38,7 @@ describe('RoleSelection Component', () => {
     context('cuando el usuario tiene múltiples roles', () => {
       beforeEach(() => {
         // Simular el inicio de sesión visitando la URL principal
-        cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/');
+        cy.visit('http://localhost:5173/');
         cy.get('input[placeholder="Cédula"]').type('121212121');
         cy.get('input[placeholder="Contraseña"]').type('Ozsu-2610');
         cy.get('button').contains('Iniciar sesión').click();
@@ -51,7 +53,7 @@ describe('RoleSelection Component', () => {
         );
   
         // Visitar la ruta donde se renderiza el componente para usuarios con múltiples roles
-        cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/seleccionar-rol');
+        cy.visit('http://localhost:5173/seleccionar-rol');
         // Recargar para que el componente lea la cookie actualizada
         cy.reload();
       });

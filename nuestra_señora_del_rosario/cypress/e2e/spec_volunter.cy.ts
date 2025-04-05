@@ -1,7 +1,9 @@
+/// <reference types="cypress" />
+
 describe('VolunteerRequests', () => {
   beforeEach(() => {
     // Visita la URL principal primero
-    cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/');
+    cy.visit('http://localhost:5173/');
     
     // Iniciar sesión con credenciales válidas
     cy.get('input[placeholder="Cédula"]').type('1234');
@@ -12,7 +14,7 @@ describe('VolunteerRequests', () => {
     cy.contains('Inicio de sesión exitoso', { timeout: 5000 }).should('be.visible');
     
     // Navegar a la página de solicitudes de voluntariado
-    cy.visit('https://nuestra-senora-del-rosario-frontend.vercel.app/dashboard/solicitudes/voluntariado');
+    cy.visit('http://localhost:5173/dashboard/solicitudes/voluntariado');
     
     // Esperar a que la página cargue completamente
     cy.contains('Solicitudes de Voluntarios', { timeout: 10000 }).should('be.visible');
