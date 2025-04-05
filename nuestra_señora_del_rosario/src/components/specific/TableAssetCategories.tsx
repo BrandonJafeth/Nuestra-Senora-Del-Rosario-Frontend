@@ -17,9 +17,13 @@ const TableAssetCategories: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Estado para el modal de edición (solo nombre)
+  // Estado para el modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<{ idAssetCategory: number; categoryName: string } | null>(null);
+
+  // Estado para el modal de confirmación de edición
+  const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
+  const [pendingEdit, setPendingEdit] = useState<{ idAssetCategory: number; categoryName: string } | null>(null);
 
   // Estado para el modal de confirmación de eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
@@ -53,15 +57,18 @@ const TableAssetCategories: React.FC = () => {
     closeAddModal();
   };
 
-  const handleEditCategory = (updatedValue: string) => {
-    if (!editCategory) return;
+  // Función para confirmar la edición (modal de confirmación)
+  const handleConfirmEdit = () => {
+    if (!pendingEdit) return;
     updateEntity.mutate(
       {
-        id: editCategory.idAssetCategory,
-        categoryName: updatedValue,
+        id: pendingEdit.idAssetCategory,
+        categoryName: pendingEdit.categoryName,
       },
       {
-        onSuccess: () => closeEditModal(),
+        onSuccess: () => {
+          setIsConfirmEditModalOpen(false);
+        },
       }
     );
   };
@@ -130,7 +137,24 @@ const TableAssetCategories: React.FC = () => {
         title="Editar Categoría"
         initialValue={editCategory?.categoryName || ""}
         onClose={closeEditModal}
-        onSave={(updatedValue) => handleEditCategory(updatedValue)}
+        onSave={(updatedValue) => {
+          if (editCategory) {
+            // Se guarda el cambio pendiente y se abre el modal de confirmación
+            setPendingEdit({ idAssetCategory: editCategory.idAssetCategory, categoryName: updatedValue });
+            setIsConfirmEditModalOpen(true);
+            closeEditModal();
+          }
+        }}
+      />
+
+      {/* Modal de Confirmación para Edición */}
+      <ConfirmationModal
+        isOpen={isConfirmEditModalOpen}
+        onClose={() => setIsConfirmEditModalOpen(false)}
+        onConfirm={handleConfirmEdit}
+        title="Confirmar Edición"
+        message={`¿Seguro que deseas cambiar el nombre de la categoría a ${pendingEdit?.categoryName}?`}
+        confirmText="Confirmar"
       />
 
       {/* Modal de Confirmación para Eliminar */}

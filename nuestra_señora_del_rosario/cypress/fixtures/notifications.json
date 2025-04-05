@@ -1,0 +1,10 @@
+[
+    {
+      "id": 101,
+      "title": "Recordatorio",
+      "message": "Tienes una cita programada",
+      "createdAt": "2025-04-01T08:00:00.000Z",
+      "isRead": false
+    }
+  ]
+  
