@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block access to admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Link to sitemap
+Sitemap: https://www.nuestrasenora.me/sitemap.xml
