@@ -1,4 +1,5 @@
 // cypress/e2e/spec_emailpassword.cy.ts
+/// <reference types="cypress" />
 
 describe('Pruebas de solicitud de restablecimiento de contraseña', () => {
   beforeEach(() => {

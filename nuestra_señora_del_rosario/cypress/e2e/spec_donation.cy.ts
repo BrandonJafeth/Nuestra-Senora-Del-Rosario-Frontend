@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('DonationRequests', () => {
     beforeEach(() => {
       // Visita la URL principal primero
