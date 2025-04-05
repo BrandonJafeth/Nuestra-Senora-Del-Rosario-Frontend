@@ -10,6 +10,7 @@ import { IconProvider } from './context/IconsProvider';
 import ToggleProvider from './context/ToggleProvider';
 import { ThemeProvider } from './context/ThemeProvider';
 import { QueryClient, QueryClientProvider } from 'react-query'; // Importa React Query
+import { HelmetProvider } from 'react-helmet-async';
 
 // Crea una instancia de QueryClients
 const queryClient = new QueryClient();
@@ -23,9 +24,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <AuthProvider>
             <IconProvider>
               <ToggleProvider>
-                  <Router>
-                    <App />
-                  </Router>
+              <HelmetProvider> 
+                    <Router>
+                      <App />
+                    </Router>
+                  </HelmetProvider>
               </ToggleProvider>
             </IconProvider>
           </AuthProvider>
