@@ -75,6 +75,36 @@ class AssetService extends ApiService<AssetType> {
       Authorization: `Bearer ${token}`,
     });
   }
+
+  // GET /api/Asset/byConditionPaged?condition=...&pageNumber=...&pageSize=...
+  public getAssetsByConditionPaged(condition: string, pageNumber: number, pageSize: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<{
+      data: AssetType[];
+      totalRecords: number;
+      pageNumber: number;
+      pageSize: number;
+    }>(`/Asset/byConditionPaged?condition=${encodeURIComponent(condition)}&pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  // GET /api/Asset/byCategoryPaged?categoryId=...&pageNumber=...&pageSize=...
+  public getAssetsByCategoryPaged(categoryId: number, pageNumber: number, pageSize: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    return this.getWithHeaders<{
+      data: AssetType[];
+      totalRecords: number;
+      pageNumber: number;
+      pageSize: number;
+    }>(`/Asset/byCategoryPaged?categoryId=${categoryId}&pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const assetService = new AssetService();
