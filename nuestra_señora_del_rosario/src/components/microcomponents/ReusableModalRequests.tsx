@@ -1,4 +1,5 @@
 import React from 'react';
+import { ButtonProps } from '../../types/ButtonProps';
 
 interface ModalProps {
   title: string;
@@ -49,10 +50,20 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
           {children}
         </div>
 
-        {/* Acciones (botones dinámicos) */}
-        <div className="flex justify-center space-x-4 mt-8">
-          {actions}
-        </div>
+    {/* Acciones (botones dinámicos) */}
+<div className="flex justify-center space-x-4 mt-8">
+  {React.Children.map(actions, child => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child as React.ReactElement<ButtonProps>, {
+        ...child.props,
+        className: `${child.props.className || ''} ${
+          child.props.disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`.trim()
+      });
+    }
+    return child;
+  })}
+</div>
       </div>
     </div>
   );

@@ -44,17 +44,29 @@ function ApplicationRequests() {
       showToast('La solicitud ya está aprobada', 'warning');
       return;
     }
-    updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 }); // Estado "Aprobado"
-    showToast('Solicitud de ingreso aceptada', 'success');
-    setTimeout(() => setSelectedApplication(null), 2000);
+    updateApplicationStatus(
+      { id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 },
+      {
+        onSuccess: () => {
+          setSelectedApplication(null);
+          showToast('Solicitud de ingreso aceptada', 'success');
+        }
+      }
+    ); // Estado "Aprobado"
   };
   
 
   // Función para rechazar una solicitud
   const handleReject = (application: ApplicationRequest) => {
-    updateApplicationStatus({ id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 }); // Estado "Rechazado"
-    showToast('Solicitud de ingreso rechazada', 'success');
-    setTimeout(() => setSelectedApplication(null), 2000);
+    updateApplicationStatus(
+      { id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 },
+      {
+        onSuccess: () => {
+          setSelectedApplication(null);
+          showToast('Solicitud de ingreso rechazada', 'error');
+        }
+      }
+    ); // Estado "Rechazado"
   };
 
   // Paginación
@@ -80,9 +92,9 @@ function ApplicationRequests() {
 
     deleteApplication(confirmDelete.id_ApplicationForm, {
       onSuccess: () => {
-        showToast("Solicitud eliminada correctamente", "success");
         setSelectedApplication(null);
         setConfirmDelete(null);
+        showToast("Solicitud eliminada correctamente", "success");
       },
     });
   };
