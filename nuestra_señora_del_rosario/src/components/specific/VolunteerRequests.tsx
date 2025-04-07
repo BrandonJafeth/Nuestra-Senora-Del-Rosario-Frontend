@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { VolunteerRequest } from "../../types/VolunteerType";
 import ReusableModalRequests from "../microcomponents/ReusableModalRequests";
 import ReusableTableRequests from "../microcomponents/ReusableTableRequests";
@@ -10,7 +10,6 @@ import { useStatuses } from "../../hooks/useStatuses";
 import { useUpdateVolunteerStatus } from "../../hooks/useVolunteerStatusUpdate ";
 import Skeleton from "react-loading-skeleton";
 import { useVolunteerTypes } from "../../hooks/useVolunteerTypes";
-import { useFilteredRequests } from "../../hooks/useFilteredRequests";
 import { useDeleteVoluntarieRequest } from "../../hooks/useDeleteVoluntarie";
 import ConfirmationModal from "../microcomponents/ConfirmationModal";
 
@@ -20,20 +19,79 @@ function VolunteerRequests() {
   const [filterStatus, setFilterStatus] = useState<'Todas' | 'Aceptada' | 'Rechazada' | 'Pendiente'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
   const [pageSize, setPageSize] = useState(5);
+  const [allVolunteers, setAllVolunteers] = useState<VolunteerRequest[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<VolunteerRequest | null>(null);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+
+  const isFiltering = useMemo(() => {
+    return filterStatus !== 'Todas' || filterType !== 'Todas';
+  }, [filterStatus, filterType]);
+
   const { data, isLoading } = useVolunteerRequests(pageNumber, pageSize);
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
-  const [confirmDelete, setConfirmDelete] = useState<VolunteerRequest | null>(null);
   const { mutate: deleteVolunteering, isLoading: isDeleting } = useDeleteVoluntarieRequest();
   const { showToast, message, type } = useToast();
   const { isDarkMode } = useThemeDark();
-  const [isAccepting, setIsAccepting] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
 
-  const filteredRequests = useFilteredRequests(data?.formVoluntaries || [], filterStatus, filterType);
+  useEffect(() => {
+    if (data?.formVoluntaries) {
+      setAllVolunteers(prevVolunteers => {
+        const newVolunteers = [...prevVolunteers];
+        data.formVoluntaries.forEach(volunteer => {
+          const index = newVolunteers.findIndex(v => v.id_FormVoluntarie === volunteer.id_FormVoluntarie);
+          if (index >= 0) {
+            newVolunteers[index] = volunteer;
+          } else {
+            newVolunteers.push(volunteer);
+          }
+        });
+        return newVolunteers;
+      });
+    }
+  }, [data]);
+
+  const allFilteredVolunteers = useMemo(() => {
+    if (!isFiltering) return [];
+
+    return allVolunteers.filter(volunteer => {
+      return (
+        (filterStatus === 'Todas' || volunteer.status_Name === filterStatus) &&
+        (filterType === 'Todas' || volunteer.name_voluntarieType === filterType)
+      );
+    });
+  }, [allVolunteers, filterStatus, filterType, isFiltering]);
+
+  const totalFilteredPages = useMemo(() => {
+    if (!isFiltering) return data?.totalPages || 1;
+    return Math.max(1, Math.ceil(allFilteredVolunteers.length / pageSize));
+  }, [allFilteredVolunteers, pageSize, data?.totalPages, isFiltering]);
+
+  const currentVolunteers = useMemo(() => {
+    if (!isFiltering) {
+      return data?.formVoluntaries || [];
+    } else {
+      return allFilteredVolunteers.slice(
+        (pageNumber - 1) * pageSize,
+        pageNumber * pageSize
+      );
+    }
+  }, [isFiltering, data?.formVoluntaries, allFilteredVolunteers, pageNumber, pageSize]);
+
+  useEffect(() => {
+    if (pageNumber > totalFilteredPages) {
+      setPageNumber(Math.max(1, totalFilteredPages));
+    }
+  }, [totalFilteredPages, pageNumber]);
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [filterStatus, filterType, pageSize]);
+
   const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) setPageNumber(pageNumber + 1);
+    if (pageNumber < totalFilteredPages) setPageNumber(pageNumber + 1);
   };
 
   const handlePreviousPage = () => {
@@ -47,6 +105,14 @@ function VolunteerRequests() {
         { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 },
         {
           onSuccess: () => {
+            setAllVolunteers(prevVolunteers => {
+              return prevVolunteers.map(v => {
+                if (v.id_FormVoluntarie === volunteer.id_FormVoluntarie) {
+                  return { ...v, status_Name: "Rechazado" };
+                }
+                return v;
+              });
+            });
             setSelectedVolunteer(null);
             setIsRejecting(false);
             showToast("Solicitud de voluntario rechazada", "error");
@@ -73,6 +139,14 @@ function VolunteerRequests() {
       { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 },
       {
         onSuccess: () => {
+          setAllVolunteers(prevVolunteers => {
+            return prevVolunteers.map(v => {
+              if (v.id_FormVoluntarie === volunteer.id_FormVoluntarie) {
+                return { ...v, status_Name: "Aprobado" };
+              }
+              return v;
+            });
+          });
           setSelectedVolunteer(null);
           setIsAccepting(false);
           showToast("Solicitud de voluntario aceptada", "success");
@@ -87,7 +161,7 @@ function VolunteerRequests() {
 
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setPageSize(Number(event.target.value));
-    setPageNumber(1); // Reinicia la paginación al cambiar el tamaño de página
+    setPageNumber(1);
   };
 
   const handleDelete = () => {
@@ -95,9 +169,12 @@ function VolunteerRequests() {
 
     deleteVolunteering(confirmDelete.id_FormVoluntarie, {
       onSuccess: () => {
+        setAllVolunteers(prevVolunteers => 
+          prevVolunteers.filter(v => v.id_FormVoluntarie !== confirmDelete.id_FormVoluntarie)
+        );
         setSelectedVolunteer(null);
         setConfirmDelete(null);
-        showToast("Donación eliminada correctamente", "success");
+        showToast("Solicitud eliminada correctamente", "success");
       },
     });
   };
@@ -106,7 +183,6 @@ function VolunteerRequests() {
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Solicitudes de Voluntarios</h2>
 
-      {/* Filtros */}
       <div className="flex justify-between mb-4">
         <div className="flex space-x-4">
           {isStatusesLoading ? (
@@ -176,15 +252,14 @@ function VolunteerRequests() {
         </div>
       </div>
 
-      {/* Tabla */}
       <ReusableTableRequests<VolunteerRequest>
-        data={filteredRequests}
+        data={currentVolunteers}
         headers={["Nombre", "Tipo", "Fecha Inicio", "Fecha Fin", "Estatus", "Acciones"]}
-        isLoading={isLoading}
+        isLoading={isLoading && (!isFiltering || allVolunteers.length === 0)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
-        totalPages={data?.totalPages}
+        totalPages={totalFilteredPages}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
         renderRow={(volunteer) => (
@@ -223,14 +298,12 @@ function VolunteerRequests() {
         )}
       />
 
-      {/* Modal */}
       <ReusableModalRequests
         isOpen={!!selectedVolunteer}
         title="Detalles del Voluntario"
         onClose={() => !isAccepting && !isRejecting && setSelectedVolunteer(null)}
         actions={
           <>
-            {/* Botón de Aceptar SIEMPRE visible */}
             <button
               className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
               onClick={() => handleAccept(selectedVolunteer!)}
