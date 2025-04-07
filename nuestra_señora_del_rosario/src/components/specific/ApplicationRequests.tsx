@@ -313,13 +313,13 @@ function ApplicationRequests() {
             </td>
             <td className="px-6 py-4 flex space-x-2">
               <button
-                className="px-2 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
+                className="w-20 px-3 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
                 onClick={() => setSelectedApplication(request)}
               >
                 Ver más
               </button>
               <button
-                className="px-2 py-2 bg-orange-400 text-white rounded-xl hover:bg-orange-500 transition"
+                className=" w-auto px-2 py-2 bg-orange-400 text-white rounded-xl hover:bg-orange-500 transition"
                 onClick={() => setEditingApplication(request)}
               >
                 Editar
@@ -414,7 +414,7 @@ function ApplicationRequests() {
         title="Editar Solicitud"
         onClose={() => setEditingApplication(null)}
         actions={
-          <div className="flex space-x-4 justify-end mt-4">
+          <div className="flex space-x-4 justify-end">
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
               onClick={handleSaveEdit}
@@ -434,7 +434,7 @@ function ApplicationRequests() {
         {editingApplication && (
           <>
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Nombre</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
               <input
                 type="text"
                 name="name_AP"
@@ -443,13 +443,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Primer Apellido</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer Apellido</label>
               <input
                 type="text"
                 name="lastName1_AP"
@@ -458,13 +458,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Segundo Apellido</label>
+              <label className=" font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo Apellido</label>
               <input
                 type="text"
                 name="lastName2_AP"
@@ -473,13 +473,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Cédula</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula</label>
               <input
                 type="text"
                 name="cedula_AP"
@@ -488,13 +488,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Edad</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Edad</label>
               <input
                 type="number"
                 name="age_AP"
@@ -503,13 +503,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Domicilio</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Domicilio</label>
               <input
                 type="text"
                 name="location_AP"
@@ -518,13 +518,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Nombre del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre del Encargado</label>
               <input
                 type="text"
                 name="guardianName"
@@ -533,13 +533,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Primer Apellido Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer Apellido Encargado</label>
               <input
                 type="text"
                 name="lastName1_AP"
@@ -548,13 +548,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Segundo Apellido Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo Apellido Encargado</label>
               <input
                 type="text"
                 name="lastName2_AP"
@@ -563,13 +563,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Cédula Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula Encargado</label>
               <input
                 type="text"
                 name="cedula_AP"
@@ -578,13 +578,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Teléfono del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Teléfono del Encargado</label>
               <input
                 type="text"
                 name="guardianPhone"
@@ -593,13 +593,13 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold mb-1">Email del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Email del Encargado</label>
               <input
                 type="email"
                 name="guardianEmail"
@@ -608,7 +608,7 @@ function ApplicationRequests() {
                 className={`w-full rounded-md border p-2 ${
                   isDarkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black'
+                    : 'bg-white border-gray-300 text-black-800'
                 }`}
               />
             </div>
