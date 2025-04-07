@@ -11,13 +11,14 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const { getIcon } = useIcon();
   const { isDarkMode } = useThemeDark();
   const { logout, selectedRole } = useAuth();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const rol = selectedRole || "";
   
   // Estado para el dropdown de "Personal"
   const [isPersonalDropdownOpen, setPersonalDropdownOpen] = useState(false);
   const togglePersonalDropdown = () => setPersonalDropdownOpen(!isPersonalDropdownOpen);
-  const location = useLocation();
   const isSettingsPage = location.pathname.startsWith('/dashboard/Configuracion');
 
   // Estado para el dropdown de "Inventario"
@@ -38,8 +39,15 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     { name: 'Ajustes del Sistema', link: '/dashboard/Configuracion/sistema', roles:['SuperAdmin','Admin', 'Enfermeria', 'Inventario'] },
     { name: 'Página Informativa', link: '/dashboard/Configuracion/pagina', roles:['SuperAdmin','Admin'] },
     { name: 'Página Central', link: '/dashboard' },
-
   ];
+
+  // Función para verificar si una ruta está activa
+  const isActive = (path: string) => {
+    if (path === '/dashboard' && currentPath === '/dashboard') {
+      return true;
+    }
+    return path !== '/dashboard' && currentPath.startsWith(path);
+  };
 
   return (
     <>
@@ -61,8 +69,14 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
               <li key={item.name}>
                 <Link
                   to={item.link}
-                  className={`flex items-center p-2 rounded-lg transition-colors duration-200${
-                    isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
+                  className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
+                    isActive(item.link) 
+                      ? isDarkMode 
+                        ? 'bg-gray-700 text-white' 
+                        : 'bg-gray-200 text-black'
+                      : isDarkMode 
+                        ? 'hover:bg-gray-700 dark:text-white' 
+                        : 'hover:bg-gray-100 text-black'
                   }`}
                 >
                   <span className="flex items-center justify-center w-6 h-6">
@@ -79,7 +93,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     <button
       onClick={toggleInventoryDropdown}
       className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
-        isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
+        isActive("/dashboard/inventario") 
+          ? isDarkMode 
+            ? 'bg-gray-700 text-white' 
+            : 'bg-gray-200 text-black'
+          : isDarkMode 
+            ? 'hover:bg-gray-700 dark:text-white' 
+            : 'hover:bg-gray-100 text-black'
       }`}
     >
       <span className="flex items-center justify-center w-6 h-6">
@@ -113,7 +133,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
               <Link
                 to="inventario/lista-productos"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                  isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                  isActive("/dashboard/inventario/lista-productos") 
+                    ? isDarkMode 
+                      ? 'bg-gray-700 text-white' 
+                      : 'bg-gray-200 text-black'
+                    : isDarkMode 
+                      ? 'hover:bg-gray-600 dark:text-white' 
+                      : 'hover:bg-gray-100 text-black'
                 }`}
               >
                 <span className="flex items-center justify-center w-5 h-5">
@@ -126,7 +152,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
               <Link
                 to="inventario/consumo-productos"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                  isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                  isActive("/dashboard/inventario/consumo-productos") 
+                    ? isDarkMode 
+                      ? 'bg-gray-700 text-white' 
+                      : 'bg-gray-200 text-black'
+                    : isDarkMode 
+                      ? 'hover:bg-gray-600 dark:text-white' 
+                      : 'hover:bg-gray-100 text-black'
                 }`}
               >
                 <span className="flex items-center justify-center w-5 h-5">
@@ -135,31 +167,31 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                 <span className="ml-2">Egreso de Productos</span>
               </Link>
             </li>
+            <li>
+              <Link
+                to="inventario/lista-activos"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                  isActive("/dashboard/inventario/lista-activos") 
+                    ? isDarkMode 
+                      ? 'bg-gray-700 text-white' 
+                      : 'bg-gray-200 text-black'
+                    : isDarkMode 
+                      ? 'hover:bg-gray-600 dark:text-white' 
+                      : 'hover:bg-gray-100 text-black'
+                }`}
+              >
+                <span className="flex items-center justify-center w-5 h-5">
+                  {getIcon('Lista de productos')}
+                </span>
+                <span className="ml-2">Lista de activos</span>
+              </Link>
+            </li>
           </>
-        )}
-
-        {['SuperAdmin', 'Admin', 'Fisioterapia'].includes(rol) && (
-          <li>
-            <Link
-              to="inventario/lista-activos"
-              className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
-              }`}
-            >
-              <span className="flex items-center justify-center w-5 h-5">
-                {getIcon('Lista de productos')}
-              </span>
-              <span className="ml-2">Lista de activos</span>
-            </Link>
-          </li>
         )}
       </ul>
     )}
   </li>
 )}
-
-
-
 
           {/* Dropdown de Solicitudes, solo visible para Admin */}
           {['Admin', 'SuperAdmin'].includes(rol) && (
@@ -167,7 +199,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
               <button
                 onClick={toggleDropdown}
                 className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
-                  isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
+                  isActive("/dashboard/solicitudes")
+                    ? isDarkMode 
+                      ? 'bg-gray-700 text-white' 
+                      : 'bg-gray-200 text-black'
+                    : isDarkMode 
+                      ? 'hover:bg-gray-700 dark:text-white' 
+                      : 'hover:bg-gray-100 text-black'
                 }`}
               >
                 <span className="flex items-center justify-center w-6 h-6">
@@ -199,7 +237,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to="solicitudes/ingreso"
                       className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                        isActive("/dashboard/solicitudes/ingreso") 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-600 dark:text-white' 
+                            : 'hover:bg-gray-100 text-black'
                       }`}
                     >
                       <span className="flex items-center justify-center w-5 h-5">
@@ -212,7 +256,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to="solicitudes/voluntariado"
                       className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                        isActive("/dashboard/solicitudes/voluntariado") 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-600 dark:text-white' 
+                            : 'hover:bg-gray-100 text-black'
                       }`}
                     >
                       <span className="flex items-center justify-center w-5 h-5">
@@ -225,7 +275,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to="solicitudes/donaciones"
                       className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                        isActive("/dashboard/solicitudes/donaciones") 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-600 dark:text-white' 
+                            : 'hover:bg-gray-100 text-black'
                       }`}
                     >
                       <span className="flex items-center justify-center w-5 h-5">
@@ -245,7 +301,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
               <button
                 onClick={togglePersonalDropdown}
                 className={`flex items-center w-full p-2 rounded-lg transition-colors duration-200 ${
-                  isDarkMode ? 'hover:bg-gray-700 dark:text-white' : 'hover:bg-gray-100 text-black'
+                  isActive("/dashboard/personal")
+                    ? isDarkMode 
+                      ? 'bg-gray-700 text-white' 
+                      : 'bg-gray-200 text-black'
+                    : isDarkMode 
+                      ? 'hover:bg-gray-700 dark:text-white' 
+                      : 'hover:bg-gray-100 text-black'
                 }`}
               >
                 <span className="flex items-center justify-center w-6 h-6">
@@ -277,7 +339,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to="personal/registro"
                       className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                        isActive("/dashboard/personal/registro") 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-600 dark:text-white' 
+                            : 'hover:bg-gray-100 text-black'
                       }`}
                     >
                       <span className="flex items-center justify-center w-5 h-5">
@@ -290,7 +358,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to="personal/lista"
                       className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? 'hover:bg-gray-600 dark:text-white' : 'hover:bg-gray-100 text-black'
+                        isActive("/dashboard/personal/lista") 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-600 dark:text-white' 
+                            : 'hover:bg-gray-100 text-black'
                       }`}
                     >
                       <span className="flex items-center justify-center w-5 h-5">
@@ -339,7 +413,13 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                     <Link
                       to={item.link}
                       className={`flex items-center p-2 rounded-lg transition-colors duration-200 ${
-                        isDarkMode ? "hover:bg-gray-700 dark:text-white" : "hover:bg-gray-200 text-black"
+                        isActive(item.link) 
+                          ? isDarkMode 
+                            ? 'bg-gray-700 text-white' 
+                            : 'bg-gray-200 text-black'
+                          : isDarkMode 
+                            ? 'hover:bg-gray-700 dark:text-white' 
+                            : 'hover:bg-gray-200 text-black'
                       }`}
                     >
                        <span className="flex items-center justify-center w-6 h-6">
