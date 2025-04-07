@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.hide-scrollbar::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  
+  /* Para Firefox */
+  .hide-scrollbar {
+    scrollbar-width: none;   /* Oculta scrollbar en Firefox */
+    -ms-overflow-style: none;/* IE y Edge */
+  }
+  
