@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useStatuses } from '../../hooks/useStatuses';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -20,6 +20,12 @@ function ApplicationRequests() {
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [allApplications, setAllApplications] = useState<ApplicationRequest[]>([]);
+  const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
+
+  const isFiltering = useMemo(() => {
+    return filterStatus !== 'Todas';
+  }, [filterStatus]);
 
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
   const [confirmDelete, setConfirmDelete] = useState<ApplicationRequest | null>(null);
@@ -28,23 +34,66 @@ function ApplicationRequests() {
   const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
   const [editingApplication, setEditingApplication] = useState<ApplicationRequest | null>(null);
 
-  const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const { showToast, message, type } = useToast();
   const { mutate: updateApplicationStatus } = useUpdateApplicationStatus();
   const { mutate: updateApplication, isLoading: isUpdating } = useUpdateApplicationRequest();
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
 
-  // Filtrar solicitudes según el estatus
-  const filteredRequests = Array.isArray(data?.forms)
-    ? data.forms.filter((req) => filterStatus === 'Todas' || req.status_Name === filterStatus)
-    : [];
+  useEffect(() => {
+    if (data?.forms) {
+      setAllApplications(prevApplications => {
+        const newApplications = [...prevApplications];
+        data.forms.forEach(application => {
+          const index = newApplications.findIndex(a => a.id_ApplicationForm === application.id_ApplicationForm);
+          if (index >= 0) {
+            newApplications[index] = application;
+          } else {
+            newApplications.push(application);
+          }
+        });
+        return newApplications;
+      });
+    }
+  }, [data]);
 
-  // Manejo de errores
+  const filteredApplications = useMemo(() => {
+    if (!isFiltering) return [];
+
+    return allApplications.filter((app) =>
+      filterStatus === 'Todas' || app.status_Name === filterStatus
+    );
+  }, [allApplications, filterStatus, isFiltering]);
+
+  const currentApplications = useMemo(() => {
+    if (!isFiltering) {
+      return data?.forms || [];
+    } else {
+      return filteredApplications.slice(
+        (pageNumber - 1) * pageSize,
+        pageNumber * pageSize
+      );
+    }
+  }, [isFiltering, data?.forms, filteredApplications, pageNumber, pageSize]);
+
+  const totalPages = useMemo(() => {
+    if (!isFiltering) return data?.totalPages || 1;
+    return Math.max(1, Math.ceil(filteredApplications.length / pageSize));
+  }, [isFiltering, data?.totalPages, filteredApplications.length, pageSize]);
+
+  useEffect(() => {
+    if (pageNumber > totalPages) {
+      setPageNumber(Math.max(1, totalPages));
+    }
+  }, [totalPages, pageNumber]);
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [filterStatus, pageSize]);
+
   if (error) {
     return <div>Error loading application requests</div>;
   }
 
-  // Aceptar una solicitud
   const handleAccept = (application: ApplicationRequest) => {
     if (application.status_Name === 'Aprobado') {
       showToast('La solicitud ya está aprobada', 'warning');
@@ -54,6 +103,13 @@ function ApplicationRequests() {
       { id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 },
       {
         onSuccess: () => {
+          setAllApplications(prev =>
+            prev.map(app =>
+              app.id_ApplicationForm === application.id_ApplicationForm
+                ? { ...app, status_Name: 'Aprobado' }
+                : app
+            )
+          );
           setSelectedApplication(null);
           showToast('Solicitud de ingreso aceptada', 'success');
         },
@@ -61,7 +117,6 @@ function ApplicationRequests() {
     );
   };
 
-  // Guardar edición
   const handleSaveEdit = () => {
     if (!editingApplication) return;
 
@@ -87,7 +142,6 @@ function ApplicationRequests() {
     );
   };
 
-  // Manejar los cambios en inputs
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -98,12 +152,18 @@ function ApplicationRequests() {
     });
   };
 
-  // Rechazar una solicitud
   const handleReject = (application: ApplicationRequest) => {
     updateApplicationStatus(
       { id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 },
       {
         onSuccess: () => {
+          setAllApplications(prev =>
+            prev.map(app =>
+              app.id_ApplicationForm === application.id_ApplicationForm
+                ? { ...app, status_Name: 'Rechazado' }
+                : app
+            )
+          );
           setSelectedApplication(null);
           showToast('Solicitud de ingreso rechazada', 'error');
         },
@@ -112,7 +172,7 @@ function ApplicationRequests() {
   };
 
   const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
+    if (pageNumber < totalPages) {
       setPageNumber(pageNumber + 1);
     }
   };
@@ -128,11 +188,13 @@ function ApplicationRequests() {
     setPageNumber(1);
   };
 
-  // Eliminar la solicitud
   const handleDelete = () => {
     if (!confirmDelete) return;
     deleteApplication(confirmDelete.id_ApplicationForm, {
       onSuccess: () => {
+        setAllApplications(prev =>
+          prev.filter(app => app.id_ApplicationForm !== confirmDelete.id_ApplicationForm)
+        );
         setSelectedApplication(null);
         setConfirmDelete(null);
         showToast('Solicitud eliminada correctamente', 'success');
@@ -154,7 +216,6 @@ function ApplicationRequests() {
         Solicitudes de Ingreso
       </h2>
 
-      {/* Filtros */}
       <div className="flex justify-between mb-4">
         <div className="flex space-x-4">
           {isStatusesLoading
@@ -211,15 +272,14 @@ function ApplicationRequests() {
         </div>
       </div>
 
-      {/* Tabla */}
       <ReusableTableRequests<ApplicationRequest>
-        data={filteredRequests}
+        data={currentApplications}
         headers={['Nombre', 'Apellido', 'Edad', 'Domicilio', 'Fecha Solicitud', 'Estatus', 'Acciones']}
-        isLoading={isLoading}
+        isLoading={isLoading && (!isFiltering || allApplications.length === 0)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
-        totalPages={data?.totalPages}
+        totalPages={totalPages}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
         renderRow={(request) => (
@@ -269,7 +329,6 @@ function ApplicationRequests() {
         )}
       />
 
-      {/* Modal de Ver Detalles */}
       <ReusableModalRequests
         isOpen={!!selectedApplication}
         title="Detalles de la Solicitud"
@@ -351,236 +410,211 @@ function ApplicationRequests() {
       </ReusableModalRequests>
 
       <ReusableModalRequests
-  isOpen={!!editingApplication}
-  title="Editar Solicitud"
-  onClose={() => setEditingApplication(null)}
-  actions={
-    <div className="flex space-x-4 justify-end mt-4">
-      <button
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-        onClick={handleSaveEdit}
-        disabled={isUpdating}
+        isOpen={!!editingApplication}
+        title="Editar Solicitud"
+        onClose={() => setEditingApplication(null)}
+        actions={
+          <div className="flex space-x-4 justify-end mt-4">
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+              onClick={handleSaveEdit}
+              disabled={isUpdating}
+            >
+              {isUpdating ? <LoadingSpinner /> : 'Guardar'}
+            </button>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+              onClick={() => setEditingApplication(null)}
+            >
+              Cancelar
+            </button>
+          </div>
+        }
       >
-        {isUpdating ? <LoadingSpinner /> : 'Guardar'}
-      </button>
-      <button
-        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-        onClick={() => setEditingApplication(null)}
-      >
-        Cancelar
-      </button>
-    </div>
-  }
->
-  {editingApplication && (
-    <>
-      {/* Nombre */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Nombre</label>
-        <input
-          type="text"
-          name="name_AP"
-          value={editingApplication.name_AP}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white' 
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+        {editingApplication && (
+          <>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Nombre</label>
+              <input
+                type="text"
+                name="name_AP"
+                value={editingApplication.name_AP}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Primer Apellido */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Primer Apellido</label>
-        <input
-          type="text"
-          name="lastName1_AP"
-          value={editingApplication.lastName1_AP}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Primer Apellido</label>
+              <input
+                type="text"
+                name="lastName1_AP"
+                value={editingApplication.lastName1_AP}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Segundo Apellido */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Segundo Apellido</label>
-        <input
-          type="text"
-          name="lastName2_AP"
-          value={editingApplication.lastName2_AP || ''}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Segundo Apellido</label>
+              <input
+                type="text"
+                name="lastName2_AP"
+                value={editingApplication.lastName2_AP || ''}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Cédula */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Cédula</label>
-        <input
-          type="text"
-          name="cedula_AP"
-          value={editingApplication.cedula_AP}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Cédula</label>
+              <input
+                type="text"
+                name="cedula_AP"
+                value={editingApplication.cedula_AP}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Edad */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Edad</label>
-        <input
-          type="number"
-          name="age_AP"
-          value={editingApplication.age_AP}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Edad</label>
+              <input
+                type="number"
+                name="age_AP"
+                value={editingApplication.age_AP}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Domicilio */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Domicilio</label>
-        <input
-          type="text"
-          name="location_AP"
-          value={editingApplication.location_AP}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Domicilio</label>
+              <input
+                type="text"
+                name="location_AP"
+                value={editingApplication.location_AP}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Nombre del Encargado */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Nombre del Encargado</label>
-        <input
-          type="text"
-          name="guardianName"
-          value={editingApplication.guardianName}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Nombre del Encargado</label>
+              <input
+                type="text"
+                name="guardianName"
+                value={editingApplication.guardianName}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Primer Apellido */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Primer Apellido Encargado</label>
-        <input
-          type="text"
-          name="lastName1_AP"
-          value={editingApplication.guardianLastName1}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Primer Apellido Encargado</label>
+              <input
+                type="text"
+                name="lastName1_AP"
+                value={editingApplication.guardianLastName1}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Segundo Apellido */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Segundo Apellido Encargado</label>
-        <input
-          type="text"
-          name="lastName2_AP"
-          value={editingApplication.guardianLastName2 || ''}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Segundo Apellido Encargado</label>
+              <input
+                type="text"
+                name="lastName2_AP"
+                value={editingApplication.guardianLastName2 || ''}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Cédula */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Cédula Encargado</label>
-        <input
-          type="text"
-          name="cedula_AP"
-          value={editingApplication.guardianCedula}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Cédula Encargado</label>
+              <input
+                type="text"
+                name="cedula_AP"
+                value={editingApplication.guardianCedula}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Teléfono del Encargado */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Teléfono del Encargado</label>
-        <input
-          type="text"
-          name="guardianPhone"
-          value={editingApplication.guardianPhone}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Teléfono del Encargado</label>
+              <input
+                type="text"
+                name="guardianPhone"
+                value={editingApplication.guardianPhone}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
 
-      {/* Email del Encargado */}
-      <div className="flex flex-col">
-        <label className="font-semibold mb-1">Email del Encargado</label>
-        <input
-          type="email"
-          name="guardianEmail"
-          value={editingApplication.guardianEmail}
-          onChange={handleInputChange}
-          className={`
-            w-full rounded-md border p-2
-            ${isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white'
-              : 'bg-white border-gray-300 text-black'}
-          `}
-        />
-      </div>
-    </>
-  )}
-</ReusableModalRequests>
-
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1">Email del Encargado</label>
+              <input
+                type="email"
+                name="guardianEmail"
+                value={editingApplication.guardianEmail}
+                onChange={handleInputChange}
+                className={`w-full rounded-md border p-2 ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-300 text-black'
+                }`}
+              />
+            </div>
+          </>
+        )}
+      </ReusableModalRequests>
 
       <Toast message={message} type={type} />
     </div>
