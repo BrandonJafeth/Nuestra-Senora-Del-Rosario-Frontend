@@ -76,7 +76,6 @@ class AssetService extends ApiService<AssetType> {
     });
   }
 
-  // GET /api/Asset/byConditionPaged?condition=...&pageNumber=...&pageSize=...
   public getAssetsByConditionPaged(condition: string, pageNumber: number, pageSize: number) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
@@ -91,7 +90,7 @@ class AssetService extends ApiService<AssetType> {
     });
   }
 
-  // GET /api/Asset/byCategoryPaged?categoryId=...&pageNumber=...&pageSize=...
+
   public getAssetsByCategoryPaged(categoryId: number, pageNumber: number, pageSize: number) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");

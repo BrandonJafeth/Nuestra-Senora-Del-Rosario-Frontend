@@ -275,7 +275,7 @@ const AssetTable: React.FC = () => {
       </div>
 
       {/* Filtros: Estado, Búsqueda y Categoría */}
-      <div className="mb-6 flex flex-wrap gap-4 items-center justify-around">
+      <div className="mb-6 flex flex-wrap gap-4 items-center justify-around mt-7">
         {/* Filtro por estado */}
         <div className="w-auto">
           <select
