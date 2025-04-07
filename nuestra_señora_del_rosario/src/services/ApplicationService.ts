@@ -57,6 +57,18 @@ class ApplicationService extends ApiService<ApplicationRequest> {
     });
   }
 
+   // PUT /api/ApplicationForm/{id}
+   public putApplicationRequest(id: number, data: Omit<ApplicationRequest, 
+    'id_ApplicationForm' | 'id_Applicant' | 'id_Guardian' | 
+    'applicationDate' | 'status_Name'>) {
+      const token = Cookies.get("authToken");
+      if (!token) throw new Error("No se encontró un token de autenticación");
+  
+      return this.updateWithHeaders(`/ApplicationForm/${id}`, data, {
+        Authorization: `Bearer ${token}`,
+      });
+    }
+
   // DELETE /api/ApplicationForm/{id}
   public deleteApplicationRequest(id: number) {
     const token = Cookies.get("authToken");
