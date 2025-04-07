@@ -44,17 +44,27 @@ function DonationRequests() {
       showToast('Esta donación ya ha sido aceptada', 'warning');
       return;
     }
-    {
-      updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 2 });
-      showToast('Donación aceptada exitosamente', 'success');
-      setTimeout(() => setSelectedDonation(null), 2000);
-    }
+    updateDonationStatus(
+      { id_FormDonation: donation.id_FormDonation, id_Status: 2 },
+      {
+        onSuccess: () => {
+          setSelectedDonation(null);
+          showToast('Donación aceptada exitosamente', 'success');
+        }
+      }
+    );
   };
 
   const handleReject = (donation: DonationRequest) => {
-    updateDonationStatus({ id_FormDonation: donation.id_FormDonation, id_Status: 3 });
-    showToast('Donación rechazada exitosamente', 'success');
-    setTimeout(() => setSelectedDonation(null), 2000);
+    updateDonationStatus(
+      { id_FormDonation: donation.id_FormDonation, id_Status: 3 },
+      {
+        onSuccess: () => {
+          setSelectedDonation(null);
+          showToast('Donación rechazada exitosamente', 'error');
+        }
+      }
+    );
   };
 
   const handleNextPage = () => {
@@ -79,9 +89,9 @@ function DonationRequests() {
 
     deleteDonation(confirmDelete.id_FormDonation, {
       onSuccess: () => {
-        showToast("Donación eliminada correctamente", "success");
         setSelectedDonation(null);
         setConfirmDelete(null);
+        showToast("Donación eliminada correctamente", "success");
       },
     });
   };

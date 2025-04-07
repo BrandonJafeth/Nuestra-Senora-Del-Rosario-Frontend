@@ -25,10 +25,12 @@ function VolunteerRequests() {
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
   const [confirmDelete, setConfirmDelete] = useState<VolunteerRequest | null>(null);
-  const {mutate: deleteVolunteering, isLoading : isDeleting} = useDeleteVoluntarieRequest();
+  const { mutate: deleteVolunteering, isLoading: isDeleting } = useDeleteVoluntarieRequest();
   const { showToast, message, type } = useToast();
   const { isDarkMode } = useThemeDark();
-  
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+
   const filteredRequests = useFilteredRequests(data?.formVoluntaries || [], filterStatus, filterType);
   const handleNextPage = () => {
     if (data && pageNumber < data.totalPages) setPageNumber(pageNumber + 1);
@@ -39,16 +41,19 @@ function VolunteerRequests() {
   };
 
   const handleReject = (volunteer: VolunteerRequest) => {
-    if (volunteer) {
+    if (volunteer && !isRejecting && !isAccepting) {
+      setIsRejecting(true);
       updateVolunteerStatus(
         { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 3 },
         {
           onSuccess: () => {
-            showToast("Solicitud de voluntario rechazada", "success");
-            setTimeout(() => setSelectedVolunteer(null), 2000);
+            setSelectedVolunteer(null);
+            setIsRejecting(false);
+            showToast("Solicitud de voluntario rechazada", "error");
           },
           onError: () => {
             showToast("Error al rechazar la solicitud", "error");
+            setIsRejecting(false);
           },
         }
       );
@@ -56,23 +61,28 @@ function VolunteerRequests() {
   };
 
   const handleAccept = (volunteer: VolunteerRequest) => {
+    if (!volunteer || isAccepting || isRejecting) return;
+
     if (volunteer.status_Name === "Aprobado") {
       showToast("Esta solicitud ya ha sido aceptada", "warning");
       return;
-    } {
-      updateVolunteerStatus(
-        { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 },
-        {
-          onSuccess: () => {
-            showToast("Solicitud de voluntario aceptada", "success");
-            setTimeout(() => setSelectedVolunteer(null), 2000);
-          },
-          onError: () => {
-            showToast("Error al aceptar la solicitud", "error");
-          },
-        }
-      );
     }
+
+    setIsAccepting(true);
+    updateVolunteerStatus(
+      { id_FormVoluntarie: volunteer.id_FormVoluntarie, id_Status: 2 },
+      {
+        onSuccess: () => {
+          setSelectedVolunteer(null);
+          setIsAccepting(false);
+          showToast("Solicitud de voluntario aceptada", "success");
+        },
+        onError: () => {
+          showToast("Error al aceptar la solicitud", "error");
+          setIsAccepting(false);
+        },
+      }
+    );
   };
 
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -85,9 +95,9 @@ function VolunteerRequests() {
 
     deleteVolunteering(confirmDelete.id_FormVoluntarie, {
       onSuccess: () => {
-        showToast("Donación eliminada correctamente", "success");
         setSelectedVolunteer(null);
         setConfirmDelete(null);
+        showToast("Donación eliminada correctamente", "success");
       },
     });
   };
@@ -95,10 +105,6 @@ function VolunteerRequests() {
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-2xl relative`}>
       <h2 className={`text-3xl font-bold mb-8 text-center font-poppins ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Solicitudes de Voluntarios</h2>
-  
-
-
-
 
       {/* Filtros */}
       <div className="flex justify-between mb-4">
@@ -128,129 +134,128 @@ function VolunteerRequests() {
         </div>
 
         <div className="flex justify-end gap-4">
-        <div>
-          {isVolunteerTypesLoading ? (
-            <Skeleton width={200} height={40} className="rounded-full" />
-          ) : (
-            <select
-              className="px-4 py-2 border rounded-full bg-gray-200"
-              onChange={(e) => setFilterType(e.target.value)}
+          <div>
+            {isVolunteerTypesLoading ? (
+              <Skeleton width={200} height={40} className="rounded-full" />
+            ) : (
+              <select
+                className="px-4 py-2 border rounded-full bg-gray-200"
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="Todas">Tipos de Voluntariado</option>
+                {volunteerTypes?.map((type) => (
+                  <option key={type.id_VoluntarieType} value={type.name_voluntarieType}>
+                    {type.name_voluntarieType}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div className="flex items-center">
+            <label
+              htmlFor="pageSize"
+              className={`mr-2 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
             >
-              <option value="Todas">Tipos de Voluntariado</option>
-              {volunteerTypes?.map((type) => (
-                <option key={type.id_VoluntarieType} value={type.name_voluntarieType}>
-                  {type.name_voluntarieType}
-                </option>
-              ))}
+              Mostrar:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className={`p-2 border rounded-lg ${
+                isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
             </select>
-          )}
+          </div>
         </div>
-
-  <div className="flex items-center">
-    <label
-      htmlFor="pageSize"
-      className={`mr-2 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
-      >
-      Mostrar:
-    </label>
-    <select
-      id="pageSize"
-      value={pageSize}
-      onChange={handlePageSizeChange}
-      className={`p-2 border rounded-lg ${
-        isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'
-      }`}
-      >
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-    </select>
-  </div>
       </div>
-      </div>
-
 
       {/* Tabla */}
-    <ReusableTableRequests<VolunteerRequest>
-  data={filteredRequests}
-  headers={["Nombre", "Tipo", "Fecha Inicio", "Fecha Fin", "Estatus", "Acciones"]}
-  isLoading={isLoading}
-  skeletonRows={5}
-  isDarkMode={isDarkMode}
-  pageNumber={pageNumber}
-  totalPages={data?.totalPages}
-  onNextPage={handleNextPage}
-  onPreviousPage={handlePreviousPage}
-  renderRow={(volunteer) => (
-    <tr
-      key={volunteer.id_FormVoluntarie}
-      className={`${
-        isDarkMode ? "bg-gray-600 text-white hover:bg-gray-700" : "bg-white text-gray-800 hover:bg-gray-200"
-      }`}
-    >
-      <td className="px-6 py-4">{`${volunteer.vn_Name} ${volunteer.vn_Lastname1} ${volunteer.vn_Lastname2}`}</td>
-      <td className="px-6 py-4">{volunteer.name_voluntarieType}</td>
-      <td className="px-6 py-4">{new Date(volunteer.delivery_Date).toLocaleDateString()}</td>
-      <td className="px-6 py-4">{new Date(volunteer.end_Date).toLocaleDateString()}</td>
-      <td className="px-6 py-4">
-        <span
-          className={`px-3 py-1 rounded-lg text-white ${
-            volunteer.status_Name === "Aprobado"
-              ? "bg-green-500"
-              : volunteer.status_Name === "Rechazado"
-              ? "bg-red-500"
-              : "bg-yellow-500"
-          }`}
-        >
-          {volunteer.status_Name}
-        </span>
-      </td>
-      <td className="px-6 py-4">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
-          onClick={() => setSelectedVolunteer(volunteer)}
-        >
-          Editar
-        </button>
-      </td>
-    </tr>
-  )}
-/>
-
+      <ReusableTableRequests<VolunteerRequest>
+        data={filteredRequests}
+        headers={["Nombre", "Tipo", "Fecha Inicio", "Fecha Fin", "Estatus", "Acciones"]}
+        isLoading={isLoading}
+        skeletonRows={5}
+        isDarkMode={isDarkMode}
+        pageNumber={pageNumber}
+        totalPages={data?.totalPages}
+        onNextPage={handleNextPage}
+        onPreviousPage={handlePreviousPage}
+        renderRow={(volunteer) => (
+          <tr
+            key={volunteer.id_FormVoluntarie}
+            className={`${
+              isDarkMode ? "bg-gray-600 text-white hover:bg-gray-700" : "bg-white text-gray-800 hover:bg-gray-200"
+            }`}
+          >
+            <td className="px-6 py-4">{`${volunteer.vn_Name} ${volunteer.vn_Lastname1} ${volunteer.vn_Lastname2}`}</td>
+            <td className="px-6 py-4">{volunteer.name_voluntarieType}</td>
+            <td className="px-6 py-4">{new Date(volunteer.delivery_Date).toLocaleDateString()}</td>
+            <td className="px-6 py-4">{new Date(volunteer.end_Date).toLocaleDateString()}</td>
+            <td className="px-6 py-4">
+              <span
+                className={`px-3 py-1 rounded-lg text-white ${
+                  volunteer.status_Name === "Aprobado"
+                    ? "bg-green-500"
+                    : volunteer.status_Name === "Rechazado"
+                    ? "bg-red-500"
+                    : "bg-yellow-500"
+                }`}
+              >
+                {volunteer.status_Name}
+              </span>
+            </td>
+            <td className="px-6 py-4">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+                onClick={() => setSelectedVolunteer(volunteer)}
+              >
+                Editar
+              </button>
+            </td>
+          </tr>
+        )}
+      />
 
       {/* Modal */}
       <ReusableModalRequests
         isOpen={!!selectedVolunteer}
         title="Detalles del Voluntario"
-        onClose={() => setSelectedVolunteer(null)}
+        onClose={() => !isAccepting && !isRejecting && setSelectedVolunteer(null)}
         actions={
           <>
-          {/* Botón de Aceptar SIEMPRE visible */}
-          <button
-            className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
-            onClick={() => handleAccept(selectedVolunteer!)}
-          >
-            Aceptar
-          </button>
+            {/* Botón de Aceptar SIEMPRE visible */}
+            <button
+              className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
+              onClick={() => handleAccept(selectedVolunteer!)}
+              disabled={isAccepting || isRejecting}
+            >
+              {isAccepting ? "Procesando..." : "Aceptar"}
+            </button>
             {selectedVolunteer?.status_Name !== "Rechazado" && (
-            <button
-              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-              onClick={() => handleReject(selectedVolunteer!)}
-            >
-              Rechazar
-            </button>
-          )}
-          {selectedVolunteer?.status_Name === "Rechazado" && (
-            <button
-              className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-              onClick={() => setConfirmDelete(selectedVolunteer)}
-              disabled={isLoading}
-            >
-              {isLoading ? "Eliminando..." : "Eliminar"}
-            </button>
-          )}
-          
+              <button
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => handleReject(selectedVolunteer!)}
+                disabled={isRejecting || isAccepting}
+              >
+                {isRejecting ? "Procesando..." : "Rechazar"}
+              </button>
+            )}
+            {selectedVolunteer?.status_Name === "Rechazado" && (
+              <button
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => setConfirmDelete(selectedVolunteer)}
+                disabled={isLoading || isAccepting || isRejecting}
+              >
+                {isLoading ? "Eliminando..." : "Eliminar"}
+              </button>
+            )}
           </>
         }
       >
@@ -269,17 +274,18 @@ function VolunteerRequests() {
               <strong>Fecha de Fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}
             </p>
             <p>
-              <strong>Estatus:</strong> <span
-                    className={`px-3 py-1 ml-2 rounded-lg text-white ${
-                      selectedVolunteer.status_Name === 'Aprobado'
-                        ? 'bg-green-500'
-                        : selectedVolunteer.status_Name === 'Rechazado'
-                        ? 'bg-red-500'
-                        : 'bg-yellow-500'
-                    }`}
-                  >
-                    {selectedVolunteer.status_Name}
-                  </span>
+              <strong>Estatus:</strong>{" "}
+              <span
+                className={`px-3 py-1 ml-2 rounded-lg text-white ${
+                  selectedVolunteer.status_Name === "Aprobado"
+                    ? "bg-green-500"
+                    : selectedVolunteer.status_Name === "Rechazado"
+                    ? "bg-red-500"
+                    : "bg-yellow-500"
+                }`}
+              >
+                {selectedVolunteer.status_Name}
+              </span>
             </p>
             <p>
               <strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}
@@ -287,14 +293,14 @@ function VolunteerRequests() {
           </>
         )}
         <ConfirmationModal
-        isOpen={!!confirmDelete}
-        onClose={() => setConfirmDelete(null)}
-        onConfirm={handleDelete}
-        title="Confirmar Eliminación"
-        message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
-        confirmText="Eliminar"
-        isLoading={isDeleting}
-      />
+          isOpen={!!confirmDelete}
+          onClose={() => setConfirmDelete(null)}
+          onConfirm={handleDelete}
+          title="Confirmar Eliminación"
+          message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
+          confirmText="Eliminar"
+          isLoading={isDeleting}
+        />
       </ReusableModalRequests>
 
       <Toast message={message} type={type} />
