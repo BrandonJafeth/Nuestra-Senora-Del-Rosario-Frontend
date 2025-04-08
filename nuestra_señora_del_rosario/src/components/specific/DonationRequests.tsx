@@ -21,6 +21,8 @@ function DonationRequests() {
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
   const [filterType, setFilterType] = useState<string>('Todas');
   const [allDonations, setAllDonations] = useState<DonationRequest[]>([]);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   
   const isFiltering = useMemo(() => {
     return filterStatus !== 'Todas' || filterType !== 'Todas';
@@ -87,10 +89,14 @@ function DonationRequests() {
   }, [totalPages, pageNumber]);
 
   const handleAccept = (donation: DonationRequest) => {
+    if (!donation || isAccepting || isRejecting) return;
+    
     if(donation.status_Name === 'Aprobado'){
       showToast('Esta donación ya ha sido aceptada', 'warning');
       return;
     }
+    
+    setIsAccepting(true);
     updateDonationStatus(
       { id_FormDonation: donation.id_FormDonation, id_Status: 2 },
       {
@@ -104,13 +110,21 @@ function DonationRequests() {
             });
           });
           setSelectedDonation(null);
+          setIsAccepting(false);
           showToast('Donación aceptada exitosamente', 'success');
+        },
+        onError: () => {
+          showToast('Error al aceptar la donación', 'error');
+          setIsAccepting(false);
         }
       }
     );
   };
 
   const handleReject = (donation: DonationRequest) => {
+    if (!donation || isRejecting || isAccepting) return;
+    
+    setIsRejecting(true);
     updateDonationStatus(
       { id_FormDonation: donation.id_FormDonation, id_Status: 3 },
       {
@@ -124,7 +138,12 @@ function DonationRequests() {
             });
           });
           setSelectedDonation(null);
+          setIsRejecting(false);
           showToast('Donación rechazada exitosamente', 'error');
+        },
+        onError: () => {
+          showToast('Error al rechazar la donación', 'error');
+          setIsRejecting(false);
         }
       }
     );
@@ -187,49 +206,53 @@ function DonationRequests() {
                   {status.status_Name}
                 </button>
               ))}
-          <button
-            className="px-4 py-2 rounded-full bg-gray-500 text-white"
-            onClick={() => setFilterStatus('Todas')}
-          >
-            Todas
-          </button>
-        </div>
-
-        <div className='flex gap-4'>
-        <div>
-          {isDonationTypesLoading ? (
-            <Skeleton width={200} height={40} className="rounded-full" />
+          {isStatusesLoading ? (
+            <Skeleton width={100} height={40} className="rounded-full" />
           ) : (
-            <select
-              className="px-4 py-2 border rounded-full bg-gray-200"
-              onChange={(e) => setFilterType(e.target.value)}
+            <button
+              className="px-4 py-2 rounded-full bg-gray-500 text-white"
+              onClick={() => setFilterStatus('Todas')}
             >
-              <option value="Todas">Tipos de donación</option>
-              {donationTypes?.map((type) => (
-                <option key={type.id_DonationType} value={type.name_DonationType}>
-                  {type.name_DonationType}
-                </option>
-              ))}
-            </select>
+              Todas
+            </button>
           )}
         </div>
 
-        <div className="flex justify-center">
-        <label htmlFor="pageSize" className={`mr-2 my-1 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Mostrar:
-        </label>
-        <select
-          id="pageSize"
-          value={pageSize}
-          onChange={handlePageSizeChange}
-          className={`p-1  border rounded-lg ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
-        >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-      </div>
+        <div className='flex gap-4'>
+          <div>
+            {isDonationTypesLoading ? (
+              <Skeleton width={200} height={40} className="rounded-full" />
+            ) : (
+              <select
+                className="px-4 py-2 border rounded-full bg-gray-200"
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="Todas">Tipos de donación</option>
+                {donationTypes?.map((type) => (
+                  <option key={type.id_DonationType} value={type.name_DonationType}>
+                    {type.name_DonationType}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div className="flex justify-center">
+            <label htmlFor="pageSize" className={`mr-2 my-1 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+              Mostrar:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className={`p-1  border rounded-lg ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -282,32 +305,34 @@ function DonationRequests() {
       <ReusableModalRequests
         isOpen={!!selectedDonation}
         title="Detalles de la Donación"
-        onClose={() => setSelectedDonation(null)}
+        onClose={() => !isAccepting && !isRejecting && setSelectedDonation(null)}
         actions={
           <>
             <button
               className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
               onClick={() => handleAccept(selectedDonation!)}
+              disabled={isAccepting || isRejecting}
               >
-              Aceptar
+              {isAccepting ? "Procesando..." : "Aceptar"}
             </button>
-              {selectedDonation?.status_Name !== "Rechazado" && (
-                <button
-                  className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-                  onClick={() => handleReject(selectedDonation!)}
-                >
-                  Rechazar
-                </button>
-              )}
-              {selectedDonation?.status_Name === "Rechazado" && (
-                <button
-                  className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
-                  onClick={() => setConfirmDelete(selectedDonation)}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Eliminando..." : "Eliminar"}
-                </button>
-              )}
+            {selectedDonation?.status_Name !== "Rechazado" && (
+              <button
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => handleReject(selectedDonation!)}
+                disabled={isRejecting || isAccepting}
+              >
+                {isRejecting ? "Procesando..." : "Rechazar"}
+              </button>
+            )}
+            {selectedDonation?.status_Name === "Rechazado" && (
+              <button
+                className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
+                onClick={() => setConfirmDelete(selectedDonation)}
+                disabled={isDeleting || isAccepting || isRejecting}
+              >
+                {isDeleting ? "Eliminando..." : "Eliminar"}
+              </button>
+            )}
           </>
         }
       >
