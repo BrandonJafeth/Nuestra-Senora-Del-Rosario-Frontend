@@ -6,7 +6,7 @@ const SystemPageSettings = () =>  {
     const { isDarkMode } = useThemeDark(); // Obtener si el modo oscuro está activo
      return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold mb-6 text-gray-900">⚙ Configuración de la Pagina Informativa</h2>
+      <h2 className="text-3xl font-bold mb-6 text-gray-900">⚙ Configuración de la pagina informativa</h2>
       <p className="text-gray-600 mb-8">
         Administra los diferentes parámetros de la pagina informativa. Puedes agregar, editar y eliminar información clave.
       </p>

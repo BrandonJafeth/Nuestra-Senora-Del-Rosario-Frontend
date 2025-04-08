@@ -110,7 +110,7 @@ const TableModels: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Modelos"
+        title="Lista de modelos"
         columns={[
           { key: "modelName", label: "Modelo" },
           { key: "brandName", label: "Marca" }
@@ -127,20 +127,20 @@ const TableModels: React.FC = () => {
       />
 
       {/* Modal para Agregar Modelo */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Modelo" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nuevo modelo" onClose={closeAddModal}>
         <input
           type="text"
           value={newModel.modelName}
           onChange={(e) => setNewModel({ ...newModel, modelName: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-          placeholder="Nombre del Modelo"
+          placeholder="Nombre del modelo"
         />
         <select
           value={newModel.idBrand}
           onChange={(e) => setNewModel({ ...newModel, idBrand: parseInt(e.target.value) })}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
         >
-          <option value={0}>Seleccione una Marca</option>
+          <option value={0}>Seleccione una marca</option>
           {brands?.map((brand) => (
             <option key={brand.idBrand} value={brand.idBrand}>
               {brand.brandName}
@@ -167,7 +167,7 @@ const TableModels: React.FC = () => {
       {brands && editModel && (
         <AdminModalEditWithBrand
           isOpen={isEditModalOpen}
-          title="Editar Modelo"
+          title="Editar modelo"
           initialModelName={editModel.modelName}
           initialIdBrand={editModel.idBrand}
           brands={brands}
@@ -190,7 +190,7 @@ const TableModels: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el modelo a ${pendingEdit?.modelName}?`}
         confirmText="Confirmar"
       />
@@ -211,7 +211,7 @@ const TableModels: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Modelo"
+        title="Eliminar modelo"
         message="¿Estás seguro de que quieres eliminar este modelo?"
         confirmText="Eliminar"
         isLoading={isDeleting}

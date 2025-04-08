@@ -57,7 +57,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className={`rounded-lg shadow-lg p-8 w-full max-w-4xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-        <h3 className="text-2xl font-bold mb-6">Detalles del Residente</h3>
+        <h3 className="text-2xl font-bold mb-6">Detalles del residente</h3>
 
         <div className="grid grid-cols-2 gap-4">
           {/* 📌 Habitación */}
@@ -83,7 +83,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
 
           {/* 📌 Grado de Dependencia */}
           <div>
-            <label className="block font-bold">Grado de Dependencia:</label>
+            <label className="block font-bold">Grado de dependencia:</label>
             {isEditing ? (
               <select
                 value={idDependencyLevel || ''}
@@ -140,7 +140,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
           </div>
 
           <div>
-            <label className="block font-bold">Fecha de Nacimiento:</label>
+            <label className="block font-bold">Fecha de nacimiento:</label>
             <input
               type="text"
               value={formatDate(resident.fechaNacimiento)}
@@ -180,7 +180,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
           </div>
 
           <div>
-            <label className="block font-bold">Nombre del Encargado:</label>
+            <label className="block font-bold">Nombre del encargado:</label>
             <input
               type="text"
               value={resident.guardianName}
@@ -190,7 +190,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
           </div>
 
           <div>
-            <label className="block font-bold">Teléfono del Encargado:</label>
+            <label className="block font-bold">Teléfono del encargado:</label>
             <input
               type="text"
               value={resident.guardianPhone}
@@ -208,7 +208,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
             state: { residentName: `${resident.name_RD} ${resident.lastname1_RD} ${resident.lastname2_RD}` }
           })}className="px-6 py-2 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 text-white"
           >
-            Ver Documentos
+            Ver documentos
           </button>
         )}
 
@@ -216,7 +216,7 @@ const { data: documents } = useResidentDocuments(residentCedula);
             onClick={() => setShowUploadModal(true)}
             className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
           >
-            Subir Documentos
+            Subir documentos
           </button>
 
           {!isEditing ? (

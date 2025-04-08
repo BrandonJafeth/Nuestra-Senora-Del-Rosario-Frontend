@@ -112,14 +112,14 @@ const TableUnitOfMeasure: React.FC = () => {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Unidades de Medida</h2>
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Unidades de medida</h2>
         <div className="w-28"></div>
       </div>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Unidades de Medida"
+        title="Lista de unidades de medida"
         columns={[{ key: "nombreUnidad", label: "Nombre" }]}
         data={unitOfMeasure || []}
         isLoading={isLoading}
@@ -133,7 +133,7 @@ const TableUnitOfMeasure: React.FC = () => {
       />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Unidad de Medida" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar unidad de medida" onClose={closeAddModal}>
         <input
           type="text"
           value={newUnitOfMeasure}
@@ -165,7 +165,7 @@ const TableUnitOfMeasure: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas editar la unidad de medida a "${pendingEditValue}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -176,7 +176,7 @@ const TableUnitOfMeasure: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Unidad de Medida"
+        title="Eliminar unidad de medida"
         message="¿Estás seguro de que quieres eliminar esta unidad de medida?"
         confirmText="Eliminar"
         isLoading={isDeleting}

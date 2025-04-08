@@ -49,7 +49,7 @@ const AddPathologyPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block">Seleccionar Patología</label>
+          <label className="block">Seleccionar patología</label>
           <select
             {...register("id_Pathology", { required: true })}
             value={selectedPathology ?? ""}
@@ -66,7 +66,7 @@ const AddPathologyPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block">Fecha de Diagnóstico</label>
+          <label className="block">Fecha de diagnóstico</label>
           <input
             type="date"
             {...register("diagnosisDate", { required: true })}
@@ -75,7 +75,7 @@ const AddPathologyPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block">Fecha de Registro</label>
+          <label className="block">Fecha de registro</label>
           <input
             type="date"
             {...register("registerDate", { required: true })}

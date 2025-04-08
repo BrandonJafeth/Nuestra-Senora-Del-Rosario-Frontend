@@ -69,7 +69,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
       }`}
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
     >
-      <h2 className="text-2xl font-bold text-center mb-4">Actualizar Perfil</h2>
+      <h2 className="text-2xl font-bold text-center mb-4">Actualizar perfil</h2>
 
       {/* Toasts */}
       {toastMessage && <Toast message={toastMessage} type={toastType || "error"} />}
@@ -125,7 +125,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
           isOpen={isConfirmOpen}
           onClose={() => setIsConfirmOpen(false)}
           onConfirm={handleConfirm}
-          title="Confirmar Cambio de Perfil"
+          title="Confirmar cambio de perfil"
           message="¿Estás seguro de que quieres actualizar tu perfil?"
           confirmText="Confirmar"
           cancelText="Cancelar"

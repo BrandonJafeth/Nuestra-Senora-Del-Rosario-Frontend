@@ -118,7 +118,7 @@ const ResidentPDF = ({ resident }: { resident: Resident }) => (
 
       {/* Citas Médicas (mejor separación y diseño profesional) */}
       <View style={styles.section}>
-        <Text style={styles.title}>📅 Citas Médicas</Text>
+        <Text style={styles.title}>📅 Citas médicas</Text>
         {resident?.appointments?.length ? (
           <View style={styles.table}>
             <View style={[styles.tableRow, { backgroundColor: "#ddd", paddingVertical: 8 }]}>

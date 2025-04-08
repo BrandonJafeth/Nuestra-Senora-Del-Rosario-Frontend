@@ -66,7 +66,7 @@ const UpdateMedicalHistory: React.FC = () => {
         >
           <FaArrowLeft className="mr-2" /> Volver
         </button>
-        <h2 className="text-2xl font-bold">Actualizar Historial Médico</h2>
+        <h2 className="text-2xl font-bold">Actualizar historial médico</h2>
       </div>
 
       {/* Componente Toast */}

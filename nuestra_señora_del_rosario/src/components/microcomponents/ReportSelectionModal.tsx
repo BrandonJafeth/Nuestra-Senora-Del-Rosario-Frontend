@@ -52,13 +52,13 @@ const ReportSelectionModal: React.FC<ReportSelectionModalProps> = ({
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      contentLabel="Generar Reporte"
+      contentLabel="Generar reporte"
       ariaHideApp={false}
       className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto outline-none"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <h2 className="text-xl font-bold mb-4 text-center dark:text-white">
-        Generar Reporte
+        Generar reporte
       </h2>
 
       {/* Dropdown de Categoría */}
@@ -74,7 +74,7 @@ const ReportSelectionModal: React.FC<ReportSelectionModalProps> = ({
       {/* Dropdown de Unidad de Medida (hardcodeado) */}
       <div className="mb-4">
         <label htmlFor="measure-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Unidad de Medida:
+          Unidad de medida:
         </label>
         <select
           id="measure-select"

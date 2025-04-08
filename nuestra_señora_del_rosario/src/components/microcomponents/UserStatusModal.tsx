@@ -55,9 +55,9 @@ const UserStatusModal: React.FC<UserStatusModalProps> = ({ userId, currentStatus
 
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-          <h2 className="text-xl font-bold mb-4">Actualizar Estado del Usuario</h2>
+          <h2 className="text-xl font-bold mb-4">Actualizar estado del usuario</h2>
 
-          <label className="block mb-2 font-medium">Estado del Usuario</label>
+          <label className="block mb-2 font-medium">Estado del usuario</label>
           <select
             value={isActive ? "true" : "false"}
             onChange={(e) => setIsActive(e.target.value === "true")}
@@ -89,7 +89,7 @@ const UserStatusModal: React.FC<UserStatusModalProps> = ({ userId, currentStatus
           isOpen={showConfirmation}
           onClose={() => setShowConfirmation(false)}
           onConfirm={handleConfirmEdit}
-          title="Confirmar Cambio de Estado"
+          title="Confirmar cambio de estado"
           message="¿Estás seguro de que quieres cambiar el estado de este usuario?"
           confirmText="Confirmar"
         />

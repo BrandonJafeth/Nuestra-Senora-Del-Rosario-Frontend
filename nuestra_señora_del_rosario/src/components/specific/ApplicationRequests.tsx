@@ -213,7 +213,7 @@ function ApplicationRequests() {
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}
       >
-        Solicitudes de Ingreso
+        Solicitudes de ingreso
       </h2>
 
       <div className="flex justify-between mb-4">
@@ -274,7 +274,7 @@ function ApplicationRequests() {
 
       <ReusableTableRequests<ApplicationRequest>
         data={currentApplications}
-        headers={['Nombre', 'Apellido', 'Edad', 'Domicilio', 'Fecha Solicitud', 'Estatus', 'Acciones']}
+        headers={['Nombre', 'Apellido', 'Edad', 'Domicilio', 'Fecha solicitud', 'Estatus', 'Acciones']}
         isLoading={isLoading && (!isFiltering || allApplications.length === 0)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -373,7 +373,7 @@ function ApplicationRequests() {
               <strong>Domicilio:</strong> {selectedApplication.location_AP}
             </p>
             <p>
-              <strong>Fecha de Solicitud:</strong>{' '}
+              <strong>Fecha de solicitud:</strong>{' '}
               {new Date(selectedApplication.applicationDate).toLocaleDateString()}
             </p>
             <p>
@@ -394,7 +394,7 @@ function ApplicationRequests() {
               <strong>Encargado:</strong> {selectedApplication.guardianName}
             </p>
             <p>
-              <strong>Teléfono Encargado:</strong> {selectedApplication.guardianPhone}
+              <strong>Teléfono encargado:</strong> {selectedApplication.guardianPhone}
             </p>
           </>
         )}
@@ -411,7 +411,7 @@ function ApplicationRequests() {
 
       <ReusableModalRequests
         isOpen={!!editingApplication}
-        title="Editar Solicitud"
+        title="Editar solicitud"
         onClose={() => setEditingApplication(null)}
         actions={
           <div className="flex space-x-4 justify-end">
@@ -449,7 +449,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer Apellido</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer apellido</label>
               <input
                 type="text"
                 name="lastName1_AP"
@@ -464,7 +464,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className=" font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo Apellido</label>
+              <label className=" font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo apellido</label>
               <input
                 type="text"
                 name="lastName2_AP"
@@ -524,7 +524,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre del encargado</label>
               <input
                 type="text"
                 name="guardianName"
@@ -539,7 +539,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer Apellido Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer apellido encargado</label>
               <input
                 type="text"
                 name="guardianLastName1"
@@ -554,7 +554,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo Apellido Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo apellido encargado</label>
               <input
                 type="text"
                 name="guardianLastName2"
@@ -569,7 +569,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula encargado</label>
               <input
                 type="text"
                 name="guardianCedula"
@@ -584,7 +584,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Teléfono del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Teléfono del encargado</label>
               <input
                 type="text"
                 name="guardianPhone"
@@ -599,7 +599,7 @@ function ApplicationRequests() {
             </div>
 
             <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Email del Encargado</label>
+              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Email del encargado</label>
               <input
                 type="email"
                 name="guardianEmail"

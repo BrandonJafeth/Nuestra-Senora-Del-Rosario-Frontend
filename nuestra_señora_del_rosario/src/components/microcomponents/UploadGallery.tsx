@@ -65,7 +65,7 @@ const UploadGallery = ({ refetchGallery, selectedCategory }: { refetchGallery: (
           htmlFor="fileUpload"
           className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md cursor-pointer hover:bg-gray-300 transition"
         >
-          Seleccionar Imagen
+          Seleccionar imagen
         </label>
       </div>
 

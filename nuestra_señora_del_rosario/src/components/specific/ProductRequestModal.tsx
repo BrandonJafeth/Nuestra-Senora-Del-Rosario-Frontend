@@ -147,7 +147,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
               onClick={handleAddProduct}
               className="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition duration-200"
             >
-              Agregar Producto
+              Agregar producto
             </button>
           </div>
 
@@ -200,7 +200,7 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
               onClick={handleSubmit}
               className="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
             >
-              Registrar Egreso
+              Registrar egreso
             </button>
           </div>
         </form>

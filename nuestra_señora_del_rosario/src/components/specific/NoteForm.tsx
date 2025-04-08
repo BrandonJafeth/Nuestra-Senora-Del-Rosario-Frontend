@@ -27,7 +27,7 @@ const {showToast, message, type} = useToast();
   return (
     <div className="p-8 max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
-        Agregar Nota
+        Agregar nota
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">

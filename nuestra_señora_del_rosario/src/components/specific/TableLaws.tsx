@@ -92,7 +92,7 @@ const TableLaws: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Leyes"
+        title="Lista de leyes"
         columns={[
           { key: "lawName", label: "Nombre de la Ley" },
           { key: "lawDescription", label: "Descripción" }
@@ -109,7 +109,7 @@ const TableLaws: React.FC = () => {
       />
 
       {/* Modal para Agregar Ley */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Ley" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva ley" onClose={closeAddModal}>
         <input
           type="text"
           value={newLaw.lawName}
@@ -164,7 +164,7 @@ const TableLaws: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre de la ley ${pendingEdit?.lawName}?`}
         confirmText="Confirmar"
       />
@@ -185,7 +185,7 @@ const TableLaws: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Ley"
+        title="Eliminar ley"
         message="¿Estás seguro de que quieres eliminar esta ley?"
         confirmText="Eliminar"
         isLoading={isDeleting}

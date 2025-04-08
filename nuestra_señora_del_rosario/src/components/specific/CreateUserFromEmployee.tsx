@@ -43,7 +43,7 @@ const CreateUserFromEmployeeForm: React.FC = () => {
   return (
     <div className={`w-full max-w-[600px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'}`}>
       <h2 className={`text-3xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-        Asignar Usuario a Empleado
+        Asignar usuario a empleado
       </h2>
 
       {/* Mensaje de éxito o error del backend */}
@@ -54,7 +54,7 @@ const CreateUserFromEmployeeForm: React.FC = () => {
         {/* Seleccionar Empleado */}
         <div>
           <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-            Seleccionar Empleado
+            Seleccionar empleado
           </label>
           <EmployeeDropdown value={dniEmployee || 0} onChange={setDniEmployee} />
         </div>
@@ -62,7 +62,7 @@ const CreateUserFromEmployeeForm: React.FC = () => {
         {/* Seleccionar Rol */}
         <div>
           <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-            Seleccionar Rol
+            Seleccionar rol
           </label>
           <RoleDropdown value={idRole || 0} onChange={setIdRole} />
         </div>
@@ -76,7 +76,7 @@ const CreateUserFromEmployeeForm: React.FC = () => {
             }`}
             disabled={isLoading}
           >
-            {isLoading ? <LoadingSpinner/> : 'Asignar Usuario'}
+            {isLoading ? <LoadingSpinner/> : 'Asignar usuario'}
           </button>
           <button
             type="button"

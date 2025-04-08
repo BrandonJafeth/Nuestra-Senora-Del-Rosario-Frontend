@@ -116,7 +116,7 @@ const TableSpecialties: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Especialidades Médicas"
+        title="Lista de especialidades médicas"
         columns={[{ key: "name_Specialty", label: "Nombre" }]}
         data={specialties || []}
         isLoading={isLoading}
@@ -130,7 +130,7 @@ const TableSpecialties: React.FC = () => {
       />
 
      {/* 📌 Modal para Agregar */}
-     <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Especialidad" onClose={closeAddModal}>
+     <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva especialidad" onClose={closeAddModal}>
         <input
           type="text"
           value={newSpecialty}
@@ -151,7 +151,7 @@ const TableSpecialties: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Especialidad Médica"
+        title="Editar especialidad médica"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
         initialValue={editSpecialty.name_Specialty}
@@ -162,7 +162,7 @@ const TableSpecialties: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas editar la especialidad médica a "${pendingEditValue}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -173,7 +173,7 @@ const TableSpecialties: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Especialidad"
+        title="Eliminar especialidad"
         message="¿Estás seguro de que quieres eliminar esta Especialidad?"
         confirmText="Eliminar"
         isLoading={isDeleting}

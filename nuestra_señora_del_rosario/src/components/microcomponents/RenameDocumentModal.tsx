@@ -31,7 +31,7 @@ const RenameDocumentModal: React.FC<RenameDocumentModalProps> = ({ isOpen, docum
      {toast && <Toast message={toast.message} type={toast.type} />}
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
-          <h3 className="text-xl font-semibold mb-4">Renombrar Documento</h3>
+          <h3 className="text-xl font-semibold mb-4">Renombrar documento</h3>
           <input
             type="text"
             value={newName}

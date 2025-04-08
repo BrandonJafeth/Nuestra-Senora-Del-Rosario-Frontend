@@ -7,14 +7,14 @@ const NotificationComponent: React.FC = () => {
   const [, setShowPopup] = useState<boolean>(false); // Controlar notificación emergente
   const [, setNewNotification] = useState<any | null>(null); // Notificación reciente
 
-  // Detectar si hay una nueva notificación
+
   useEffect(() => {
     if (notifications.length > 0) {
       const latestNotification = notifications[0]; // Obtener la más reciente
       setNewNotification(latestNotification);
       setShowPopup(true); // Mostrar notificación emergente
 
-      // Ocultar la notificación emergente después de 3 segundos
+
       const timer = setTimeout(() => setShowPopup(false), 3000);
 
       return () => clearTimeout(timer); // Limpiar el temporizador al desmontar

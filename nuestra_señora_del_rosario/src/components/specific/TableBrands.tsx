@@ -90,7 +90,7 @@ const TableBrands: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Marcas"
+        title="Lista de marcas"
         columns={[
           { key: "brandName", label: "Marca" }
         ]}
@@ -106,13 +106,13 @@ const TableBrands: React.FC = () => {
       />
 
       {/* Modal para Agregar Marca */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Marca" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva marca" onClose={closeAddModal}>
         <input
           type="text"
           value={newBrand.brandName}
           onChange={(e) => setNewBrand({ brandName: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-          placeholder="Nombre de la Marca"
+          placeholder="Nombre de la marca"
         />
         <div className="flex justify-center space-x-4">
           <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={handleAddBrand}>
@@ -127,7 +127,7 @@ const TableBrands: React.FC = () => {
       {/* Modal para Editar Marca */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Marca"
+        title="Editar marca"
         initialValue={editBrand?.brandName || ""}
         onClose={closeEditModal}
         onSave={(updatedValue) => {
@@ -144,7 +144,7 @@ const TableBrands: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre de la marca ${pendingEdit?.brandName}?`}
         confirmText="Confirmar"
       />
@@ -165,7 +165,7 @@ const TableBrands: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Marca"
+        title="Eliminar marca"
         message="¿Estás seguro de que quieres eliminar esta marca?"
         confirmText="Eliminar"
         isLoading={isDeleting}

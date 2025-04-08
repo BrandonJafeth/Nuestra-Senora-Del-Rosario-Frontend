@@ -122,7 +122,7 @@ const TableHealthcareCenter: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Centros de Atención"
+        title="Lista de centros de atención"
         columns={[
           { key: "name_HC", label: "Nombre" },
           { key: "location_HC", label: "Ubicación" },
@@ -179,7 +179,7 @@ const TableHealthcareCenter: React.FC = () => {
       {/* 📌 Modal para Editar solo el Nombre */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Nombre del Centro de Atención"
+        title="Editar nombre del centro de atención"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
         initialValue={pendingEditName} // ✅ Solo permite editar el nombre
@@ -190,7 +190,7 @@ const TableHealthcareCenter: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre a "${pendingEditName}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -214,7 +214,7 @@ const TableHealthcareCenter: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Centro de Atención"
+        title="Eliminar centro de atención"
         message="¿Estás seguro de que quieres eliminar este centro de atención?"
         confirmText="Eliminar"
         isLoading={isDeleting}

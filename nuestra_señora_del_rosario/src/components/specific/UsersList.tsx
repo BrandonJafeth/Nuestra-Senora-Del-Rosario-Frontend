@@ -81,7 +81,7 @@ const UserList: React.FC = () => {
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Lista de Usuarios
+          Lista de usuarios
         </h2>
 
         {/* Controles: Crear usuario, combo de página, etc. */}
@@ -90,13 +90,13 @@ const UserList: React.FC = () => {
             onClick={handleCreateUser}
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all"
           >
-            Crear Usuario
+            Crear usuario
           </button>
           <button
             onClick={handleCreateUserFromEmployee}
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all"
           >
-            Crear Usuario por Empleado
+            Crear usuario por empleado
           </button>
           <div className="flex items-center">
             <label
@@ -142,7 +142,7 @@ const UserList: React.FC = () => {
       {/* 6. Tabla reutilizable con usuarios filtrados */}
       <ReusableTableRequests<User>
         data={filteredUsers} // Aquí pasamos los usuarios filtrados
-        headers={['Cédula', 'Nombre de Usuario', 'Correo', 'Activo', 'Roles', 'Acciones']}
+        headers={['Cédula', 'Nombre de usuario', 'Correo', 'Activo', 'Roles', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}

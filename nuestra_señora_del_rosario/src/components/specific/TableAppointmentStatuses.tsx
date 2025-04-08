@@ -106,14 +106,14 @@ const TableAppointmentStatuses: React.FC = () => {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de Estados de Citas</h2>
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de estados de citas</h2>
         <div className="w-28"></div>
       </div>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Estados de Citas"
+        title="Lista de estados de citas"
         columns={[{ key: "name_StatusAP", label: "Nombre" }]}
         data={appointmentStatuses || []}
         isLoading={isLoading}
@@ -127,7 +127,7 @@ const TableAppointmentStatuses: React.FC = () => {
       />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Estado de Cita" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar estado de cita" onClose={closeAddModal}>
         <input
           type="text"
           value={newAppointmentStatus.name_StatusAP}
@@ -148,7 +148,7 @@ const TableAppointmentStatuses: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Estado de Cita"
+        title="Editar estado de cita"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit} // ✅ Muestra el modal de confirmación antes de editar
         initialValue={editAppointmentStatus.name_StatusAP}
@@ -159,7 +159,7 @@ const TableAppointmentStatuses: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas editar el estado de cita a "${pendingEditValue}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -170,7 +170,7 @@ const TableAppointmentStatuses: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Estado de Cita"
+        title="Eliminar estado de cita"
         message="¿Estás seguro de que quieres eliminar este estado de cita?"
         confirmText="Eliminar"
         isLoading={isDeleting}

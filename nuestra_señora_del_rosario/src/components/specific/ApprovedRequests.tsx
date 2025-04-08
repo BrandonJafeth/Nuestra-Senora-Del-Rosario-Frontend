@@ -45,14 +45,14 @@ function ApprovedRequests() {
           <span className="text-lg font-semibold">Regresar</span>
         </button>
         <h2 className={`flex justify-end mx-8 my-3 text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Solicitudes Aprobadas
+          Solicitudes aprobadas
         </h2>
       </div>
 
       {/* Tabla reutilizable */}
       <ReusableTableRequests<ApplicationRequest>
         data={approvedRequests}
-        headers={['Nombre', 'Primer Apellido', 'Cédula', 'Acciones']}
+        headers={['Nombre', 'Primer apellido', 'Cédula', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -77,7 +77,7 @@ function ApprovedRequests() {
                   isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
               >
-                Completar Información
+                Completar información
               </button>
             </td>
           </tr>

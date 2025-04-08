@@ -178,7 +178,7 @@ createResident(residentPayload, {
 
         {/* Título */}
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mr-64">
-  Añadir Información
+  Añadir información
 </h1>
 
       </div>
@@ -191,7 +191,7 @@ createResident(residentPayload, {
         <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-6">
           {/* Campos del residente */}
           <div>
-            <label className="block mb-2 text-lg">Nombre Residente</label>
+            <label className="block mb-2 text-lg">Nombre residente</label>
             <input
               type="text"
               value={residentData.name_RD}
@@ -202,7 +202,7 @@ createResident(residentPayload, {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Primer Apellido Residente</label>
+            <label className="block mb-2 text-lg">Primer apellido residente</label>
             <input
               type="text"
               value={residentData.lastname1_RD}
@@ -213,7 +213,7 @@ createResident(residentPayload, {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Segundo Apellido Residente</label>
+            <label className="block mb-2 text-lg">Segundo apellido residente</label>
             <input
               type="text"
               value={residentData.lastname2_RD}
@@ -248,7 +248,7 @@ createResident(residentPayload, {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Fecha de Nacimiento Residente</label>
+            <label className="block mb-2 text-lg">Fecha de nacimiento residente</label>
             <input
               type="date"
               value={residentData.fechaNacimiento}
@@ -276,7 +276,7 @@ createResident(residentPayload, {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Grado de Dependencia</label>
+            <label className="block mb-2 text-lg">Grado de dependencia</label>
             <select
               value={residentData.id_DependencyLevel}
               onChange={(e) => setResidentData({ ...residentData, id_DependencyLevel: parseInt(e.target.value) })}
@@ -293,7 +293,7 @@ createResident(residentPayload, {
           </div>
 
           <div>
-            <label className="block mb-2 text-lg">Fecha de Entrada</label>
+            <label className="block mb-2 text-lg">Fecha de entrada</label>
             <input
               type="date"
               value={residentData.entryDate}
@@ -304,7 +304,7 @@ createResident(residentPayload, {
           </div>
 
           <div className="col-span-2">
-            <label className="block mb-2 text-lg">Domicilio del Residente</label>
+            <label className="block mb-2 text-lg">Domicilio del residente</label>
             <input
               type="text"
               value={residentData.location_RD}

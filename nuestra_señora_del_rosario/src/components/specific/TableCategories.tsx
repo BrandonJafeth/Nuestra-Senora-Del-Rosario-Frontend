@@ -135,7 +135,7 @@ const TableCategories: React.FC = () => {
       />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Categoría" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva categoría" onClose={closeAddModal}>
         <input
           type="text"
           value={newCategory.categoryName}
@@ -156,7 +156,7 @@ const TableCategories: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Categoría"
+        title="Editar categoría"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
         initialValue={pendingEditName}
@@ -167,7 +167,7 @@ const TableCategories: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre a "${pendingEditName}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -178,7 +178,7 @@ const TableCategories: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Categoría"
+        title="Eliminar categoría"
         message="¿Estás seguro de que quieres eliminar esta categoría?"
         confirmText="Eliminar"
         isLoading={isDeleting}

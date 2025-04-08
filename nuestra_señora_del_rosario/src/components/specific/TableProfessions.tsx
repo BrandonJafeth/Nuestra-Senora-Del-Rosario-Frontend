@@ -109,7 +109,7 @@ const TableProfessions: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Profesiones"
+        title="Lista de profesiones"
         columns={[{ key: "name_Profession", label: "Nombre" }]}
         data={professions || []}
         isLoading={isLoading}
@@ -123,7 +123,7 @@ const TableProfessions: React.FC = () => {
         } }      />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Profesión" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva profesión" onClose={closeAddModal}>
         <input
           type="text"
           value={newProfession.name_Profession}
@@ -144,7 +144,7 @@ const TableProfessions: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Profesión"
+        title="Editar profesión"
         initialValue={editProfession?.name_Profession || ""}
         onClose={closeEditModal}
         onSave={handleEditSubmit}
@@ -155,7 +155,7 @@ const TableProfessions: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleEditConfirmed}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre a "${pendingEdit?.name_Profession}"?`}
         confirmText="Guardar Cambios"
       />
@@ -164,7 +164,7 @@ const TableProfessions: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Profesión"
+        title="Eliminar profesión"
         message="¿Estás seguro de que quieres eliminar esta profesión?"
         confirmText="Eliminar"
         isLoading={isDeleting}

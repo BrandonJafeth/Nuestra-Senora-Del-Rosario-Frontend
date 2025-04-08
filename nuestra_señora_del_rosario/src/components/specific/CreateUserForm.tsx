@@ -103,7 +103,7 @@ const CreateUserForm: React.FC = () => {
         isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-900'
       }`}
     >
-      <h2 className="text-3xl font-bold text-center mb-6">Registro de Usuario</h2>
+      <h2 className="text-3xl font-bold text-center mb-6">Registro de usuario</h2>
 
       {message && <Toast message={message} type={type || 'info'} />}
 
@@ -130,7 +130,7 @@ const CreateUserForm: React.FC = () => {
         {/* Correo Electrónico */}
         <div>
           <label htmlFor="email" className="block text-lg font-medium">
-            Correo Electrónico
+            Correo electrónico
           </label>
           <input
             type="email"
@@ -169,7 +169,7 @@ const CreateUserForm: React.FC = () => {
         {/* 📌 Nombre Completo */}
         <div>
           <label htmlFor="fullName" className="block text-lg font-medium">
-            Nombre de Usuario
+            Nombre de usuario
           </label>
           <input
             type="text"

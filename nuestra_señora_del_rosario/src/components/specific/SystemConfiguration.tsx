@@ -7,31 +7,31 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 // 1. Define un arreglo con los datos de tus cards
 const cardsData = [
   {
-    title: "Estados de Citas Médicas",
+    title: "Estados de citas Mmdicas",
     description: "Gestiona los estados de las citas médicas.",
     route: "/dashboard/Configuracion/sistema/estado-citas",
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Tipos de Salario",
+    title: "Tipos de salario",
     description: "Gestiona los diferentes tipos de salario.",
     route: "/dashboard/Configuracion/sistema/tipo-salario",
     roles: ["SuperAdmin","Admin"],
   },
   {
-    title: "Unidades de Medida",
+    title: "Unidades de medida",
     description: "Gestiona las unidades de medida.",
     route: "/dashboard/Configuracion/sistema/unidad-medida",
     roles: ["SuperAdmin","Admin", "Enfermeria", "Inventario"],
   },
   {
-    title: "Especialidades Médicas",
+    title: "Especialidades médicas",
     description: "Gestiona las especialidades médicas.",
     route: "/dashboard/Configuracion/sistema/especialidad",
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Gestión de Habitaciones",
+    title: "Gestión de habitaciones",
     description: "Gestiona las habitaciones del centro.",
     route: "/dashboard/Configuracion/sistema/habitacion",
     roles: ["SuperAdmin","Admin"],
@@ -49,19 +49,19 @@ const cardsData = [
     roles: ["SuperAdmin","Admin"],
   },
   {
-    title: "Notas Médicas",
+    title: "Notas médicas",
     description: "Gestiona las notas médicas de los pacientes.",
     route: "/dashboard/Configuracion/sistema/notas",
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Centros de Salud",
+    title: "Centros de salud",
     description: "Gestiona los centros de salud registrados.",
     route: "/dashboard/Configuracion/sistema/centro-atencion",
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Niveles de Dependencia",
+    title: "Niveles de dependencia",
     description: "Gestiona los niveles de dependencia para los residentes.",
     route: "/dashboard/Configuracion/sistema/nivel-dependencia",
     roles: ["SuperAdmin","Enfermeria", "Admin"],
@@ -73,7 +73,7 @@ const cardsData = [
     roles: ["SuperAdmin", "Admin"],
   },
   {
-    title: "Marcas de Activos",
+    title: "Marcas de activos",
     description: "Gestiona las marcas de los activos.",
     route: "/dashboard/Configuracion/sistema/marca",
     roles: ["SuperAdmin","Admin" ],
@@ -103,7 +103,7 @@ const cardsData = [
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Vías de Administración",
+    title: "Vías de administración",
     description: "Gestiona las vías de administración de medicamentos.",
     route: "/dashboard/Configuracion/sistema/via-administracion",
     roles: ["SuperAdmin","Enfermeria"],
@@ -145,7 +145,7 @@ const SystemConfiguration: React.FC = () => {
         isDarkMode ? "text-white" : "text-gray-900"
       }`}
     >
-      <h2 className="text-3xl font-bold mb-6">⚙ Configuración del Sistema</h2>
+      <h2 className="text-3xl font-bold mb-6">⚙ Configuración del sistema</h2>
       <p className="mb-8">
         Administra los diferentes parámetros del sistema. Puedes agregar, editar
         y eliminar información clave.

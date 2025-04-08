@@ -40,7 +40,7 @@ const AddMedicationPage: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block">Dosis Prescrita</label>
+          <label className="block">Dosis prescrita</label>
           <input
             type="number"
             {...register("prescribedDose", { required: true })}
@@ -49,7 +49,7 @@ const AddMedicationPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block">Seleccionar Medicamento</label>
+          <label className="block">Seleccionar medicamento</label>
           <select
             {...register("id_MedicamentSpecific", { required: true })}
             value={selectedMedicament ?? ""}
@@ -66,7 +66,7 @@ const AddMedicationPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block">Fecha de Inicio</label>
+          <label className="block">Fecha de inicio</label>
           <input
             type="date"
             {...register("startDate", { required: true })}

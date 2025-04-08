@@ -169,7 +169,7 @@ function DonationRequests() {
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} rounded-[20px] shadow-xl`}>
       <h2 className={`text-3xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-        Solicitudes de Donaciones
+        Solicitudes de donaciones
       </h2>
 
       <div className="flex justify-between mb-4">
@@ -204,7 +204,7 @@ function DonationRequests() {
               className="px-4 py-2 border rounded-full bg-gray-200"
               onChange={(e) => setFilterType(e.target.value)}
             >
-              <option value="Todas">Tipos de Donación</option>
+              <option value="Todas">Tipos de donación</option>
               {donationTypes?.map((type) => (
                 <option key={type.id_DonationType} value={type.name_DonationType}>
                   {type.name_DonationType}
@@ -235,7 +235,7 @@ function DonationRequests() {
 
       <ReusableTableRequests<DonationRequest>
         data={currentPageDonations}
-        headers={['Nombre', 'Tipo de Donación', 'Método', 'Fecha', 'Estatus', 'Acciones']}
+        headers={['Nombre', 'Tipo de donación', 'Método', 'Fecha', 'Estatus', 'Acciones']}
         isLoading={isLoading && (!isFiltering || allDonations.length === 0)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -320,14 +320,14 @@ function DonationRequests() {
               <strong>Teléfono:</strong> {selectedDonation.dn_Phone}
             </p>
             <p>
-              <strong>Fecha de Donación:</strong>{" "}
+              <strong>Fecha de donación:</strong>{" "}
               {new Date(selectedDonation.delivery_date).toLocaleDateString()}
             </p>
             <p>
               <strong>Email:</strong> {selectedDonation.dn_Email}
             </p>
             <p>
-              <strong>Tipo de Donación:</strong> {selectedDonation.donationType}
+              <strong>Tipo de donación:</strong> {selectedDonation.donationType}
             </p>
             <p>
               <strong>Estatus:</strong>{" "}
@@ -352,7 +352,7 @@ function DonationRequests() {
           isOpen={!!confirmDelete}
           onClose={() => setConfirmDelete(null)}
           onConfirm={handleDelete}
-          title="Confirmar Eliminación"
+          title="Confirmar eliminación"
           message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
           confirmText="Eliminar"
           isLoading={isDeleting}

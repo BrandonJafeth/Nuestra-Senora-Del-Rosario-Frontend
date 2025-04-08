@@ -71,7 +71,7 @@ const EmployeeList: React.FC = () => {
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Lista de Empleados
+          Lista de empleados
         </h2>
 
         {/* Selector de cantidad por página */}
@@ -147,7 +147,7 @@ const EmployeeList: React.FC = () => {
                 className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
                 onClick={() => handleGenerateReceipt(employee)}
               >
-                Generar Comprobante
+                Generar comprobante
               </button>
             </td>
           </tr>

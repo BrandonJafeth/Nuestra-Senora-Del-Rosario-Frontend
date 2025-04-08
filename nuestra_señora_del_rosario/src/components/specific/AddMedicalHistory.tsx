@@ -57,7 +57,7 @@ const AddMedicalHistoryForm: React.FC = () => {
         >
           <FaArrowLeft className="mr-2" /> Volver
         </button>
-        <h2 className="text-2xl font-bold">Agregar Historial Médico</h2>
+        <h2 className="text-2xl font-bold">Agregar Historial médico</h2>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

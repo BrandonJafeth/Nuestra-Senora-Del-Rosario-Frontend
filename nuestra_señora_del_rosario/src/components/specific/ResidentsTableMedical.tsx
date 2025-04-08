@@ -65,7 +65,7 @@ function ResidentTableMedical() {
       {/* 🔹 FILA SUPERIOR: Título, Búsqueda y Selección de Páginas */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Listado de Pacientes
+          Listado de pacientes
         </h2>
 
         {/* 🔍 Búsqueda */}
@@ -99,7 +99,7 @@ function ResidentTableMedical() {
       {/* 🔹 TABLA DE RESIDENTES */}
       <ReusableTableRequests<Resident>
         data={filteredResidents}
-        headers={['Nombre Completo', 'Cédula', 'Edad', 'Fecha Nacimiento', 'Fecha de Entrada', 'Acciones']}
+        headers={['Nombre completo', 'Cédula', 'Edad', 'Fecha nacimiento', 'Fecha de entrada', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}

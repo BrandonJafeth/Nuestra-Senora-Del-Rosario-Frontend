@@ -87,13 +87,13 @@ const TableAssetCategories: React.FC = () => {
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Gestión de Categorías de Activos
+        Gestión de categorías de activos
       </h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Categorías"
+        title="Lista de categorías"
         columns={[{ key: "categoryName", label: "Categoría" }]}
         data={categories || []}
         isLoading={isLoading}
@@ -107,13 +107,13 @@ const TableAssetCategories: React.FC = () => {
       />
 
       {/* Modal para Agregar Categoría */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Categoría" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva categoría" onClose={closeAddModal}>
         <input
           type="text"
           value={newCategoryName}
           onChange={(e) => setNewCategoryName(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-          placeholder="Nombre de la Categoría"
+          placeholder="Nombre de la categoría"
         />
         <div className="flex justify-center space-x-4">
           <button
@@ -152,7 +152,7 @@ const TableAssetCategories: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre de la categoría a ${pendingEdit?.categoryName}?`}
         confirmText="Confirmar"
       />
@@ -173,7 +173,7 @@ const TableAssetCategories: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Categoría"
+        title="Eliminar categoría"
         message="¿Estás seguro de que quieres eliminar esta categoría?"
         confirmText="Eliminar"
         isLoading={isDeleting}

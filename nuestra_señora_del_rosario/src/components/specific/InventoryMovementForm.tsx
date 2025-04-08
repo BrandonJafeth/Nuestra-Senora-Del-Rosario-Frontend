@@ -87,7 +87,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
         contentLabel="Agregar Producto al Inventario"
         style={customStyles}
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Agregar Producto</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Agregar producto</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="quantity" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>

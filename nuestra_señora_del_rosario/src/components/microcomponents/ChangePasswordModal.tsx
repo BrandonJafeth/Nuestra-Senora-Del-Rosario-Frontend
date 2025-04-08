@@ -153,7 +153,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
 
           {/* Nueva Contraseña */}
           <div>
-            <label className="block text-lg">Nueva Contraseña</label>
+            <label className="block text-lg">Nueva contraseña</label>
             <input
               type="password"
               className="w-full p-2 rounded-md shadow-sm border border-gray-300 text-black"
@@ -165,7 +165,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
 
           {/* Confirmar Nueva Contraseña */}
           <div>
-            <label className="block text-lg">Confirmar Nueva Contraseña</label>
+            <label className="block text-lg">Confirmar nueva contraseña</label>
             <input
               type="password"
               className="w-full p-2 rounded-md shadow-sm border border-gray-300 text-black"
@@ -198,13 +198,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
           </div>
         </form>
 
-        {/* 🔹 Modal de Confirmación con z-index superior */}
+        
         {isConfirmOpen && (
           <ConfirmationModal
             isOpen={isConfirmOpen}
             onClose={() => setIsConfirmOpen(false)}
             onConfirm={handleConfirm}
-            title="Confirmar Cambio de Contraseña"
+            title="Confirmar cambio de contraseña"
             message="¿Estás seguro de que quieres cambiar tu contraseña?"
             confirmText="Confirmar"
             cancelText="Cancelar"

@@ -118,13 +118,13 @@ const TableAdministrationRoute: React.FC = () => {
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Gestión de Vías de Administración
+        Gestión de vías de administración
       </h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Vías de Administración"
+        title="Lista de vías de administración"
         columns={[
           { key: "routeName", label: "Nombre de la Vía" },
         ]}
@@ -146,7 +146,7 @@ const TableAdministrationRoute: React.FC = () => {
       {/* Modal para Agregar Vía de Administración */}
       <AdminModalAdd
         isOpen={isAddModalOpen}
-        title="Agregar Vía de Administración"
+        title="Agregar vía de administración"
         onClose={closeAddModal}
       >
         <input
@@ -175,7 +175,7 @@ const TableAdministrationRoute: React.FC = () => {
       {/* Modal para Editar Vía de Administración */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Vía de Administración"
+        title="Editar vía de administración"
         onClose={closeEditModal}
         onSave={(updatedValue) => {
           if (editRoute) {
@@ -206,7 +206,7 @@ const TableAdministrationRoute: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Vía de Administración"
+        title="Eliminar vía de administración"
         message="¿Estás seguro de que quieres eliminar esta vía de administración?"
         confirmText="Eliminar"
         isLoading={isDeleting}
