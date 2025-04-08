@@ -78,7 +78,7 @@ const RoleAssignment: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, userI
 
         {/* Selección de Rol */}
         <div>
-          <label className="block text-lg">Seleccionar Rol</label>
+          <label className="block text-lg">Seleccionar rol</label>
           <RoleDropdown value={idRole || 0} onChange={setIdRole} />
         </div>
 

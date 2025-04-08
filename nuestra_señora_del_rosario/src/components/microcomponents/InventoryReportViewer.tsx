@@ -22,11 +22,7 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
   const openReportModal = () => setIsReportModalOpen(true);
   const closeReportModal = () => setIsReportModalOpen(false);
 
-  /**
-   * Se invoca al confirmar la selección en cualquiera de los modales.
-   * Si productId y measure no fueron proporcionados (caso de usuarios que no son de inventario),
-   * se envían arreglos vacíos para evitar errores.
-   */
+  
   const handleConfirmReport = async (selection: {
     categoryId: number;
     productId?: number;
@@ -46,7 +42,7 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
         targetUnits,
         productIds
       );
-      // Se asume que la respuesta tiene el formato { item1: InventoryReport[], item2: number }
+
       const reportData: InventoryReport[] = response.data;
       const blob = await pdf(<InventoryReportPDF report={reportData} />).toBlob();
       saveAs(blob, `Reporte_Mensual_Inventario_${month}_${year}.pdf`);

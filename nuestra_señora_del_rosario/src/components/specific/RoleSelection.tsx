@@ -57,7 +57,7 @@ const RoleSelection: React.FC = () => {
 
         {/* Título */}
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-2">
-          Seleccionar Rol
+          Seleccionar rol
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
           Tienes múltiples roles. Por favor, selecciona uno para continuar.

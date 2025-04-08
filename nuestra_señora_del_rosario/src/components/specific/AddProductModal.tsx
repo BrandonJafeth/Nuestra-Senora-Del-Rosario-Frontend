@@ -76,17 +76,17 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
       <Modal
         isOpen={isOpen}
         onRequestClose={handleCancel}
-        contentLabel="Agregar Producto"
+        contentLabel="Agregar producto"
         className={`relative z-50 w-full max-w-md mx-auto p-6 rounded-lg shadow-lg ${
           isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
         }`}
         overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Agregar Producto</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Agregar producto</h2>
         <form className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium">
-              Nombre del Producto
+              Nombre del producto
             </label>
             <input
               type="text"
@@ -122,7 +122,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
           </div>
           <div>
             <label htmlFor="unitOfMeasureID" className="block text-sm font-medium">
-              Unidad de Medida
+              Unidad de medida
             </label>
             <select
               id="unitOfMeasureID"
@@ -143,7 +143,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
           </div>
           <div>
             <label htmlFor="initialQuantity" className="block text-sm font-medium">
-              Cantidad Inicial
+              Cantidad inicial
             </label>
             <input
               type="number"
@@ -165,7 +165,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({ isOpen, onRequestClos
               className="ml-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
               tabIndex={0}
             >
-              Agregar Producto
+              Agregar producto
             </button>
             <button
               type="button"

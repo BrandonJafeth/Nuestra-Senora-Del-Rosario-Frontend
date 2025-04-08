@@ -266,10 +266,10 @@ const AssetTable: React.FC = () => {
           onClick={() => setIsCreateModalOpen(true)}
           className="mt-2 sm:mt-0 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
         >
-          Agregar Activo
+          Agregar activo
         </button>
         <h2 className={`text-3xl font-bold font-poppins ${isDarkMode ? "text-white" : "text-gray-800"}`}>
-          Lista de Activos
+          Lista de activos
         </h2>
         <AssetReportButton assets={assets} />
       </div>
@@ -293,8 +293,8 @@ const AssetTable: React.FC = () => {
             }`}
           >
             <option value="">Todos los estados</option>
-            <option value="Buen Estado">Buen Estado</option>
-            <option value="Mal Estado">Mal Estado</option>
+            <option value="Buen Estado">Buen estado</option>
+            <option value="Mal Estado">Mal estado</option>
           </select>
         </div>
 
@@ -361,7 +361,7 @@ const AssetTable: React.FC = () => {
           )}
           {selectedCondition !== undefined && (
             <span className="font-bold mx-1">
-              Estado: {selectedCondition === 'Buen Estado' ? 'Buen estado' : 'Mal estado'}
+              Estado: {selectedCondition === 'Buen estado' ? 'Buen estado' : 'Mal estado'}
             </span>
           )}
         </div>
@@ -377,8 +377,8 @@ const AssetTable: React.FC = () => {
               } text-center`}
             >
               <th className="p-4 border dark:border-gray-500">Nombre</th>
-              <th className="p-4 border dark:border-gray-500">Número de Serie</th>
-              <th className="p-4 border dark:border-gray-500">Costo Original</th>
+              <th className="p-4 border dark:border-gray-500">Número de serie</th>
+              <th className="p-4 border dark:border-gray-500">Costo original</th>
               <th className="p-4 border dark:border-gray-500">Ubicación</th>
               <th className="p-4 border dark:border-gray-500">Condición</th>
               <th className="p-4 border dark:border-gray-500">Acciones</th>

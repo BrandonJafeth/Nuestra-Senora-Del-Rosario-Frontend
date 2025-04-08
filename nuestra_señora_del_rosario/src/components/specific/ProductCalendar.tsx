@@ -106,7 +106,7 @@ const ProductCalendar: React.FC = () => {
                   onClick={handleOpenProductRequestModal}
                   className={`px-4 py-2 rounded ${isDarkMode ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
                 >
-                  Pedir Producto
+                  Pedir producto
                 </button>
                 <button
                   onClick={() => props.onNavigate('TODAY')}

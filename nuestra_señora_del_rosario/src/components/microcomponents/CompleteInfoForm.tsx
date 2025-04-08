@@ -74,7 +74,7 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
         }}
       >
         <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Completar Información para {selectedRequest?.name_AP}
+          Completar información para {selectedRequest?.name_AP}
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -84,19 +84,19 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
               onChange={(e) => setSexo(e.target.value)}
               className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
             >
-              <option value="">Seleccionar Sexo</option>
+              <option value="">Seleccionar sexo</option>
               <option value="Masculino">Masculino</option>
               <option value="Femenino">Femenino</option>
             </select>
           </div>
           <div>
-            <label className="block mb-2 font-bold">Grado de Dependencia</label>
+            <label className="block mb-2 font-bold">Grado de dependencia</label>
             <select
               value={dependencyLevel}
               onChange={(e) => setDependencyLevel(e.target.value)}
               className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
             >
-              <option value="">Seleccionar Grado de Dependencia</option>
+              <option value="">Seleccionar grado de dependencia</option>
               {dependencyLevels.map((level) => (
                 <option key={level.id_DependencyLevel} value={level.id_DependencyLevel}>
                   {level.levelName}
@@ -105,7 +105,7 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
             </select>
           </div>
           <div>
-            <label className="block mb-2 font-bold">Fecha de Nacimiento</label>
+            <label className="block mb-2 font-bold">Fecha de nacimiento</label>
             <input
               type="date"
               value={fechaNacimiento}
@@ -120,7 +120,7 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
               onChange={(e) => setRoomNumber(e.target.value)}
               className={`w-full p-2 mt-1 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
             >
-              <option value="">Seleccionar Habitación</option>
+              <option value="">Seleccionar habitación</option>
               {rooms.map((room) => (
                 <option key={room.id_Room} value={room.id_Room}>
                   {room.roomNumber}
@@ -129,7 +129,7 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
             </select>
           </div>
           <div>
-            <label className="block mb-2 font-bold">Fecha de Entrada</label>
+            <label className="block mb-2 font-bold">Fecha de entrada</label>
             <input
               type="date"
               value={entryDate}

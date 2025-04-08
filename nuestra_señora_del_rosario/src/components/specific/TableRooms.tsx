@@ -94,7 +94,7 @@ const TableRooms: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Habitaciones"
+        title="Lista de habitaciones"
         columns={[
           { key: "roomNumber", label: "Número" },
           { key: "capacity", label: "Capacidad" },
@@ -111,7 +111,7 @@ const TableRooms: React.FC = () => {
       />
 
       {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Habitación" onClose={closeAddModal}>
+      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva habitación" onClose={closeAddModal}>
         <input
           type="number"
           value={newRoom.roomNumber}
@@ -138,7 +138,7 @@ const TableRooms: React.FC = () => {
 
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Numero de Habitación"
+        title="Editar numero de habitación"
         initialValue={editRoom?.roomNumber || ""}
         onClose={closeEditModal}
         onSave={(updatedValue) => {
@@ -155,7 +155,7 @@ const TableRooms: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar los datos de la habitación ${pendingEdit?.roomNumber}?`}
         confirmText="Confirmar"
       />
@@ -176,7 +176,7 @@ const TableRooms: React.FC = () => {
             });
           }
         }}
-        title="Eliminar Habitación"
+        title="Eliminar habitación"
         message="¿Estás seguro de que quieres eliminar esta habitación?"
         confirmText="Eliminar"
         isLoading={isDeleting}

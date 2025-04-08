@@ -97,7 +97,7 @@ const EditResidentMedicationForm: React.FC = () => {
 
         {/* Dosis Prescrita */}
         <div>
-          <label className="block mb-1">Dosis Prescrita</label>
+          <label className="block mb-1">Dosis prescrita</label>
           <input
             type="number"
             {...register("prescribedDose")}
@@ -107,7 +107,7 @@ const EditResidentMedicationForm: React.FC = () => {
 
         {/* Fecha de Inicio (no editable) */}
         <div>
-          <label className="block mb-1">Fecha de Inicio</label>
+          <label className="block mb-1">Fecha de inicio</label>
           <input
             type="date"
             value={startDate}
@@ -119,7 +119,7 @@ const EditResidentMedicationForm: React.FC = () => {
 
         {/* Fecha de Fin */}
         <div>
-          <label className="block mb-1">Fecha de Fin</label>
+          <label className="block mb-1">Fecha de fin</label>
           <input
             type="date"
             {...register("endDate")}

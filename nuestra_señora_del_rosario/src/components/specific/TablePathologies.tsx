@@ -116,7 +116,7 @@ const TablePathologies: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Patologías"
+        title="Lista de patologías"
         columns={[{ key: "name_Pathology", label: "Nombre" }]}
         data={pathologies || []}
         isLoading={isLoading}
@@ -129,7 +129,7 @@ const TablePathologies: React.FC = () => {
         onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
       />
 
-<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Unidad de Medida" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar unidad de medida" onClose={closeAddModal}>
         <input
           type="text"
           value={newPathology}
@@ -150,7 +150,7 @@ const TablePathologies: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Patología"
+        title="Editar patología"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
         initialValue={editPathology.name_Pathology}
@@ -161,7 +161,7 @@ const TablePathologies: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas editar la patología a "${pendingEditValue}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -171,7 +171,7 @@ const TablePathologies: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Patología"
+        title="Eliminar patología"
         message="¿Estás seguro de que quieres eliminar esta patología"
         confirmText="Eliminar"
         isLoading={isDeleting}

@@ -119,12 +119,12 @@ const TableDependencyLevels: React.FC = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Niveles de Dependencia</h2>
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de niveles de dependencia</h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Niveles de Dependencia"
+        title="Lista de niveles de dependencia"
         columns={[{ key: "levelName", label: "Nombre" }]}
         data={dependencyLevels || []}
         isLoading={isLoading}
@@ -138,7 +138,7 @@ const TableDependencyLevels: React.FC = () => {
           throw new Error("Function not implemented.");
         } }      />
 
-<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Nivel de Dependencia" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar nuevo nivel de dependencia" onClose={closeAddModal}>
         <input
           type="text"
           value={newDependencyLevel.levelName}
@@ -170,7 +170,7 @@ const TableDependencyLevels: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre a "${pendingEditName}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -181,7 +181,7 @@ const TableDependencyLevels: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Nivel de Dependencia"
+        title="Eliminar nivel de dependencia"
         message="¿Estás seguro de que quieres eliminar este nivel de dependencia?"
         confirmText="Eliminar"
         isLoading={isDeleting}

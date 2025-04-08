@@ -86,7 +86,7 @@ const EditResidentPathology: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Nombre de la Patología (Solo visual, se envía el ID) */}
         <div>
-          <label className="block">Nombre de la Patología</label>
+          <label className="block">Nombre de la patología</label>
           <input
             type="text"
             value={pathologyName} // Muestra el nombre de la patología
@@ -111,7 +111,7 @@ const EditResidentPathology: React.FC = () => {
 
         {/* Fecha de Diagnóstico (No editable, siempre es hoy) */}
         <div>
-          <label className="block">Fecha de Diagnóstico</label>
+          <label className="block">Fecha de diagnóstico</label>
           <input
             type="date"
             value={todayDate} // Muestra la fecha de hoy
@@ -123,7 +123,7 @@ const EditResidentPathology: React.FC = () => {
 
         {/* Fecha de Registro (No editable, usa la que ya está registrada) */}
         <div>
-          <label className="block">Fecha de Registro</label>
+          <label className="block">Fecha de registro</label>
           <input
             type="date"
             value={registerDate} // Muestra la fecha registrada o la actual si era null

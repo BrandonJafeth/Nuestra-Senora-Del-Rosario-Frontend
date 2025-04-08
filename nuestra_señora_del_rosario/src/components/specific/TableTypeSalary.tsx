@@ -113,7 +113,7 @@ const TableTypeOfSalary: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
-        title="Lista de Tipos de Salario"
+        title="Lista de tipos de salario"
         columns={[{ key: "name_TypeOfSalary", label: "Nombre" }]}
         data={typeSalary || []}
         isLoading={isLoading}
@@ -126,7 +126,7 @@ const TableTypeOfSalary: React.FC = () => {
           throw new Error("Function not implemented.");
         } }      />
 
-<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nuevo Tipo de Salario" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar nuevo tipo de salario" onClose={closeAddModal}>
         <input
           type="text"
           value={newSalaryType}
@@ -147,7 +147,7 @@ const TableTypeOfSalary: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Tipo de Salario"
+        title="Editar tipo de salario"
         initialValue={editSalaryType?.name_TypeOfSalary || ""}
         onClose={closeEditModal}
         onSave={handleEditSubmit}
@@ -158,16 +158,16 @@ const TableTypeOfSalary: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleEditConfirmed}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas cambiar el nombre a "${pendingEdit?.name_TypeOfSalary}"?`}
-        confirmText="Guardar Cambios"
+        confirmText="Guardar cambios"
       />
 
       {/* 📌 Modal de Confirmación para Eliminar */<ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Tipo de Salario"
+        title="Eliminar tipo de salario"
         message="¿Estás seguro de que quieres eliminar este Tipo de Salario?"
         confirmText="Eliminar"
         isLoading={isDeleting}

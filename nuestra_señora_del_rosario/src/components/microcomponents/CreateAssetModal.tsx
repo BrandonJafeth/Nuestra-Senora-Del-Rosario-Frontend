@@ -106,7 +106,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
         <div className="grid grid-cols-2 gap-4">
           {/* Columna 1 */}
           <div>
-            <label className="block mb-2 font-semibold">Nombre del Activo</label>
+            <label className="block mb-2 font-semibold">Nombre del activo</label>
             <input
               type="text"
               name="assetName"
@@ -114,7 +114,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               onChange={handleChange}
               className={`${inputClass} mb-4`}
             />
-            <label className="block mb-2 font-semibold">Número de Serie</label>
+            <label className="block mb-2 font-semibold">Número de serie</label>
             <input
               type="text"
               name="serialNumber"
@@ -138,7 +138,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               onChange={handleChange}
               className={`${inputClass} mb-4`}
             />
-             <label className="block mb-2 font-semibold">Fecha de Compra</label>
+             <label className="block mb-2 font-semibold">Fecha de compra</label>
             <input
               type="date"
               name="purchaseDate"
@@ -158,7 +158,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               onChange={handleChange}
               className={`${inputClass} mb-4`}
             />
-            <label className="block mb-2 font-semibold">Condición del Activo</label>
+            <label className="block mb-2 font-semibold">Condición del activo</label>
             <select
               name="assetCondition"
               value={newAsset.assetCondition}
@@ -166,8 +166,8 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               className={`${inputClass} mb-4`}
             >
               <option value="">Seleccione la condición</option>
-              <option value="Mal Estado">Mal Estado</option>
-              <option value="Buen Estado">Buen Estado</option>
+              <option value="Mal Estado">Mal estado</option>
+              <option value="Buen Estado">Buen estado</option>
             </select>
             <label className="block mb-2 font-semibold">Ley</label>
             <select
@@ -190,7 +190,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               onChange={handleChange}
               className={`${inputClass} mb-4`}
             >
-              <option value={0}>Seleccione una Categoría*</option>
+              <option value={0}>Seleccione una categoría*</option>
               {categoryOptions.map((cat) => (
                 <option key={cat.idAssetCategory} value={cat.idAssetCategory}>
                   {cat.categoryName}
@@ -204,7 +204,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
               onChange={handleChange}
               className={`${inputClass} mb-4`}
             >
-              <option value={0}>Seleccione un Modelo (opcional)</option>
+              <option value={0}>Seleccione un modelo (opcional)</option>
               {modelOptions.map((model) => (
                 <option key={model.idModel} value={model.idModel}>
                   {model.modelName}

@@ -39,7 +39,7 @@ const UserSettings: React.FC = () => {
       <div className={`max-w-4xl w-full p-8 rounded-lg shadow-lg transition-all duration-300 ${isDarkMode ? "bg-[#0D313F]" : "bg-white"}`}>
         {/* Título */}
         <h1 className="text-3xl font-semibold text-center mb-6">
-          Configuración del Perfil del Usuario
+          Configuración del perfil del usuario
         </h1>
 
         {/* Tarjeta de Información Personal */}
@@ -76,7 +76,7 @@ const UserSettings: React.FC = () => {
         onClick={handleOpenModal}
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
       >
-        Cambiar Información del Usuario
+        Cambiar Información del usuario
       </button>
     </div>
   </div>
@@ -85,7 +85,7 @@ const UserSettings: React.FC = () => {
   <div className={`shadow-md rounded-lg p-6 flex flex-col h-full transition-colors duration-300 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
     <div className="flex items-center mb-4">
       <Icon icon="mdi:lock-outline" className="text-3xl mr-3 text-blue-500" />
-      <h3 className="text-xl font-semibold">Contraseña del Usuario</h3>
+      <h3 className="text-xl font-semibold">Contraseña del usuario</h3>
     </div>
 
     <p className="mb-4"><span className="font-semibold">Contraseña:</span> ********</p>
@@ -96,7 +96,7 @@ const UserSettings: React.FC = () => {
         onClick={() => setIsPasswordModalOpen(true)}
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full text-center transition duration-200"
       >
-        Cambiar Contraseña
+        Cambiar contraseña
       </button>
     </div>
   </div>

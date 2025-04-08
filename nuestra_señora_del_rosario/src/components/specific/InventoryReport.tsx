@@ -43,16 +43,16 @@ interface InventoryReportPDFProps {
 const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
   <Document>
     <Page style={styles.page}>
-      <Text style={styles.header}>Reporte Mensual de Inventario</Text>
+      <Text style={styles.header}>Reporte mensual de inventario</Text>
       
       {/* Encabezado de la tabla */}
       <View style={styles.tableHeader}>
         <Text style={styles.tableCellHeader}>Producto</Text>
-        <Text style={styles.tableCellHeader}>Total en Stock</Text>
-        <Text style={styles.tableCellHeader}>Total Ingresos</Text>
-        <Text style={styles.tableCellHeader}>Total Egresos</Text>
-        <Text style={styles.tableCellHeader}>U.Medida</Text>
-        <Text style={styles.tableCellHeader}>Total Convertido</Text>
+        <Text style={styles.tableCellHeader}>Total en stock</Text>
+        <Text style={styles.tableCellHeader}>Total ingresos</Text>
+        <Text style={styles.tableCellHeader}>Total egresos</Text>
+        <Text style={styles.tableCellHeader}>U.medida</Text>
+        <Text style={styles.tableCellHeader}>Total convertido</Text>
       </View>
 
       {/* Filas de datos */}

@@ -114,7 +114,7 @@ const TableNotes: React.FC = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Notas</h2>
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de notas</h2>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
@@ -137,7 +137,7 @@ const TableNotes: React.FC = () => {
           throw new Error("Function not implemented.");
         } }      />
 
-<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Nueva Nota" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva nota" onClose={closeAddModal}>
         <input
           type="text"
           value={newNote.reason}
@@ -170,7 +170,7 @@ const TableNotes: React.FC = () => {
       {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Nota"
+        title="Editar nota"
         onClose={closeEditModal}
         onSave={handlePreConfirmEdit}
         initialValue={pendingEditValue} // ✅ Solo se edita la descripción en el modal
@@ -181,7 +181,7 @@ const TableNotes: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message="¿Seguro que deseas editar esta nota?"
         confirmText="Confirmar"
         isLoading={false}
@@ -192,7 +192,7 @@ const TableNotes: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
         onConfirm={handleDeleteConfirmed}
-        title="Eliminar Nota"
+        title="Eliminar nota"
         message="¿Estás seguro de que quieres eliminar esta nota?"
         confirmText="Eliminar"
         isLoading={isDeleting}

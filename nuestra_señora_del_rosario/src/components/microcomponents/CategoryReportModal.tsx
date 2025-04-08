@@ -28,11 +28,9 @@ const CategoryReportModal: React.FC<CategoryReportModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Seleccionar Categoría para Reporte"
-      /* 
-        Ajustamos la clase para hacerlo más amplio:
-        - w-full max-w-[500px]: ocupa todo el ancho disponible hasta 500px 
-        - p-8: más padding interno
-      */
+     
+
+      
       className="
         relative 
         w-full 

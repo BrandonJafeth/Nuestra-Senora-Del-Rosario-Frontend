@@ -182,7 +182,7 @@ const PaymentReceiptForm: React.FC = () => {
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}
       >
-        Generar Comprobante de Pago -{' '}
+        Generarcomprobante de pago -{' '}
         <span>
           {formData.employeeName} {formData.employeeLastName}
         </span>
@@ -198,7 +198,7 @@ const PaymentReceiptForm: React.FC = () => {
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}
             >
-              Fecha de Pago
+              Fecha de pago
             </label>
             <input
               type="date"
@@ -236,7 +236,7 @@ const PaymentReceiptForm: React.FC = () => {
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}
             >
-              Horas Extra
+              Horas extra
             </label>
             <input
               type="number"
@@ -255,7 +255,7 @@ const PaymentReceiptForm: React.FC = () => {
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}
             >
-              Horas Dobles
+              Horas dobles
             </label>
             <input
               type="number"
@@ -273,7 +273,7 @@ const PaymentReceiptForm: React.FC = () => {
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}
             >
-              Días Trabajados
+              Días trabajados
             </label>
             <input
               type="number"
@@ -295,7 +295,7 @@ const PaymentReceiptForm: React.FC = () => {
                 isDarkMode ? 'text-white' : 'text-gray-800'
               }`}
             >
-              Horas Nocturnas
+              Horas nocturnas
             </label>
             <input
               type="number"
@@ -445,7 +445,7 @@ const PaymentReceiptForm: React.FC = () => {
             onClick={addDeduction}
             className="bg-blue-500 text-white p-3 rounded-md"
           >
-            Agregar Deducción
+            Agregar deducción
           </button>
         </div>
 

@@ -135,13 +135,13 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Agregar Cita
+            Agregar cita
           </h2>
           <button
             onClick={openHealthcareCenterModal}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            Agregar Centro
+            Agregar centro
           </button>
         </div>
 
@@ -191,7 +191,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
           {/* Centro Médico */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Centro Médico:
+              Centro médico:
             </label>
             <select
               name="id_HC"

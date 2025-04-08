@@ -121,19 +121,19 @@ function ResidentList() {
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
       <div className="flex justify-between items-center mb-8">
-        <h2 className={`text-3xl font-bold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Listado de Residentes</h2>
+        <h2 className={`text-3xl font-bold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Listado de residentes</h2>
         <div className="flex space-x-4">
           <button
             onClick={() => navigate('/dashboard/solicitudesAprobadas')}
             className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-800 hover:bg-blue-900'} text-white`}
           >
-            Solicitudes Aprobadas
+            Solicitudes aprobadas
           </button>
           <button
             onClick={() => navigate('/dashboard/NuevoResidente')}
             className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-green-500 hover:bg-green-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
           >
-            Nuevo Residente
+            Nuevo residente
           </button>
         </div>
       </div>
@@ -150,7 +150,7 @@ function ResidentList() {
 
       <ReusableTableRequests<Resident>
         data={filteredResidents}
-        headers={['Nombre', 'Primer Apellido', 'Segundo Apellido', 'Cédula', 'Acciones']}
+        headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -176,7 +176,7 @@ function ResidentList() {
                   isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
               >
-                Ver Más Detalles
+                Ver más detalles
               </button>
             </td>
           </tr>

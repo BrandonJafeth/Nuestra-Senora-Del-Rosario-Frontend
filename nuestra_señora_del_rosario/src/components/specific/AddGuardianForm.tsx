@@ -103,7 +103,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
       <h2 className={`text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-        {isNewGuardian ? 'Añadir Encargado' : 'Buscar Encargado'}
+        {isNewGuardian ? 'Añadir encargado' : 'Buscar encargado'}
       </h2>
 
       <div className="flex justify-center space-x-4 mb-6">
@@ -111,7 +111,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           onClick={() => setIsNewGuardian(false)}
           className={`px-4 py-2 rounded-lg text-white ${isNewGuardian ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'}`}
         >
-          Buscar Encargado
+          Buscar encargado
         </button>
         <button
           onClick={() => {
@@ -121,13 +121,13 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           }}
           className={`px-4 py-2 rounded-lg text-white ${isNewGuardian ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500'}`}
         >
-          Nuevo Encargado
+          Nuevo encargado
         </button>
       </div>
 
       {!isNewGuardian ? (
         <div className="mb-6">
-          <label className="block mb-2 text-lg">Nombre del Encargado</label>
+          <label className="block mb-2 text-lg">Nombre del encargado</label>
           <input
             type="text"
             {...register('name_GD')}
@@ -155,7 +155,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
           {/* Campos del formulario */}
           <div>
-          <label className="block mb-2 text-lg">Nombre del Encargado</label>
+          <label className="block mb-2 text-lg">Nombre del encargado</label>
           <input
             {...register('name_GD', { required: 'El nombre es obligatorio' })}
             className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
@@ -165,7 +165,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
 
         {/* Primer apellido del guardián */}
         <div>
-          <label className="block mb-2 text-lg">Primer Apellido</label>
+          <label className="block mb-2 text-lg">Primer apellido</label>
           <input
             {...register('lastname1_GD', { required: 'El primer apellido es obligatorio' })}
             className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
@@ -175,7 +175,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
 
         {/* Segundo apellido del guardián */}
         <div>
-          <label className="block mb-2 text-lg">Segundo Apellido</label>
+          <label className="block mb-2 text-lg">Segundo apellido</label>
           <input
             {...register('lastname2_GD')}
             className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
@@ -221,7 +221,7 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   type="submit"
   className="col-span-2 px-7 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mx-auto block"
 >
-  Guardar Encargado
+  Guardar encargado
 </button>
 </form>
       )}

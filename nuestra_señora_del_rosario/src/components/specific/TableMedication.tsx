@@ -186,7 +186,7 @@ const TableMedicationSpecific: React.FC = () => {
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Gestión de Medicamentos Específicos
+        Gestión de medicamentos específicos
       </h2>
 
       {/* Si hay mensaje de éxito/error */}
@@ -198,7 +198,7 @@ const TableMedicationSpecific: React.FC = () => {
         columns={[
           { key: "name_MedicamentSpecific", label: "Nombre" },
           { key: "specialInstructions", label: "Instrucciones" },
-          { key: "routeName", label: "Ruta de Administración" },
+          { key: "routeName", label: "Ruta de administración" },
         ]}
         data={medicationSpecificList?.data || []}
         isLoading={isLoading}
@@ -218,7 +218,7 @@ const TableMedicationSpecific: React.FC = () => {
       {/* Modal para Agregar */}
       <AdminModalAdd
         isOpen={isAddModalOpen}
-        title="Agregar Medicamento Específico"
+        title="Agregar medicamento específico"
         onClose={closeAddModal}
       >
         {/* Nombre del Medicamento */}
@@ -327,7 +327,7 @@ const TableMedicationSpecific: React.FC = () => {
       {/* Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
-        title="Editar Medicamento Específico"
+        title="Editar medicamento específico"
         onClose={closeEditModal}
         onSave={(updatedValue) => {
           if (editMedication) {
@@ -348,7 +348,7 @@ const TableMedicationSpecific: React.FC = () => {
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
         onConfirm={handleConfirmEdit}
-        title="Confirmar Edición"
+        title="Confirmar edición"
         message={`¿Seguro que deseas editar el medicamento a "${pendingEdit?.medicationName}"?`}
         confirmText="Confirmar"
         isLoading={false}
@@ -358,7 +358,7 @@ const TableMedicationSpecific: React.FC = () => {
   isOpen={isConfirmDeleteModalOpen}
   onClose={closeConfirmDeleteModal}
   onConfirm={handleDeleteConfirmed}
-  title="Eliminar Medicamento"
+  title="Eliminar medicamento"
   message={`¿Estás seguro de que quieres eliminar "${medicationNameToDelete}"?`}
   confirmText="Eliminar"
   isLoading={isDeleting}

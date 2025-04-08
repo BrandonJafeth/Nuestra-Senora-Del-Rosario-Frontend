@@ -115,7 +115,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
           setIsEditing(false);
           onClose();
         }}
-        contentLabel="Editar Activo"
+        contentLabel="Editar activo"
         className="flex items-center justify-center min-h-screen"
         overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
       >
@@ -133,7 +133,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
             <div>
               <label className="block">
                 <span className="text-gray-700 dark:text-gray-300">
-                  Nombre del Activo:
+                  Nombre del activo:
                 </span>
                 <input
                   type="text"
@@ -147,7 +147,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
 
               <label className="block">
                 <span className="text-gray-700 dark:text-gray-300">
-                  Número de Serie:
+                  Número de serie:
                 </span>
                 <input
                   type="text"
@@ -175,7 +175,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
 
               <label className="block">
                 <span className="text-gray-700 dark:text-gray-300">
-                  Costo Original:
+                  Costo original:
                 </span>
                 <input
                   type="number"
@@ -235,7 +235,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
 
               <label className="block">
                 <span className="text-gray-700 dark:text-gray-300">
-                  Fecha de Compra:
+                  Fecha de compra:
                 </span>
                 <input
                   type="date"

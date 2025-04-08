@@ -240,7 +240,7 @@ const AppointmentCalendar = () => {
       <Modal
         isOpen={notesModalIsOpen}
         onRequestClose={closeNotesModal}
-        contentLabel="Agregar Nota"
+        contentLabel="Agregar nota"
         className={`relative p-6 rounded-lg shadow-lg max-w-md mx-auto bg-white dark:bg-gray-800`}
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
         style={{

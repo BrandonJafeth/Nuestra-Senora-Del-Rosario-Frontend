@@ -61,7 +61,7 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
           onChange={(e) => setConversionUnit(e.target.value)}
           className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
         >
-          <option value="">Seleccione una Unidad de medida</option>
+          <option value="">Seleccione una unidad de medida</option>
           <option value="paquete">Paquete</option>
           <option value="caja">Caja</option>
           <option value="litros">Litros</option>
@@ -85,16 +85,16 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
             <strong>Producto:</strong> {typedData.name}
           </p>
           <p>
-            <strong>Unidad Original:</strong> {typedData.unitOfMeasure}
+            <strong>Unidad original:</strong> {typedData.unitOfMeasure}
           </p>
           <p>
-            <strong>Cantidad Original:</strong> {typedData.totalQuantity}
+            <strong>Cantidad original:</strong> {typedData.totalQuantity}
           </p>
           <p>
-            <strong>Unidad Convertida:</strong> {typedData.convertedUnitOfMeasure}
+            <strong>Unidad convertida:</strong> {typedData.convertedUnitOfMeasure}
           </p>
           <p>
-            <strong>Cantidad Convertida:</strong> {typedData.convertedTotalQuantity}
+            <strong>Cantidad convertida:</strong> {typedData.convertedTotalQuantity}
           </p>
         </div>
       )}

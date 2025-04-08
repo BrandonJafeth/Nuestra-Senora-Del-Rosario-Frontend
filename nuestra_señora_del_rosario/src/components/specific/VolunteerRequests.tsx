@@ -254,7 +254,7 @@ function VolunteerRequests() {
 
       <ReusableTableRequests<VolunteerRequest>
         data={currentVolunteers}
-        headers={["Nombre", "Tipo", "Fecha Inicio", "Fecha Fin", "Estatus", "Acciones"]}
+        headers={["Nombre", "Tipo", "Fecha inicio", "Fecha fin", "Estatus", "Acciones"]}
         isLoading={isLoading && (!isFiltering || allVolunteers.length === 0)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
@@ -300,7 +300,7 @@ function VolunteerRequests() {
 
       <ReusableModalRequests
         isOpen={!!selectedVolunteer}
-        title="Detalles del Voluntario"
+        title="Detalles del voluntario"
         onClose={() => !isAccepting && !isRejecting && setSelectedVolunteer(null)}
         actions={
           <>
@@ -341,10 +341,10 @@ function VolunteerRequests() {
               <strong>Teléfono:</strong> {selectedVolunteer.vn_Phone}
             </p>
             <p>
-              <strong>Fecha de Inicio:</strong> {new Date(selectedVolunteer.delivery_Date).toLocaleDateString()}
+              <strong>Fecha de inicio:</strong> {new Date(selectedVolunteer.delivery_Date).toLocaleDateString()}
             </p>
             <p>
-              <strong>Fecha de Fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}
+              <strong>Fecha de fin:</strong> {new Date(selectedVolunteer.end_Date).toLocaleDateString()}
             </p>
             <p>
               <strong>Estatus:</strong>{" "}
@@ -361,7 +361,7 @@ function VolunteerRequests() {
               </span>
             </p>
             <p>
-              <strong>Tipo de Voluntario:</strong> {selectedVolunteer.name_voluntarieType}
+              <strong>Tipo de voluntario:</strong> {selectedVolunteer.name_voluntarieType}
             </p>
           </>
         )}
@@ -369,7 +369,7 @@ function VolunteerRequests() {
           isOpen={!!confirmDelete}
           onClose={() => setConfirmDelete(null)}
           onConfirm={handleDelete}
-          title="Confirmar Eliminación"
+          title="Confirmar eliminación"
           message="¿Estás seguro de que deseas eliminar esta solicitud de donación?"
           confirmText="Eliminar"
           isLoading={isDeleting}

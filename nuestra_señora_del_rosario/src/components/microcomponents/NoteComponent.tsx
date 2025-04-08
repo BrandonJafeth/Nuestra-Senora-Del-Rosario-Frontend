@@ -77,7 +77,7 @@ const NotesComponent: React.FC = () => {
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
         onConfirm={handleDelete}
-        title="Confirmar Eliminación"
+        title="Confirmar eliminación"
         message="¿Estás seguro de que deseas eliminar esta nota?"
         confirmText="Eliminar"
         isLoading={isDeleting}

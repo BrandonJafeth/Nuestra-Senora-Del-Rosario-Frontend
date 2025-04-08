@@ -21,7 +21,7 @@ function RequestPasswordForm() {
 
   return (
     <div className="w-full max-w-md p-8 mx-auto bg-white dark:bg-[#0f1728] shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-white">Solicitar Restablecimiento</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-white">Solicitar restablecimiento</h2>
       <p className="text-sm text-center text-gray-600 dark:text-gray-300 mb-8">
         Por favor, ingrese su correo electrónico para recibir un enlace de restablecimiento de contraseña.
       </p>

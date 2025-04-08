@@ -26,7 +26,7 @@ const NotificationMailbox = () => {
 
         {/* Título */}
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mr-64">
-  Bandeja de Notificaciones y Notas
+  Bandeja de notificaciones y notas
 </h1>
 
       </div>

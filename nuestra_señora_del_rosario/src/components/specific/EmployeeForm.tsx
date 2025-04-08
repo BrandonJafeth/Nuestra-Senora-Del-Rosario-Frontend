@@ -113,7 +113,7 @@ setTypeOfSalaryId(0);
           {/* Primer Apellido */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Primer Apellido</span>
+              <span className="ml-2">Primer apellido</span>
             </label>
             <input
               type="text"
@@ -127,7 +127,7 @@ setTypeOfSalaryId(0);
           {/* Segundo Apellido */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Segundo Apellido</span>
+              <span className="ml-2">Segundo apellido</span>
             </label>
             <input
               type="text"
@@ -155,7 +155,7 @@ setTypeOfSalaryId(0);
           {/* Correo Electrónico */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Correo Electrónico</span>
+              <span className="ml-2">Correo electrónico</span>
             </label>
             <input
               type="email"
@@ -219,7 +219,7 @@ setTypeOfSalaryId(0);
           {/* Tipo de Salario */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Tipo de Salario</span>
+              <span className="ml-2">Tipo de salario</span>
             </label>
             <select
               className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
@@ -238,7 +238,7 @@ setTypeOfSalaryId(0);
           {/* Contacto de Emergencia */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Contacto de Emergencia</span>
+              <span className="ml-2">Contacto de emergencia</span>
             </label>
             <input
               type="text"

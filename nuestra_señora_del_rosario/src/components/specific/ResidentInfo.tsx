@@ -70,7 +70,7 @@ const ResidentDetail: React.FC = () => {
         <p><strong>Edad:</strong> {resident?.age} años</p>
         <p><strong>Ubicación:</strong> {resident?.location_RD}</p>
         <p><strong>Status:</strong> {resident?.status}</p>
-        <p><strong>Fecha de Entrada:</strong> {new Date(resident?.entryDate ?? "").toLocaleDateString()}</p>
+        <p><strong>Fecha de entrada:</strong> {new Date(resident?.entryDate ?? "").toLocaleDateString()}</p>
       </div>
 
       {/* Sección de Medicamentos */}
@@ -106,7 +106,7 @@ const ResidentDetail: React.FC = () => {
             className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
             onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-medicamento`)}
           >
-            Agregar Medicamentos
+            Agregar medicamentos
           </button>
         </div>
       </div>
@@ -142,7 +142,7 @@ const ResidentDetail: React.FC = () => {
             className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
             onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-patologia`)}
           >
-            Agregar Patologías
+            Agregar patologías
           </button>
         </div>
       </div>

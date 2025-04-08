@@ -29,9 +29,7 @@ const ProductDropdown: React.FC<ProductDropdownProps> = ({ categoryId, onProduct
   if (isLoading) return <p>Cargando productos...</p>;
   if (isError) return <p>Error al cargar productos.</p>;
 
-  // Si tu backend retorna un array, ajusta el acceso
-  // Ejemplo: si data es { item1: Product[], item2: number }, entonces data.item1
-  // Si data es un array directamente, usas data.map(...)
+  
   const products: Product[] = Array.isArray(data) ? data : data?.item1 ?? [];
 
   return (
