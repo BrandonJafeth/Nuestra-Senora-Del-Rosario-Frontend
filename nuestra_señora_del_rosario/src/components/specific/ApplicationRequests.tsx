@@ -542,7 +542,7 @@ function ApplicationRequests() {
               <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer Apellido Encargado</label>
               <input
                 type="text"
-                name="lastName1_AP"
+                name="guardianLastName1"
                 value={editingApplication.guardianLastName1}
                 onChange={handleInputChange}
                 className={`w-full rounded-md border p-2 ${
@@ -557,7 +557,7 @@ function ApplicationRequests() {
               <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo Apellido Encargado</label>
               <input
                 type="text"
-                name="lastName2_AP"
+                name="guardianLastName2"
                 value={editingApplication.guardianLastName2 || ''}
                 onChange={handleInputChange}
                 className={`w-full rounded-md border p-2 ${
@@ -572,7 +572,7 @@ function ApplicationRequests() {
               <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula Encargado</label>
               <input
                 type="text"
-                name="cedula_AP"
+                name="guardianCedula"
                 value={editingApplication.guardianCedula}
                 onChange={handleInputChange}
                 className={`w-full rounded-md border p-2 ${
