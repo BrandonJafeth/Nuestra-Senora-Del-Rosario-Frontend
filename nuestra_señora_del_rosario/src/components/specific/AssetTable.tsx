@@ -361,7 +361,7 @@ const AssetTable: React.FC = () => {
           )}
           {selectedCondition !== undefined && (
             <span className="font-bold mx-1">
-              Estado: {selectedCondition === 'Buen estado' ? 'Buen estado' : 'Mal estado'}
+              Estado: {selectedCondition === 'Buen Estado' ? 'Buen estado' : 'Mal estado'}
             </span>
           )}
         </div>
