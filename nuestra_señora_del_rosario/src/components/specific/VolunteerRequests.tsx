@@ -23,12 +23,14 @@ function VolunteerRequests() {
   const [confirmDelete, setConfirmDelete] = useState<VolunteerRequest | null>(null);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [isLoadingAllData, setIsLoadingAllData] = useState(false);
 
   const isFiltering = useMemo(() => {
     return filterStatus !== 'Todas' || filterType !== 'Todas';
   }, [filterStatus, filterType]);
 
   const { data, isLoading } = useVolunteerRequests(pageNumber, pageSize);
+  const { data: allData } = useVolunteerRequests(1, 1000);
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { data: volunteerTypes, isLoading: isVolunteerTypesLoading } = useVolunteerTypes();
   const { mutate: updateVolunteerStatus } = useUpdateVolunteerStatus();
@@ -38,20 +40,46 @@ function VolunteerRequests() {
 
   useEffect(() => {
     if (data?.formVoluntaries) {
-      setAllVolunteers(prevVolunteers => {
-        const newVolunteers = [...prevVolunteers];
-        data.formVoluntaries.forEach(volunteer => {
-          const index = newVolunteers.findIndex(v => v.id_FormVoluntarie === volunteer.id_FormVoluntarie);
-          if (index >= 0) {
-            newVolunteers[index] = volunteer;
-          } else {
-            newVolunteers.push(volunteer);
-          }
+      if (!isFiltering) {
+        setAllVolunteers(prevVolunteers => {
+          const newVolunteers = [...prevVolunteers];
+          data.formVoluntaries.forEach(volunteer => {
+            const index = newVolunteers.findIndex(v => v.id_FormVoluntarie === volunteer.id_FormVoluntarie);
+            if (index >= 0) {
+              newVolunteers[index] = volunteer;
+            } else {
+              newVolunteers.push(volunteer);
+            }
+          });
+          return newVolunteers;
         });
-        return newVolunteers;
-      });
+      }
     }
-  }, [data]);
+  }, [data, isFiltering]);
+
+  useEffect(() => {
+    if (isFiltering && allData?.formVoluntaries) {
+      setAllVolunteers(allData.formVoluntaries);
+      setIsLoadingAllData(false);
+    }
+  }, [allData, isFiltering]);
+
+  useEffect(() => {
+    if (isFiltering) {
+      setIsLoadingAllData(true);
+    } else {
+      setIsLoadingAllData(false);
+    }
+  }, [filterStatus, filterType, isFiltering]);
+
+  useEffect(() => {
+    if (isLoadingAllData) {
+      const timer = setTimeout(() => {
+        setIsLoadingAllData(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoadingAllData]);
 
   const allFilteredVolunteers = useMemo(() => {
     if (!isFiltering) return [];
@@ -164,6 +192,24 @@ function VolunteerRequests() {
     setPageNumber(1);
   };
 
+  const handleStatusFilterChange = (status: 'Todas' | 'Aceptada' | 'Rechazada' | 'Pendiente') => {
+    setFilterStatus(status);
+    setPageNumber(1);
+
+    if (status === 'Todas') {
+      setIsLoadingAllData(false);
+    }
+  };
+
+  const handleTypeFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterType(e.target.value);
+    setPageNumber(1);
+
+    if (e.target.value === 'Todas') {
+      setIsLoadingAllData(false);
+    }
+  };
+
   const handleDelete = () => {
     if (!confirmDelete) return;
 
@@ -194,7 +240,7 @@ function VolunteerRequests() {
               <button
                 key={status.id_Status}
                 className={`px-4 py-2 rounded-full ${filterStatus === status.status_Name ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}
-                onClick={() => setFilterStatus(status.status_Name as 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas')}
+                onClick={() => handleStatusFilterChange(status.status_Name as 'Aceptada' | 'Rechazada' | 'Pendiente' | 'Todas')}
               >
                 {status.status_Name}
               </button>
@@ -203,7 +249,7 @@ function VolunteerRequests() {
           {isStatusesLoading ? (
             <Skeleton width={100} height={40} className="rounded-full" />
           ) : (
-            <button className="px-4 py-2 rounded-full bg-gray-500 text-white" onClick={() => setFilterStatus('Todas')}>
+            <button className="px-4 py-2 rounded-full bg-gray-500 text-white" onClick={() => handleStatusFilterChange('Todas')}>
               Todas
             </button>
           )}
@@ -216,7 +262,7 @@ function VolunteerRequests() {
             ) : (
               <select
                 className="px-4 py-2 border rounded-full bg-gray-200"
-                onChange={(e) => setFilterType(e.target.value)}
+                onChange={(e) => handleTypeFilterChange(e)}
               >
                 <option value="Todas">Tipos de Voluntariado</option>
                 {volunteerTypes?.map((type) => (
@@ -255,7 +301,7 @@ function VolunteerRequests() {
       <ReusableTableRequests<VolunteerRequest>
         data={currentVolunteers}
         headers={["Nombre", "Tipo", "Fecha inicio", "Fecha fin", "Estatus", "Acciones"]}
-        isLoading={isLoading && (!isFiltering || allVolunteers.length === 0)}
+        isLoading={(isLoading && !isFiltering) || (isLoadingAllData && isFiltering)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
