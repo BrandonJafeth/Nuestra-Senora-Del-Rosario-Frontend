@@ -23,12 +23,18 @@ function DonationRequests() {
   const [allDonations, setAllDonations] = useState<DonationRequest[]>([]);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [isLoadingAllData, setIsLoadingAllData] = useState(false);
   
   const isFiltering = useMemo(() => {
     return filterStatus !== 'Todas' || filterType !== 'Todas';
   }, [filterStatus, filterType]);
   
+  // Para paginación normal sin filtros
   const { data, isLoading } = useDonationRequests(pageNumber, pageSize);
+  
+  // Para cargar todos los datos cuando se aplica un filtro
+  const { data: allData, isLoading: isLoadingAll } = useDonationRequests(1, 1000);
+  
   const { data: donationTypes, isLoading: isDonationTypesLoading } = useDonationTypes();
   const { data: statuses, isLoading: isStatusesLoading } = useStatuses();
   const { mutate: updateDonationStatus } = useUpdateDonationStatus();
@@ -38,22 +44,58 @@ function DonationRequests() {
   const { showToast, message, type } = useToast();
   const { mutate: deleteDonation, isLoading: isDeleting } = useDeleteDonationRequest();
 
+  // Cargar datos paginados normales
   useEffect(() => {
     if (data?.donations) {
-      setAllDonations(prevDonations => {
-        const newDonations = [...prevDonations];
-        data.donations.forEach(donation => {
-          const index = newDonations.findIndex(d => d.id_FormDonation === donation.id_FormDonation);
-          if (index >= 0) {
-            newDonations[index] = donation;
-          } else {
-            newDonations.push(donation);
-          }
+      // Solo actualizar si no estamos filtrando
+      if (!isFiltering) {
+        setAllDonations(prevDonations => {
+          const newDonations = [...prevDonations];
+          data.donations.forEach(donation => {
+            const index = newDonations.findIndex(d => d.id_FormDonation === donation.id_FormDonation);
+            if (index >= 0) {
+              newDonations[index] = donation;
+            } else {
+              newDonations.push(donation);
+            }
+          });
+          return newDonations;
         });
-        return newDonations;
-      });
+      }
     }
-  }, [data]);
+  }, [data, isFiltering]);
+
+  // Cargar todos los datos cuando se aplica un filtro
+  useEffect(() => {
+    if (isFiltering) {
+      setIsLoadingAllData(true);
+      
+      // Si los datos ya están disponibles
+      if (allData?.donations) {
+        setAllDonations(allData.donations);
+        setIsLoadingAllData(false);
+      }
+    } else {
+      setIsLoadingAllData(false);
+    }
+  }, [allData, isFiltering]);
+
+  // Timeout para evitar loading infinito 
+  useEffect(() => {
+    if (isLoadingAllData) {
+      const timer = setTimeout(() => {
+        setIsLoadingAllData(false);
+      }, 100); 
+      return () => clearTimeout(timer);
+    }
+  }, [isLoadingAllData]);
+
+  // Activar carga completa cuando cambia un filtro
+  useEffect(() => {
+    if (isFiltering) {
+      setIsLoadingAllData(true);
+    }
+  }, [filterStatus, filterType]);
 
   const filteredRequests = useMemo(() => {
     if (!isFiltering) return [];
@@ -181,6 +223,26 @@ function DonationRequests() {
     });
   };
 
+  const handleStatusFilterChange = (status: 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas') => {
+    setFilterStatus(status);
+    setPageNumber(1);
+    
+    if (status === 'Todas') {
+      // Si volvemos a "Todas", dejamos de mostrar el loader
+      setIsLoadingAllData(false);
+    }
+  };
+
+  const handleTypeFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterType(e.target.value);
+    setPageNumber(1);
+    
+    if (e.target.value === 'Todas') {
+      // Si volvemos a "Todas", dejamos de mostrar el loader
+      setIsLoadingAllData(false);
+    }
+  };
+
   useEffect(() => {
     setPageNumber(1);
   }, [filterStatus, filterType, pageSize]);
@@ -201,7 +263,7 @@ function DonationRequests() {
                   className={`px-4 py-2 rounded-full ${
                     filterStatus === status.status_Name ? 'bg-gray-700 text-white' : 'bg-gray-300'
                   }`}
-                  onClick={() => setFilterStatus(status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas')}
+                  onClick={() => handleStatusFilterChange(status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas')}
                 >
                   {status.status_Name}
                 </button>
@@ -211,7 +273,7 @@ function DonationRequests() {
           ) : (
             <button
               className="px-4 py-2 rounded-full bg-gray-500 text-white"
-              onClick={() => setFilterStatus('Todas')}
+              onClick={() => handleStatusFilterChange('Todas')}
             >
               Todas
             </button>
@@ -225,7 +287,7 @@ function DonationRequests() {
             ) : (
               <select
                 className="px-4 py-2 border rounded-full bg-gray-200"
-                onChange={(e) => setFilterType(e.target.value)}
+                onChange={handleTypeFilterChange}
               >
                 <option value="Todas">Tipos de donación</option>
                 {donationTypes?.map((type) => (
@@ -259,7 +321,7 @@ function DonationRequests() {
       <ReusableTableRequests<DonationRequest>
         data={currentPageDonations}
         headers={['Nombre', 'Tipo de donación', 'Método', 'Fecha', 'Estatus', 'Acciones']}
-        isLoading={isLoading && (!isFiltering || allDonations.length === 0)}
+        isLoading={(isLoading && !isFiltering) || (isLoadingAllData && isFiltering) || isLoadingAll}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}

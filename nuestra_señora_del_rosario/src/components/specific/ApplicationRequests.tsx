@@ -22,12 +22,17 @@ function ApplicationRequests() {
   const [pageSize, setPageSize] = useState(5);
   const [allApplications, setAllApplications] = useState<ApplicationRequest[]>([]);
   const [filterStatus, setFilterStatus] = useState<'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'>('Todas');
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+  const [isLoadingAllData, setIsLoadingAllData] = useState(false);
 
   const isFiltering = useMemo(() => {
     return filterStatus !== 'Todas';
   }, [filterStatus]);
 
   const { data, isLoading, error } = useAplicationRequests(pageNumber, pageSize);
+  const { data: allData } = useAplicationRequests(1, 1000);
+
   const [confirmDelete, setConfirmDelete] = useState<ApplicationRequest | null>(null);
   const { mutate: deleteApplication, isLoading: isDeleting } = useDeleteApplicationRequest();
 
@@ -41,20 +46,46 @@ function ApplicationRequests() {
 
   useEffect(() => {
     if (data?.forms) {
-      setAllApplications(prevApplications => {
-        const newApplications = [...prevApplications];
-        data.forms.forEach(application => {
-          const index = newApplications.findIndex(a => a.id_ApplicationForm === application.id_ApplicationForm);
-          if (index >= 0) {
-            newApplications[index] = application;
-          } else {
-            newApplications.push(application);
-          }
+      if (!isFiltering) {
+        setAllApplications(prevApplications => {
+          const newApplications = [...prevApplications];
+          data.forms.forEach(application => {
+            const index = newApplications.findIndex(a => a.id_ApplicationForm === application.id_ApplicationForm);
+            if (index >= 0) {
+              newApplications[index] = application;
+            } else {
+              newApplications.push(application);
+            }
+          });
+          return newApplications;
         });
-        return newApplications;
-      });
+      }
     }
-  }, [data]);
+  }, [data, isFiltering]);
+
+  useEffect(() => {
+    if (isFiltering && allData?.forms) {
+      setAllApplications(allData.forms);
+      setIsLoadingAllData(false);
+    }
+  }, [allData, isFiltering]);
+
+  useEffect(() => {
+    if (isFiltering) {
+      setIsLoadingAllData(true);
+    } else {
+      setIsLoadingAllData(false);
+    }
+  }, [filterStatus, isFiltering]);
+
+  useEffect(() => {
+    if (isLoadingAllData) {
+      const timer = setTimeout(() => {
+        setIsLoadingAllData(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoadingAllData]);
 
   const filteredApplications = useMemo(() => {
     if (!isFiltering) return [];
@@ -90,6 +121,15 @@ function ApplicationRequests() {
     setPageNumber(1);
   }, [filterStatus, pageSize]);
 
+  const handleStatusFilterChange = (status: 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas') => {
+    setFilterStatus(status);
+    setPageNumber(1);
+
+    if (status === 'Todas') {
+      setIsLoadingAllData(false);
+    }
+  };
+
   if (error) {
     return <div>Error loading application requests</div>;
   }
@@ -99,6 +139,8 @@ function ApplicationRequests() {
       showToast('La solicitud ya está aprobada', 'warning');
       return;
     }
+
+    setIsAccepting(true);
     updateApplicationStatus(
       { id_ApplicationForm: application.id_ApplicationForm, id_Status: 2 },
       {
@@ -111,7 +153,12 @@ function ApplicationRequests() {
             )
           );
           setSelectedApplication(null);
+          setIsAccepting(false);
           showToast('Solicitud de ingreso aceptada', 'success');
+        },
+        onError: () => {
+          showToast('Error al aceptar la solicitud', 'error');
+          setIsAccepting(false);
         },
       }
     );
@@ -153,6 +200,7 @@ function ApplicationRequests() {
   };
 
   const handleReject = (application: ApplicationRequest) => {
+    setIsRejecting(true);
     updateApplicationStatus(
       { id_ApplicationForm: application.id_ApplicationForm, id_Status: 3 },
       {
@@ -165,7 +213,12 @@ function ApplicationRequests() {
             )
           );
           setSelectedApplication(null);
+          setIsRejecting(false);
           showToast('Solicitud de ingreso rechazada', 'error');
+        },
+        onError: () => {
+          showToast('Error al rechazar la solicitud', 'error');
+          setIsRejecting(false);
         },
       }
     );
@@ -230,21 +283,23 @@ function ApplicationRequests() {
                       ? 'bg-gray-700 text-white'
                       : 'bg-gray-300'
                   }`}
-                  onClick={() =>
-                    setFilterStatus(
-                      status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'
-                    )
-                  }
+                  onClick={() => handleStatusFilterChange(
+                    status.status_Name as 'Aprobado' | 'Rechazado' | 'Pendiente' | 'Todas'
+                  )}
                 >
                   {status.status_Name}
                 </button>
               ))}
-          <button
-            className="px-4 py-2 rounded-full bg-gray-500 text-white"
-            onClick={() => setFilterStatus('Todas')}
-          >
-            Todas
-          </button>
+          {isStatusesLoading ? (
+            <Skeleton width={100} height={40} className="rounded-full" />
+          ) : (
+            <button
+              className="px-4 py-2 rounded-full bg-gray-500 text-white"
+              onClick={() => handleStatusFilterChange('Todas')}
+            >
+              Todas
+            </button>
+          )}
         </div>
 
         <div className="flex items-center">
@@ -275,7 +330,7 @@ function ApplicationRequests() {
       <ReusableTableRequests<ApplicationRequest>
         data={currentApplications}
         headers={['Nombre', 'Apellido', 'Edad', 'Domicilio', 'Fecha solicitud', 'Estatus', 'Acciones']}
-        isLoading={isLoading && (!isFiltering || allApplications.length === 0)}
+        isLoading={(isLoading && !isFiltering) || (isLoadingAllData && isFiltering)}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
@@ -332,21 +387,23 @@ function ApplicationRequests() {
       <ReusableModalRequests
         isOpen={!!selectedApplication}
         title="Detalles de la Solicitud"
-        onClose={() => setSelectedApplication(null)}
+        onClose={() => !isAccepting && !isRejecting && setSelectedApplication(null)}
         actions={
           <>
             <button
               className="px-7 py-4 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-200"
               onClick={() => selectedApplication && handleAccept(selectedApplication)}
+              disabled={isAccepting || isRejecting}
             >
-              Aceptar
+              {isAccepting ? <LoadingSpinner /> : 'Aceptar'}
             </button>
             {selectedApplication?.status_Name !== 'Rechazado' && (
               <button
                 className="px-7 py-4 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-200"
                 onClick={() => selectedApplication && handleReject(selectedApplication)}
+                disabled={isRejecting || isAccepting}
               >
-                Rechazar
+                {isRejecting ? <LoadingSpinner /> : 'Rechazar'}
               </button>
             )}
             {selectedApplication?.status_Name === 'Rechazado' && (
