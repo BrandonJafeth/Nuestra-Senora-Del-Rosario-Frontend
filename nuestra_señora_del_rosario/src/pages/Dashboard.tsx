@@ -290,7 +290,7 @@ function Dashboard() {
                 } />
 
               <Route path="Configuracion/sistema/nivel-dependencia" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
+                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria']}>
                 <TableDependencyLevels />
                 </RoleBasedRoute>
                 } />
