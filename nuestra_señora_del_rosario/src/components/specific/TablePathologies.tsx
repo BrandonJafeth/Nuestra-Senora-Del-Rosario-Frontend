@@ -129,13 +129,13 @@ const TablePathologies: React.FC = () => {
         onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
       />
 
-<AdminModalAdd isOpen={isAddModalOpen} title="Agregar unidad de medida" onClose={closeAddModal}>
+<AdminModalAdd isOpen={isAddModalOpen} title="Agregar Patología" onClose={closeAddModal}>
         <input
           type="text"
           value={newPathology}
           onChange={(e) => setNewPathology(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-          placeholder="Ingrese el nombre de la unidad de medida"
+          placeholder="Ingrese el nombre de la patología"
         />
         <div className="flex justify-center space-x-4">
           <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={handleAddPathology}>

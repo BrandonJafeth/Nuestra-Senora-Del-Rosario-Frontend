@@ -5,7 +5,7 @@ import specialtyService from "../services/SpecialityService";
 
 export const useSpeciality = () => {
   return useQuery<Specialty[], Error>(
-    "Specialty",
+    "/Specialty",
     async () => {
       const response = await specialtyService.getAllSpecialties();
       if (!response.data || !Array.isArray(response.data)) {
