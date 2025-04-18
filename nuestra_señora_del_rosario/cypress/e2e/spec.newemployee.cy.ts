@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="mocha" />
 
 describe('EmployeeForm Component', () => {
     beforeEach(() => {
@@ -111,4 +112,3 @@ describe('EmployeeForm Component', () => {
       cy.get('input[placeholder="Ingrese su correo"]').should('have.value', '');
     });
   });
-  

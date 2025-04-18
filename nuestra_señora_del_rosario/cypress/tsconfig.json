@@ -6,7 +6,7 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"types": ["cypress", "chai", "mocha"]
+		"types": ["cypress", "mocha", "node"]
 	},
-	"include": ["e2e/**/*.ts", "support/**/*.ts"]
+	"include": ["**/*.ts"]
 }

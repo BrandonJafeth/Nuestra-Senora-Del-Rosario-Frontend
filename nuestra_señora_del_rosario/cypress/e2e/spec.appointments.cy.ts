@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="mocha" />
 
 describe('Cronograma de Citas - Datos Predefinidos', () => {
   beforeEach(() => {
