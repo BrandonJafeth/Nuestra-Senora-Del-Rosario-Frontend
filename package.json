@@ -1,9 +1,9 @@
 {
   "devDependencies": {
+    "@types/chai": "^5.2.1",
     "@types/cypress": "^0.1.6"
+  },
+  "scripts": {
+    "build": "vite build"
   }
-  ,
-"scripts": {
-  "build": "vite build"
-}
 }

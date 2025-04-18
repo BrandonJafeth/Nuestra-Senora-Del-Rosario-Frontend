@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="mocha" />
 
 describe('DonationRequests', () => {
     beforeEach(() => {
@@ -57,4 +58,3 @@ describe('DonationRequests', () => {
       cy.contains('Donación rechazada exitosamente', { timeout: 10000 }).should('be.visible');
     });
   });
-  

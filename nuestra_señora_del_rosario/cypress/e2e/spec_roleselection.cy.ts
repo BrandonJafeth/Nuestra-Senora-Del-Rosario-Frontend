@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 
 describe('RoleSelection Component', () => {
     // Antes de cada prueba, se limpian las cookies para evitar interferencias

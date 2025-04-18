@@ -6,7 +6,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "types": ["cypress"],
+    "types": ["cypress", "mocha", "node"],
     
 
     /* Bundler mode */
@@ -23,6 +23,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "cypress/**/*.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
