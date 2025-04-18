@@ -23,6 +23,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "cypress"],
+  "include": [
+    "src",
+    "cypress/**/*.ts",
+    "cypress/**/*.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
