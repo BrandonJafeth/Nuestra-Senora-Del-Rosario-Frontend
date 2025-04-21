@@ -57,7 +57,7 @@ const RoleAssignment: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, userI
       className={`p-6 rounded-xl shadow-xl w-[500px] mx-auto mt-20 ${
         isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-900'
       }`}
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
     >
       <h2 className="text-2xl font-bold text-center mb-4">Asignar Rol</h2>
 
