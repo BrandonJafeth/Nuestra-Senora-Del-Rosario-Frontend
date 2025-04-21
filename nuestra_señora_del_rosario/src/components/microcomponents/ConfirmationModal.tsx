@@ -29,7 +29,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
       <div
         className={`p-8 rounded-lg shadow-lg w-[500px] min-h-[250px] transition-colors duration-300 ${
           isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"

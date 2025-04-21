@@ -64,18 +64,20 @@ const ResidentDocumentsPage: React.FC = () => {
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-      <div className="flex justify-between items-center mb-6">
+    <div className="flex items-center relative mb-6">
+      <div className="absolute left-0">
         <button
           onClick={navigateBack}
-          className="flex justify-start items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+          className="flex items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
         >
           <FaArrowLeft size={20} />
           <span className="text-lg font-semibold">Regresar</span>
         </button>
-        <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Documentos de {residentsName}
-        </h2>
       </div>
+      <h2 className={`w-full text-center text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+        Documentos de {residentsName}
+      </h2>
+    </div>
       <div className="overflow-x-auto rounded-lg">
         <table className="w-full table-auto">
           <thead className="bg-gray-200 text-left">
