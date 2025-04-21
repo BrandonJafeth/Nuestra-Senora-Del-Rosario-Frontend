@@ -57,10 +57,26 @@ const UserList: React.FC = () => {
 
   const handleOpenAssignRoleModal = (id_User: number, fullName: string) => {
     setSelectedUser({ id_User, fullName });
+    // Add a class to the body to prevent scrolling while modal is open
+    document.body.style.overflow = 'hidden';
   };
 
   const handleOpenStatusModal = (id_User: number, is_Active: boolean) => {
     setUserStatusModal({ id_User, is_Active });
+    // Add a class to the body to prevent scrolling while modal is open
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleCloseAssignRoleModal = () => {
+    setSelectedUser(null);
+    // Restore scrolling when modal is closed
+    document.body.style.overflow = '';
+  };
+
+  const handleCloseStatusModal = () => {
+    setUserStatusModal(null);
+    // Restore scrolling when modal is closed
+    document.body.style.overflow = '';
   };
 
   // 4. Cambio de cantidad de registros por página
@@ -188,7 +204,7 @@ const UserList: React.FC = () => {
       {selectedUser && (
         <RoleAssignment
           isOpen={!!selectedUser}
-          onClose={() => setSelectedUser(null)}
+          onClose={handleCloseAssignRoleModal}
           userId={selectedUser.id_User}
           userName={selectedUser.fullName}
         />
@@ -198,7 +214,7 @@ const UserList: React.FC = () => {
         <UserStatusModal
           userId={userStatusModal.id_User}
           currentStatus={userStatusModal.is_Active}
-          onClose={() => setUserStatusModal(null)}
+          onClose={handleCloseStatusModal}
         />
       )}
     </div>
