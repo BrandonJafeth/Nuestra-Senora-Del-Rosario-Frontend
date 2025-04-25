@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
-import { useResidents } from '../../hooks/useResidents';
+import { useAllResidents } from '../../hooks/useAllResidents';
 import { Resident } from '../../types/ResidentsType';
 import { useRoom } from '../../hooks/useRoom';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
@@ -11,6 +11,7 @@ import Toast from '../common/Toast';
 import { useToast } from '../../hooks/useToast';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
 import ResidentDetailsModal from '../microcomponents/ResidentDetailsModal';
+import SearchInput from '../common/SearchInput';
 
 // Helper para formatear las fechas (YYYY-MM-DD)
 const formatDate = (dateString: string) => {
@@ -21,7 +22,15 @@ function ResidentList() {
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 5; // Número de residentes por página
-  const { data, isLoading, error, refetch } = useResidents(pageNumber, pageSize);
+  
+  // Usamos useAllResidents para obtener todos los residentes
+  const { data: allResidentsResponse, isLoading, error, refetch } = useAllResidents();
+  
+  // Usar useMemo para allResidents para evitar recálculos innecesarios
+  const allResidents = useMemo(() => {
+    return allResidentsResponse?.data || [];
+  }, [allResidentsResponse]);
+  
   const { data: rooms = [] } = useRoom();
   const { data: dependencyLevels = [] } = useDependencyLevel();
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -34,6 +43,37 @@ function ResidentList() {
   const [idDependencyLevel, setIdDependencyLevel] = useState<number | ''>('');
   const [status, setStatus] = useState<string>('Activo');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
+  // Filtrar residentes por término de búsqueda en TODOS los datos
+  const filteredResidents = useMemo(() => {
+    if (!searchTerm.trim()) return allResidents;
+    
+    return allResidents.filter((resident) => {
+      const searchValues = [
+        resident.name_RD || '',
+        resident.lastname1_RD || '',
+        resident.lastname2_RD || '',
+        resident.cedula_RD || ''
+      ].join(' ').toLowerCase();
+      
+      return searchValues.includes(searchTerm.toLowerCase());
+    });
+  }, [allResidents, searchTerm]);
+
+  // Paginar los resultados filtrados para mantener la consistencia de la interfaz
+  const paginatedResidents = useMemo(() => {
+    const startIndex = (pageNumber - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredResidents.slice(startIndex, endIndex);
+  }, [filteredResidents, pageNumber, pageSize]);
+
+  // Calcular el número total de páginas basado en los resultados filtrados
+  const totalPages = Math.ceil(filteredResidents.length / pageSize);
+
+  // Regresar a la primera página cuando cambia el término de búsqueda
+  useEffect(() => {
+    setPageNumber(1);
+  }, [searchTerm]);
 
   const { handleSubmit } = useUpdateResidentDetails(selectedResident?.id_Resident ?? 0);
 
@@ -51,12 +91,6 @@ function ResidentList() {
     setShowModal(false);
   };
 
-  const filteredResidents = Array.isArray(data?.residents) ? data?.residents.filter((resident) =>
-    `${resident.name_RD} ${resident.lastname1_RD} ${resident.cedula_RD}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  ) : [];
-
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -73,7 +107,7 @@ function ResidentList() {
       await handleSubmit(updatedResidentData);
       await refetch();
   
-      const updatedResident = data?.residents.find(
+      const updatedResident = allResidents.find(
         (resident) => resident.id_Resident === selectedResident?.id_Resident
       );
   
@@ -97,9 +131,8 @@ function ResidentList() {
     }
   };
   
-
   const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
+    if (pageNumber < totalPages) {
       setPageNumber((prev) => prev + 1);
     }
   };
@@ -138,73 +171,93 @@ function ResidentList() {
         </div>
       </div>
 
-      <div className="flex justify-center mb-6">
-        <input
-          type="text"
-          placeholder="Buscar por nombre, apellido o cédula"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white focus:ring-blue-400' : 'text-gray-700 focus:ring-blue-600'}`}
-        />
+      <div className="flex justify-center w-full mb-6">
+        <div className="w-full max-w-md">
+          <SearchInput 
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar por nombre, apellido o cédula"
+            isDarkMode={isDarkMode}
+            className="w-full"
+          />
+        </div>
       </div>
 
-      <ReusableTableRequests<Resident>
-        data={filteredResidents}
-        headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
-        isLoading={isLoading}
-        skeletonRows={5}
-        isDarkMode={isDarkMode}
-        pageNumber={pageNumber}
-        totalPages={data?.totalPages}
-        onNextPage={handleNextPage}
-        onPreviousPage={handlePreviousPage}
-        renderRow={(resident) => (
-          <tr
-            key={resident.id_Resident}
-            className={`text-center ${
-              isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
-            }`}
-          >
-            <td className="px-6 py-4">{resident.name_RD}</td>
-            <td className="px-6 py-4">{resident.lastname1_RD}</td>
-            <td className="px-6 py-4">{resident.lastname2_RD}</td>
-            <td className="px-6 py-4">{resident.cedula_RD}</td>
-            <td className="px-6 py-4">
-              <button
-                onClick={() => handleShowDetails(resident)}
-                className={`px-4 py-2 rounded-lg transition duration-200 ${
-                  isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
-                } text-white`}
-              >
-                Ver más detalles
-              </button>
-            </td>
-          </tr>
-        )}
-      />
+      {/* Nota informativa sobre la búsqueda */}
+      <div className="text-center mb-4">
+        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+          Buscando en todos los residentes ({allResidents.length} registros)
+        </p>
+      </div>
 
-<ResidentDetailsModal
-  isOpen={showModal}
-  resident={selectedResident}
-  isEditing={isEditing}
-  isUpdating={isUpdating}
-  idRoom={idRoom}
-  idDependencyLevel={idDependencyLevel}
-  status={status}
-  rooms={rooms}
-  dependencyLevels={dependencyLevels}
-  formatDate={formatDate}
-  onClose={handleCloseDetails}
-  onEdit={handleEditClick}
-  onUpdate={handleUpdateClick}
-  setIdRoom={setIdRoom}
-  setIdDependencyLevel={setIdDependencyLevel}
-  setStatus={setStatus}
-  isDarkMode={isDarkMode}
-/>
-              <Toast message={message} type={type}/>
-            </div>
-         
+      {filteredResidents.length === 0 && searchTerm ? (
+        <div className={`text-center py-8 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>
+          <p className="text-xl">No se encontraron residentes que coincidan con "{searchTerm}"</p>
+          <button 
+            onClick={() => setSearchTerm('')} 
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Limpiar búsqueda
+          </button>
+        </div>
+      ) : (
+        <ReusableTableRequests<Resident>
+          data={paginatedResidents}
+          headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
+          isLoading={isLoading}
+          skeletonRows={5}
+          isDarkMode={isDarkMode}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          onNextPage={handleNextPage}
+          onPreviousPage={handlePreviousPage}
+          renderRow={(resident) => (
+            <tr
+              key={resident.id_Resident}
+              className={`text-center ${
+                isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <td className="px-6 py-4">{resident.name_RD}</td>
+              <td className="px-6 py-4">{resident.lastname1_RD}</td>
+              <td className="px-6 py-4">{resident.lastname2_RD}</td>
+              <td className="px-6 py-4">{resident.cedula_RD}</td>
+              <td className="px-6 py-4">
+                <button
+                  onClick={() => handleShowDetails(resident)}
+                  className={`px-4 py-2 rounded-lg transition duration-200 ${
+                    isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white`}
+                >
+                  Ver más detalles
+                </button>
+              </td>
+            </tr>
+          )}
+        />
+      )}
+
+      <ResidentDetailsModal
+        isOpen={showModal}
+        resident={selectedResident}
+        isEditing={isEditing}
+        isUpdating={isUpdating}
+        idRoom={idRoom}
+        idDependencyLevel={idDependencyLevel}
+        status={status}
+        rooms={rooms}
+        dependencyLevels={dependencyLevels}
+        formatDate={formatDate}
+        onClose={handleCloseDetails}
+        onEdit={handleEditClick}
+        onUpdate={handleUpdateClick}
+        setIdRoom={setIdRoom}
+        setIdDependencyLevel={setIdDependencyLevel}
+        setStatus={setStatus}
+        isDarkMode={isDarkMode}
+      />
+      <Toast message={message} type={type}/>
+    </div>
   );
 }
 
