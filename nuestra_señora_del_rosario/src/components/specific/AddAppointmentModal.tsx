@@ -9,7 +9,6 @@ import ResidentDropdown from '../microcomponents/ResidentDropdown';
 import { useAllResidents } from '../../hooks/useAllResidents';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
-import InlineToast from '../common/InlineToast';
 import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
 import { useThemeDark } from '../../hooks/useThemeDark';
 
@@ -45,7 +44,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
   // Estado para controlar el toast dentro del modal
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const [formData, setFormData] = useState({
     id_Resident: 0,
