@@ -103,7 +103,7 @@ const AppointmentCalendar = () => {
     setShowAddModal(true);
   };
 
-  const handleSaveAppointment = (newAppointment: any) => {
+  const handleSaveAppointment = () => {
     // Actualizamos los datos
     refetch();
     

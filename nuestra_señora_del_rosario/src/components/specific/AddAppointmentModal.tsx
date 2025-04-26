@@ -20,7 +20,7 @@ if (typeof window !== 'undefined') {
 interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (newAppointment: any) => void;
+  onSave: () => void;
   residents: any[];
   healthcareCenters: any[];
   specialties: any[];
@@ -154,8 +154,8 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       // Guardar en el backend
       await appointmentService.createAppointment(appointmentData);
       
-      // Notificar al componente padre (esto mostrará el toast en AppointmentCalendar)
-      onSave(appointmentData);
+      // Notificar al componente padre sin pasar parámetro
+      onSave();
       
       // Cerramos el modal directamente, el toast lo manejará AppointmentCalendar
       onClose();
