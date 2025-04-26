@@ -8,14 +8,14 @@ import { useManagmentNote } from '../../hooks/useManagmentNote';
 const NoteForm: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<NoteRequest>();
   const {createEntity} = useManagmentNote();
-const {showToast, message, type} = useToast();
+  const {showToast, message, type} = useToast();
 
   // Manejador del envío del formulario
   const onSubmit: SubmitHandler<NoteRequest> = (data) => {
     createEntity.mutate(data, {
       onSuccess: () => {
         reset(); // Limpiar formulario tras éxito
-      showToast('Nota creada exitosamente', 'success');
+        showToast('Nota creada exitosamente', 'success');
       },
       onError: (error: any) => {
         console.error('Error al crear la nota:', error);
@@ -25,7 +25,7 @@ const {showToast, message, type} = useToast();
   };
 
   return (
-    <div className="p-8 max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="bg-white dark:bg-gray-800">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
         Agregar nota
       </h2>
@@ -49,22 +49,21 @@ const {showToast, message, type} = useToast();
         </div>
 
         {/* Fecha */}
-<div>
-  <label htmlFor="noteDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-    Fecha:
-  </label>
-  <input
-    type="date"
-    id="noteDate"
-    {...register('noteDate', { required: 'La fecha es obligatoria.' })}
-    min={new Date().toISOString().split('T')[0]} // Bloquea fechas anteriores a hoy
-    className={`mt-1 w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-      errors.noteDate ? 'border-red-500' : ''
-    }`}
-  />
-  {errors.noteDate && <p className="text-red-500 text-sm mt-1">{errors.noteDate.message}</p>}
-</div>
-
+        <div>
+          <label htmlFor="noteDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Fecha:
+          </label>
+          <input
+            type="date"
+            id="noteDate"
+            {...register('noteDate', { required: 'La fecha es obligatoria.' })}
+            min={new Date().toISOString().split('T')[0]} // Bloquea fechas anteriores a hoy
+            className={`mt-1 w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+              errors.noteDate ? 'border-red-500' : ''
+            }`}
+          />
+          {errors.noteDate && <p className="text-red-500 text-sm mt-1">{errors.noteDate.message}</p>}
+        </div>
 
         {/* Descripción */}
         <div>
@@ -86,11 +85,11 @@ const {showToast, message, type} = useToast();
         </div>
 
         {/* Botones */}
-        <div className="flex justify-end space-x-4 mt-6">
+        <div className="flex justify-center mt-6">
           <button
             type="submit"
             disabled={createEntity.isLoading}
-            className={`px-4 py-2 rounded-lg text-white ${
+            className={`w-32 px-4 py-2 rounded-lg text-white ${
               createEntity.isLoading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'

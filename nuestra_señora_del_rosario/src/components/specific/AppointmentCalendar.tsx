@@ -42,6 +42,10 @@ const AppointmentCalendar = () => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notesModalIsOpen, setNotesModalIsOpen] = useState(false);
+  
+  // Estado para mostrar toast de confirmación después de agregar una cita
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (notifications.length > 0) {
@@ -100,8 +104,20 @@ const AppointmentCalendar = () => {
   };
 
   const handleSaveAppointment = () => {
+    // Actualizamos los datos
     refetch();
+    
+    // Mostramos el toast de confirmación fuera del modal
+    setSuccessMessage('Cita creada exitosamente');
+    setShowSuccessToast(true);
+    
+    // Cerramos el modal
     setShowAddModal(false);
+    
+    // Ocultamos el toast después de 3 segundos
+    setTimeout(() => {
+      setShowSuccessToast(false);
+    }, 3000);
   };
 
   const goToNotifications = () => {
@@ -258,6 +274,21 @@ const AppointmentCalendar = () => {
         </button>
         <NoteForm />
       </Modal>
+
+      {/* Toast de confirmación fuera del modal */}
+      <AnimatePresence>
+        {showSuccessToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[1100] flex items-center"
+          >
+            <span className="text-lg font-medium">{successMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
