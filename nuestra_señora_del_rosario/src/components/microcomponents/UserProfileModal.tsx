@@ -7,6 +7,11 @@ import ConfirmationModal from "./ConfirmationModal";
 import Toast from "../common/Toast";
 import { useThemeDark } from "../../hooks/useThemeDark";
 
+// Set the app element for accessibility
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('#root');
+}
+
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -64,10 +69,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className={`p-6 rounded-xl shadow-xl w-[500px] mx-auto mt-20 ${
+      className={`p-6 rounded-xl shadow-xl w-[500px] mx-auto relative z-50 ${
         isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"
       }`}
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center overflow-y-auto z-[100]"
+      contentLabel="Actualizar perfil"
     >
       <h2 className="text-2xl font-bold text-center mb-4">Actualizar perfil</h2>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useHealthcareCenters } from '../../hooks/useHealthcareCenters';
 import { useSpeciality } from '../../hooks/useSpeciality';
@@ -9,7 +9,14 @@ import ResidentDropdown from '../microcomponents/ResidentDropdown';
 import { useAllResidents } from '../../hooks/useAllResidents';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
+import InlineToast from '../common/InlineToast';
 import { useEmployeesByProfession } from '../../hooks/useEmployeeByProfession';
+import { useThemeDark } from '../../hooks/useThemeDark';
+
+// Asegurar que Modal esté correctamente configurado para el DOM
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('#root');
+}
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -30,11 +37,15 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const { data: healthcareCenters, isLoading: loadingHC } = useHealthcareCenters();
   const { data: specialties, isLoading: loadingSpecialties } = useSpeciality();
   const { data: employees, isLoading: loadingEmployees } = useEmployeesByProfession([5]);
+  const { isDarkMode } = useThemeDark();
   
   const { showToast, message, type } = useToast();
   
   const [loading, setLoading] = useState(false);
   const [healthcareCenterModalOpen, setHealthcareCenterModalOpen] = useState(false);
+  // Estado para controlar el toast dentro del modal
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const [formData, setFormData] = useState({
     id_Resident: 0,
@@ -51,6 +62,46 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     companionName: '',
     statusName: ''
   });
+
+  // Resetear el estado del formulario y loading cuando el modal cambie su estado
+  useEffect(() => {
+    if (!isOpen) {
+      // Resetear el estado cuando el modal se cierra
+      setLoading(false);
+      setFormData({
+        id_Resident: 0,
+        date: '',
+        time: '',
+        id_HC: 0,
+        id_Specialty: 0,
+        id_Companion: '',
+        notes: undefined,
+        residentFullName: '',
+        residentCedula: '',
+        specialtyName: '',
+        healthcareCenterName: '',
+        companionName: '',
+        statusName: ''
+      });
+      setShowSuccessToast(false);
+    }
+  }, [isOpen]);
+
+  // Controlar el scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen && !healthcareCenterModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else if (!isOpen && !healthcareCenterModalOpen) {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      // Solo restaurar el scroll si no hay ningún modal abierto
+      if (!healthcareCenterModalOpen) {
+        document.body.style.overflow = '';
+      }
+    };
+  }, [isOpen, healthcareCenterModalOpen]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -105,20 +156,29 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       // Guardar en el backend
       await appointmentService.createAppointment(appointmentData);
       
-      // Notificar al componente padre y mostrar toast
+      // Notificar al componente padre (esto mostrará el toast en AppointmentCalendar)
       onSave(appointmentData);
-      showToast('Cita creada exitosamente', 'success');
       
-      setTimeout(() => onClose(), 3000);
+      // Cerramos el modal directamente, el toast lo manejará AppointmentCalendar
+      onClose();
     } catch (error) {
-      showToast('Error al crear la cita.', 'error');
-    } finally {
+      console.error('Error al crear la cita:', error);
+      showToast('❌ Error al crear la cita.', 'error');
       setLoading(false);
     }
   };
 
-  const openHealthcareCenterModal = () => setHealthcareCenterModalOpen(true);
-  const closeHealthcareCenterModal = () => setHealthcareCenterModalOpen(false);
+  const openHealthcareCenterModal = () => {
+    setHealthcareCenterModalOpen(true);
+  };
+  
+  const closeHealthcareCenterModal = () => {
+    setHealthcareCenterModalOpen(false);
+    // Asegurar que el scroll permanezca bloqueado si el modal principal sigue abierto
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+  };
 
   if (loadingResidents || loadingHC || loadingSpecialties || loadingEmployees) {
     return <LoadingSpinner />;
@@ -131,9 +191,33 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         onRequestClose={onClose}
         contentLabel="Agregar Cita"
         className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full mx-auto"
-        overlayClassName="custom-modal-overlay"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 900
+          },
+          content: {
+            position: 'relative',
+            top: 'auto',
+            left: 'auto',
+            right: 'auto',
+            bottom: 'auto',
+            border: 'none',
+            background: isDarkMode ? '#1F2937' : '#FFFFFF',
+            padding: '20px',
+            borderRadius: '8px'
+          }
+        }}
       >
-        <div className="flex justify-between items-center mb-4">
+        {/* Mensaje de éxito destacado cuando se agrega una cita exitosamente */}
+        {showSuccessToast && (
+          <div className="absolute top-0 left-0 right-0 p-4 bg-green-500 text-white font-bold text-center rounded-t-lg">
+            ✅ Cita creada exitosamente
+          </div>
+        )}
+        
+        <div className="flex justify-between items-center mb-4 mt-6">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
             Agregar cita
           </h2>

@@ -183,58 +183,56 @@ function ResidentList() {
         </div>
       </div>
 
-      {/* Nota informativa sobre la búsqueda */}
-      <div className="text-center mb-4">
-        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-          Buscando en todos los residentes ({allResidents.length} registros)
-        </p>
-      </div>
+      <ReusableTableRequests<Resident>
+        data={paginatedResidents}
+        headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
+        isLoading={isLoading}
+        skeletonRows={5}
+        isDarkMode={isDarkMode}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPreviousPage={handlePreviousPage}
+        renderRow={(resident) => (
+          <tr
+            key={resident.id_Resident}
+            className={`text-center ${
+              isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            <td className="px-6 py-4">{resident.name_RD}</td>
+            <td className="px-6 py-4">{resident.lastname1_RD}</td>
+            <td className="px-6 py-4">{resident.lastname2_RD}</td>
+            <td className="px-6 py-4">{resident.cedula_RD}</td>
+            <td className="px-6 py-4">
+              <button
+                onClick={() => handleShowDetails(resident)}
+                className={`px-4 py-2 rounded-lg transition duration-200 ${
+                  isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
+              >
+                Ver detalles
+              </button>
+            </td>
+          </tr>
+        )}
+      />
 
-      {filteredResidents.length === 0 && searchTerm ? (
-        <div className={`text-center py-8 ${isDarkMode ? 'text-white' : 'text-gray-600'}`}>
-          <p className="text-xl">No se encontraron residentes que coincidan con "{searchTerm}"</p>
+      {/* Mensaje y botón para limpiar búsqueda cuando no hay resultados */}
+      {filteredResidents.length === 0 && searchTerm && (
+        <div className="text-center mt-4">
+          <p className={`mb-3 text-lg ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+            No se encontraron residentes que coincidan con "<span className="font-semibold">{searchTerm}</span>".
+          </p>
           <button 
             onClick={() => setSearchTerm('')} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className={`px-4 py-2 rounded-lg transition duration-200 ${
+              isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
           >
             Limpiar búsqueda
           </button>
         </div>
-      ) : (
-        <ReusableTableRequests<Resident>
-          data={paginatedResidents}
-          headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
-          isLoading={isLoading}
-          skeletonRows={5}
-          isDarkMode={isDarkMode}
-          pageNumber={pageNumber}
-          totalPages={totalPages}
-          onNextPage={handleNextPage}
-          onPreviousPage={handlePreviousPage}
-          renderRow={(resident) => (
-            <tr
-              key={resident.id_Resident}
-              className={`text-center ${
-                isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              <td className="px-6 py-4">{resident.name_RD}</td>
-              <td className="px-6 py-4">{resident.lastname1_RD}</td>
-              <td className="px-6 py-4">{resident.lastname2_RD}</td>
-              <td className="px-6 py-4">{resident.cedula_RD}</td>
-              <td className="px-6 py-4">
-                <button
-                  onClick={() => handleShowDetails(resident)}
-                  className={`px-4 py-2 rounded-lg transition duration-200 ${
-                    isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
-                  } text-white`}
-                >
-                  Ver más detalles
-                </button>
-              </td>
-            </tr>
-          )}
-        />
       )}
 
       <ResidentDetailsModal

@@ -1,5 +1,5 @@
 // FILE: src/components/ProductRequestModal.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { InventoryMovement } from "../../types/InventoryMovement";
 import { useThemeDark } from "../../hooks/useThemeDark";
@@ -7,6 +7,11 @@ import { useToast } from "../../hooks/useToast";
 import Toast from "../common/Toast";
 import { useCreateInventoryMovement } from "../../hooks/useInventoryMovement";
 import ProductDropdownByCategory from "../microcomponents/ProductDropdownByCategory";
+
+// Asegurarse que Modal esté correctamente configurado para el DOM
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('#root');
+}
 
 // Solo para la UI, extendemos InventoryMovement con un campo productName
 interface InventoryMovementWithName extends InventoryMovement {
@@ -61,6 +66,21 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
     setProductsToEgress(productsToEgress.filter((_, i) => i !== index));
   };
 
+  // Resetear el formulario cuando se cierra el modal
+  const resetForm = () => {
+    setSelectedProductID(null);
+    setSelectedProductName("");
+    setQuantity(1);
+    setProductsToEgress([]);
+  };
+
+  // Efecto para limpiar el formulario cuando se cierra el modal
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
   // Envía el formulario
   const handleSubmit = () => {
     if (productsToEgress.length === 0) {
@@ -78,11 +98,12 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
 
     createInventoryMovement.mutate(formattedMovements, {
       onSuccess: () => {
+        // Cerrar el modal inmediatamente
+        onRequestClose();
+        // Limpiar el formulario
+        resetForm();
+        // Mostrar el toast después de cerrar el modal
         showToast("Egreso registrado exitosamente.", "success");
-        setTimeout(() => {
-          onRequestClose();
-          setProductsToEgress([]);
-        }, 2000);
       },
       onError: (error) => {
         console.error("Error en la solicitud:", error);
@@ -101,6 +122,23 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
         }`}
         overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40"
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000
+          },
+          content: {
+            position: 'relative',
+            top: 'auto',
+            left: 'auto',
+            right: 'auto',
+            bottom: 'auto',
+            border: 'none',
+            background: isDarkMode ? '#1F2937' : '#FFFFFF',
+            padding: '20px',
+            borderRadius: '8px'
+          }
+        }}
       >
         <h2 className="text-2xl font-bold mb-4 text-center">
           Registrar Egreso de Productos
@@ -157,14 +195,14 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
               <h3 className="text-lg font-semibold mb-2">Productos a egresar:</h3>
               <table className="w-full border-collapse border border-gray-300">
                 <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-2 py-1">
+                  <tr className={`${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}>
+                    <th className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                       Producto
                     </th>
-                    <th className="border border-gray-300 px-2 py-1">
+                    <th className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                       Cantidad
                     </th>
-                    <th className="border border-gray-300 px-2 py-1">
+                    <th className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                       Acción
                     </th>
                   </tr>
@@ -172,16 +210,17 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
                 <tbody>
                   {productsToEgress.map((prod, index) => (
                     <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-2 py-1">
+                      <td className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                         {prod.productName}
                       </td>
-                      <td className="border border-gray-300 px-2 py-1">
+                      <td className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                         {prod.quantity}
                       </td>
-                      <td className="border border-gray-300 px-2 py-1">
+                      <td className={`border ${isDarkMode ? "border-gray-600" : "border-gray-300"} px-2 py-1`}>
                         <button
                           onClick={() => handleRemoveProduct(index)}
-                          className="text-white px-2 py-1 rounded-md hover:bg-red-100 transition"
+                          className="text-red-500 px-2 py-1 rounded-md hover:bg-red-100 hover:text-red-700 transition"
+                          aria-label="Eliminar producto"
                         >
                           ❌
                         </button>
@@ -193,8 +232,15 @@ const ProductRequestModal: React.FC<ProductRequestModalProps> = ({
             </div>
           )}
 
-          {/* Botón para confirmar el egreso */}
-          <div className="flex justify-center mt-4">
+          {/* Botones para confirmar o cancelar */}
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              onClick={onRequestClose}
+              className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition duration-200"
+            >
+              Cancelar
+            </button>
             <button
               type="button"
               onClick={handleSubmit}

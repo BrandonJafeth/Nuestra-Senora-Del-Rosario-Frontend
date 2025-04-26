@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useCreateHealthcareCenter } from '../../hooks/useHealthcareCenter';
-import { useThemeDark } from '../../hooks/useThemeDark'; // Importar el hook de tema
+import { useThemeDark } from '../../hooks/useThemeDark';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
+
+// Asegurar que Modal esté correctamente configurado para el DOM
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('#root');
+}
 
 interface AddHealthcareCenterModalProps {
   isOpen: boolean;
@@ -15,14 +20,26 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { isDarkMode } = useThemeDark(); // Usar el hook de tema oscuro
+  const { isDarkMode } = useThemeDark();
 
   const [name_HC, setName_HC] = useState('');
   const [location_HC, setLocation_HC] = useState('');
-  const [type_HC, setType_HC] = useState('Public'); // Valor inicial: 'Public'
+  const [type_HC, setType_HC] = useState('Público'); // Valor inicial: 'Público'
   const {showToast, message, type} = useToast();
 
   const { mutate, isLoading } = useCreateHealthcareCenter();
+
+  // Asegurar que el body no tenga scroll cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +77,24 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
       onRequestClose={onClose}
       contentLabel="Agregar Centro de Atención"
       className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full mx-auto z-50"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100]"
+      style={{
+        overlay: {
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          zIndex: 1000
+        },
+        content: {
+          position: 'relative',
+          top: 'auto',
+          left: 'auto',
+          right: 'auto',
+          bottom: 'auto',
+          border: 'none',
+          background: isDarkMode ? '#1F2937' : '#FFFFFF',
+          padding: '20px',
+          borderRadius: '8px'
+        }
+      }}
     >
       <h2 className="text-2xl font-semibold mb-4 text-center text-gray-900 dark:text-white">
         Agregar Centro de Atención
