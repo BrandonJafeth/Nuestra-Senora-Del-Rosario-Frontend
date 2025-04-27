@@ -95,7 +95,7 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
     updateAppointment(
       { id: formData.id_Appointment, data: dataToSend },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           // Crear un objeto con la cita actualizada para la UI
           const updatedAppointment = {
             ...appointment,
