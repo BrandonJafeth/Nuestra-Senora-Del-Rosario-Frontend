@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface SearchInputProps {
   value: string;
@@ -15,9 +15,21 @@ const SearchInput: React.FC<SearchInputProps> = ({
   isDarkMode = false,
   className = '',
 }) => {
+  // Usar una referencia para mantener el foco
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Este efecto se asegura de que el input mantenga el foco cuando está siendo utilizado
+  useEffect(() => {
+    // Solo reenfocamos si el input ya tenía el foco y lo perdió
+    if (document.activeElement !== inputRef.current && inputRef.current === document.activeElement?.parentElement?.querySelector('input')) {
+      inputRef.current?.focus();
+    }
+  });
+
   return (
     <div className="w-full flex items-center">
       <input
+        ref={inputRef}
         type="text"
         placeholder={placeholder}
         value={value}
@@ -50,4 +62,4 @@ const SearchInput: React.FC<SearchInputProps> = ({
   );
 };
 
-export default SearchInput;
+export default React.memo(SearchInput); // Usar React.memo para prevenir re-renderizados innecesarios

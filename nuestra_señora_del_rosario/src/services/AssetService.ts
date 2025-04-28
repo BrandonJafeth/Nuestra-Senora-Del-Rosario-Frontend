@@ -4,12 +4,25 @@ import Cookies from "js-cookie";
 import { AssetType } from "../types/AssetType";
 import ApiService from "./GenericService/ApiService";
 
+// Interfaz para el filtro de activos
+export interface AssetFilterDTO {
+  assetName?: string | null;
+}
+
+// Interfaz para la respuesta paginada de filtrado
+export interface FilterAssetsResponse {
+  Data: AssetType[];
+  TotalRecords: number;
+  PageNumber: number;
+  PageSize: number;
+}
+
 class AssetService extends ApiService<AssetType> {
   constructor() {
     super();
   }
 
-  // GET /api/Asset?paged?pageNumber=...&pageSize=...
+  // GET /api/Asset/paged?pageNumber=...&pageSize=...
   public getAllAssetsPaged(pageNumber: number, pageSize: number) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
@@ -20,7 +33,7 @@ class AssetService extends ApiService<AssetType> {
       totalRecords: number;
       pageNumber: number;
       pageSize: number;
-    }>(`/Asset?paged?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+    }>(`/Asset/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
       Authorization: `Bearer ${token}`,
     });
   }
@@ -90,7 +103,6 @@ class AssetService extends ApiService<AssetType> {
     });
   }
 
-
   public getAssetsByCategoryPaged(categoryId: number, pageNumber: number, pageSize: number) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
@@ -101,6 +113,26 @@ class AssetService extends ApiService<AssetType> {
       pageNumber: number;
       pageSize: number;
     }>(`/Asset/byCategoryPaged?categoryId=${categoryId}&pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  // GET /api/Asset/filter
+  public filterAssets(
+    filter: AssetFilterDTO,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Construir query params
+    const params = new URLSearchParams();
+    if (filter.assetName) params.append("assetName", filter.assetName);
+    params.append("pageNumber", pageNumber.toString());
+    params.append("pageSize", pageSize.toString());
+
+    return this.getWithHeaders<FilterAssetsResponse>(`/Asset/filter?${params.toString()}`, {
       Authorization: `Bearer ${token}`,
     });
   }

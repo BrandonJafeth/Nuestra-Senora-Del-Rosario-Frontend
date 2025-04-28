@@ -9,9 +9,14 @@ import { useCreateAsset } from "../../hooks/useCreaateAsset";
 interface CreateAssetModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void; // Nueva prop para manejar el evento de éxito
 }
 
-const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) => {
+const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ 
+  isOpen, 
+  onClose,
+  onSuccess 
+}) => {
   const { isDarkMode } = useThemeDark();
   const { mutate: createAsset, isLoading: isCreating } = useCreateAsset();
   const { data: lawOptions = [] } = useLaw();
@@ -71,7 +76,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
 
     createAsset(newAsset, {
       onSuccess: () => {
-        onClose();
+        // Limpiar el formulario
         setNewAsset({
           idAsset: 0,
           assetName: "",
@@ -89,7 +94,19 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({ isOpen, onClose }) 
           brandName: "",
           lawName: ""
         });
+        
+        // Cerrar el modal
+        onClose();
+        
+        // Llamar al callback de éxito si existe
+        if (onSuccess) {
+          onSuccess();
+        }
       },
+      onError: (error) => {
+        console.error("Error al crear el activo:", error);
+        alert("Ocurrió un error al crear el activo. Por favor intenta nuevamente.");
+      }
     });
   };
 
