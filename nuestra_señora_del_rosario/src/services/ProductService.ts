@@ -75,6 +75,16 @@ class ProductService extends ApiService<Product> {
       Authorization: `Bearer ${token}`,
     });
   }
+
+  // GET /api/Product/filter?name=...&pageNumber=...&pageSize=...
+  public filterProductsByName(name: string, pageNumber: number, pageSize: number) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    const url = `/Product/filter?name=${encodeURIComponent(name || "")}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    return this.getAllPagesWithHeaders(url, pageNumber, pageSize, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const productService = new ProductService();
