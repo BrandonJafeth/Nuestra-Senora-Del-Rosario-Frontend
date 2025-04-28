@@ -3,6 +3,15 @@ import assetService, { AssetFilterDTO } from '../services/AssetService';
 import { useToast } from '../hooks/useToast';
 import { AssetType } from '../types/AssetType';
 
+// Define una interfaz para la respuesta del API que usa nombres con mayúsculas
+interface FilterAssetsResponse {
+  Data?: AssetType[];
+  TotalRecords?: number;
+  PageNumber?: number;
+  PageSize?: number;
+  // Campos adicionales si existieran
+}
+
 interface UseFilterAssetsReturn {
   assets: AssetType[];
   totalRecords: number;
@@ -34,54 +43,57 @@ export const useFilterAssets = (): UseFilterAssetsReturn => {
         if (response && response.data) {
           console.log('Respuesta filtrado:', response.data);
           
-          // Si la respuesta data contiene un array de data, estamos en el primer nivel
-          if (Array.isArray(response.data.data)) {
-            console.log('Estructura con data.data');
-            setAssets(response.data.data);
-            setTotalRecords(response.data.totalRecords || 0);
-            setPageNumber(response.data.pageNumber || page);
-            setPageSize(response.data.pageSize || size);
+          // Adaptamos el código para manejar tanto respuestas con propiedad 'data' como 'Data'
+          const responseData = response.data as FilterAssetsResponse;
+          
+          // Si tenemos Data (con mayúscula inicial)
+          if (responseData.Data && Array.isArray(responseData.Data)) {
+            console.log('Estructura con Data (mayúscula)');
+            setAssets(responseData.Data);
+            setTotalRecords(responseData.TotalRecords || 0);
+            setPageNumber(responseData.PageNumber || page);
+            setPageSize(responseData.PageSize || size);
           }
-          // Si la respuesta data contiene un array de Data, estamos en el primer nivel
-          else if (Array.isArray(response.data.Data)) {
-            console.log('Estructura con data.Data');
-            setAssets(response.data.Data);
-            setTotalRecords(response.data.TotalRecords || 0);
-            setPageNumber(response.data.PageNumber || page);
-            setPageSize(response.data.PageSize || size);
-          }
-          // Si la respuesta data es directamente un array, estamos en el segundo nivel
-          else if (Array.isArray(response.data)) {
-            console.log('La data es directamente un array:', response.data);
-            setAssets(response.data);
-            setTotalRecords(response.data.length);
+          // Si es un array directamente
+          else if (Array.isArray(responseData)) {
+            console.log('La data es directamente un array:', responseData);
+            setAssets(responseData);
+            setTotalRecords(responseData.length);
             setPageNumber(page);
             setPageSize(size);
           }
+          // Si es otro tipo de estructura, intentamos buscar campos relevantes
           else {
-            // Si la estructura es completamente diferente a las anteriores
-            console.log('Estructura alternativa, revisando campos individuales');
+            console.log('Estructura alternativa, intentando adaptarse');
             
-            // Check si la respuesta tiene la estructura correcta
-            if (response.data && response.data.data && Array.isArray(response.data.data)) {
-              console.log('Encontrado en data.data');
-              setAssets(response.data.data);
-              setTotalRecords(response.data.totalRecords || 0);
-            } else if (response.data && response.data.Data && Array.isArray(response.data.Data)) {
-              console.log('Encontrado en data.Data');
-              setAssets(response.data.Data);
-              setTotalRecords(response.data.TotalRecords || 0);
+            // Intentamos buscar cualquier array en la respuesta que podría contener los activos
+            if (Array.isArray(responseData)) {
+              setAssets(responseData);
+              setTotalRecords(responseData.length);
             } else {
-              console.log('Intentando extraer directamente de la respuesta');
-              // Buscar cualquier array en la respuesta
-              for (const key in response.data) {
-                if (Array.isArray(response.data[key])) {
-                  console.log('Encontrado array en:', key);
-                  setAssets(response.data[key]);
+              // Buscar cualquier propiedad que pueda ser un array de activos
+              for (const key in responseData) {
+                if (Array.isArray((responseData as any)[key])) {
+                  console.log('Encontrado array en propiedad:', key);
+                  setAssets((responseData as any)[key]);
+                  
+                  // Intentar encontrar el total de registros
+                  if ((responseData as any).TotalRecords) {
+                    setTotalRecords((responseData as any).TotalRecords);
+                  } else if ((responseData as any).totalRecords) {
+                    setTotalRecords((responseData as any).totalRecords);
+                  } else {
+                    setTotalRecords((responseData as any)[key].length);
+                  }
+                  
                   break;
                 }
               }
             }
+            
+            // Configurar la paginación
+            setPageNumber(page);
+            setPageSize(size);
           }
           
           console.log('Assets extraídos:', assets);
@@ -103,7 +115,7 @@ export const useFilterAssets = (): UseFilterAssetsReturn => {
         setLoading(false);
       }
     },
-    [assets, showToast]
+    [showToast] // Removido 'assets' de las dependencias para evitar loops
   );
 
   return {
