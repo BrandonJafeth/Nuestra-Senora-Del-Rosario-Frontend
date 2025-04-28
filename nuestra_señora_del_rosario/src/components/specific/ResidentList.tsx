@@ -242,7 +242,7 @@ function ResidentList() {
   }
 
   if (error && !residentsToDisplay.length) {
-    return <div>Error al cargar los residentes: {error?.message || 'Error desconocido'}</div>;
+    return <div>Error al cargar los residentes: {typeof error === 'object' && error ? (error as any).message || 'Error desconocido' : 'Error desconocido'}</div>;
   }
 
   return (

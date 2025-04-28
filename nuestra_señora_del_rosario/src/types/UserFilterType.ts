@@ -6,6 +6,7 @@ export interface UserFilter {
   apellido1?: string;
   apellido2?: string;
   cedula?: string;
+  tipoUsuario?: string; // Added this field to fix the type error
   pageNumber?: number;
   pageSize?: number;
 }

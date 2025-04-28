@@ -173,7 +173,7 @@ function ResidentTableMedical() {
   }
 
   if (error && !residentsToDisplay.length) {
-    return <div>Error al cargar los residentes: {error.message || 'Error desconocido'}</div>;
+    return <div>Error al cargar los residentes: {typeof error === 'string' ? error : ((error as any)?.message || 'Error desconocido')}</div>;
   }
 
   // 🔹 Función para redirigir a la pantalla de detalles del residente

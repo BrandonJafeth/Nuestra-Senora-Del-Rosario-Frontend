@@ -9,12 +9,13 @@ class UserService extends ApiService<UserData> {
     return this.create('/users/login', data);
   }
 
-  // Método para filtrar usuarios por nombre, apellidos y cédula
+  // Método para filtrar usuarios por nombre, apellidos, cédula y tipo de usuario
   public filterUsers(
     nombre?: string, 
     apellido1?: string, 
     apellido2?: string, 
-    cedula?: string, 
+    cedula?: string,
+    tipoUsuario?: string,
     pageNumber: number = 1, 
     pageSize: number = 10
   ) {
@@ -27,6 +28,7 @@ class UserService extends ApiService<UserData> {
     if (apellido1) url += `apellido1=${encodeURIComponent(apellido1)}&`;
     if (apellido2) url += `apellido2=${encodeURIComponent(apellido2)}&`;
     if (cedula) url += `cedula=${encodeURIComponent(cedula)}&`;
+    if (tipoUsuario) url += `tipoUsuario=${encodeURIComponent(tipoUsuario)}&`;
     url += `pageNumber=${pageNumber}&pageSize=${pageSize}`;
     
     console.log('URL de filtrado de usuarios:', url);
