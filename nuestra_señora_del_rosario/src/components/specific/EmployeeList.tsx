@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployee } from '../../hooks/useEmployee';
+import { useFilterEmployees } from '../../hooks/useFilterEmployees';
 import { useThemeDark } from '../../hooks/useThemeDark';
+import SearchInput from '../common/SearchInput';
 import 'react-loading-skeleton/dist/skeleton.css';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
+import { EmployeeFilterDTO } from '../../services/EmployeeService';
 
 const EmployeeList: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -11,10 +14,80 @@ const EmployeeList: React.FC = () => {
 
   // Estado para el filtro local
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFiltering, setIsFiltering] = useState(false);
 
+  // Hook para obtener todos los empleados paginados
   const { data, isLoading, error } = useEmployee(pageNumber, pageSize);
+  
+  // Hook para filtrar empleados
+  const { 
+    employees: filteredEmployees, 
+    totalPages: filteredTotalPages, 
+    loading: filterLoading,
+    filterEmployees
+  } = useFilterEmployees();
+
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
+
+  // Datos a mostrar
+  const displayData = useMemo(() => {
+    if (isFiltering) {
+      return filteredEmployees;
+    }
+    return data?.employees || [];
+  }, [isFiltering, filteredEmployees, data]);
+
+  // Total de páginas
+  const totalPagesCount = useMemo(() => {
+    if (isFiltering) {
+      return filteredTotalPages;
+    }
+    return data?.totalPages || 1;
+  }, [isFiltering, filteredTotalPages, data]);
+
+  // Función para crear el filtro basado en el término de búsqueda
+  const createFilter = (term: string): EmployeeFilterDTO => {
+    const filter: EmployeeFilterDTO = {};
+    
+    // Comprobar si es un número - será considerado como DNI
+    if (/^\d+$/.test(term.trim())) {
+      console.log('Filtrando por DNI:', parseInt(term.trim()));
+      filter.Dni = parseInt(term.trim(), 10);
+    } else {
+      // Si no es solo números, asumimos que es nombre
+      console.log('Filtrando por nombre:', term.trim());
+      filter.First_Name = term.trim();
+    }
+    
+    return filter;
+  };
+
+  // Efecto para manejar la búsqueda con debounce
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm.trim()) {
+        // Si hay texto de búsqueda, activamos el filtrado
+        setIsFiltering(true);
+        const filter = createFilter(searchTerm);
+        filterEmployees(filter, pageNumber, pageSize);
+      } else {
+        // Si no hay texto, desactivamos el filtrado
+        setIsFiltering(false);
+      }
+    }, 500); // Debounce de 500ms
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
+  // Efecto separado para la paginación cuando está en modo filtrado
+  useEffect(() => {
+    if (isFiltering && searchTerm.trim()) {
+      const filter = createFilter(searchTerm);
+      filterEmployees(filter, pageNumber, pageSize);
+    }
+    // Solo se ejecuta cuando cambia la página y estamos en modo filtrado
+  }, [pageNumber, pageSize, isFiltering]);
 
   if (error) {
     return <p>Error al cargar los empleados: {`${error.message}`}</p>;
@@ -33,7 +106,7 @@ const EmployeeList: React.FC = () => {
 
   // Manejadores de paginación
   const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
+    if (pageNumber < totalPagesCount) {
       setPageNumber((prev) => prev + 1);
     }
   };
@@ -49,14 +122,8 @@ const EmployeeList: React.FC = () => {
     setPageNumber(1);
   };
 
-  // Filtrar empleados de la página actual (data?.employees) por nombre, apellido o cédula
-  const filteredEmployees = React.useMemo(() => {
-    if (!data?.employees) return [];
-    return data.employees.filter((emp: any) => {
-      const fullName = `${emp.first_Name} ${emp.last_Name1} ${emp.dni}`.toLowerCase();
-      return fullName.includes(searchTerm.toLowerCase());
-    });
-  }, [data, searchTerm]);
+  // Determinar si se está cargando
+  const loading = isFiltering ? filterLoading : isLoading;
 
   return (
     <div
@@ -100,30 +167,28 @@ const EmployeeList: React.FC = () => {
         </div>
       </div>
 
-      {/* Input de búsqueda */}
-      <div className="mb-4 flex justify-center">
-        <input
-          type="text"
-          placeholder="Buscar por nombre, apellido o cédula"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-            isDarkMode
-              ? 'bg-gray-700 text-white focus:ring-blue-400'
-              : 'bg-white text-gray-700 focus:ring-blue-600'
-          }`}
-        />
+      {/* Input de búsqueda usando el componente SearchInput - Centrado */}
+      <div className="flex justify-center w-full mb-6">
+        <div className="w-full max-w-md">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar por nombre o cédula"
+            isDarkMode={isDarkMode}
+            className="w-full"
+          />
+        </div>
       </div>
 
       {/* Tabla reutilizable */}
       <ReusableTableRequests<any>
-        data={filteredEmployees} // Pasamos la lista filtrada
+        data={displayData}
         headers={['Nombre', 'Cédula', 'Correo', 'Profesión', 'Teléfono', 'Acción']}
-        isLoading={isLoading}
+        isLoading={loading}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
-        totalPages={data?.totalPages || 1}
+        totalPages={totalPagesCount}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
         renderRow={(employee) => (
@@ -153,6 +218,23 @@ const EmployeeList: React.FC = () => {
           </tr>
         )}
       />
+
+      {/* Mensaje cuando no hay resultados */}
+      {displayData.length === 0 && searchTerm && (
+        <div className="text-center mt-4">
+          <p className={`mb-3 text-lg ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+            No se encontraron empleados que coincidan con "<span className="font-semibold">{searchTerm}</span>".
+          </p>
+          <button 
+            onClick={() => setSearchTerm('')} 
+            className={`px-4 py-2 rounded-lg transition duration-200 ${
+              isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
+          >
+            Limpiar búsqueda
+          </button>
+        </div>
+      )}
     </div>
   );
 };
