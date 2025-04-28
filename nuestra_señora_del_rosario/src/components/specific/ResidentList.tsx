@@ -2,7 +2,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import { useAllResidents } from '../../hooks/useAllResidents';
+import { useResidents } from '../../hooks/useResidents';
+import useFilterResidents from '../../hooks/useFilterResidents';
 import { Resident } from '../../types/ResidentsType';
+import { ResidentFilter } from '../../types/ResidentFilterType';
 import { useRoom } from '../../hooks/useRoom';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
 import { useUpdateResidentDetails } from '../../hooks/useUpdateResidentDetails';
@@ -23,9 +26,36 @@ function ResidentList() {
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 5; // Número de residentes por página
   
-  // Usamos useAllResidents para obtener todos los residentes
-  const { data: allResidentsResponse, isLoading, error, refetch } = useAllResidents();
+  // Estado para determinar si estamos en modo filtrado o no
+  const [isFiltering, setIsFiltering] = useState(false);
   
+  // Para el input de búsqueda
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // Hook para obtener los residentes paginados (sin filtro)
+  const { 
+    data: paginatedResidentsData, 
+    isLoading: isLoadingPaginated, 
+    error: errorPaginated 
+  } = useResidents(pageNumber, pageSize);
+  
+  // Usamos useAllResidents solo para acciones que necesitan la lista completa
+  const { data: allResidentsResponse, isLoading: isLoadingAll, error: errorAll, refetch } = useAllResidents();
+  
+  // Hook para filtrar residentes
+  const { 
+    filteredResidents, 
+    loading: isLoadingFiltered, 
+    error: errorFiltered, 
+    filterResidents 
+  } = useFilterResidents();
+  
+  // Estado para los inputs de filtrado
+  const [filters, setFilters] = useState<ResidentFilter>({
+    pageNumber: 1,
+    pageSize: pageSize
+  });
+
   // Usar useMemo para allResidents para evitar recálculos innecesarios
   const allResidents = useMemo(() => {
     return allResidentsResponse?.data || [];
@@ -33,7 +63,6 @@ function ResidentList() {
   
   const { data: rooms = [] } = useRoom();
   const { data: dependencyLevels = [] } = useDependencyLevel();
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -44,36 +73,97 @@ function ResidentList() {
   const [status, setStatus] = useState<string>('Activo');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  // Filtrar residentes por término de búsqueda en TODOS los datos
-  const filteredResidents = useMemo(() => {
-    if (!searchTerm.trim()) return allResidents;
+  // Determinar qué residentes mostrar basado en si estamos en modo filtrado o paginado
+  const residentsToDisplay = useMemo(() => {
+    if (isFiltering && filteredResidents) {
+      return filteredResidents.residents;
+    }
     
-    return allResidents.filter((resident) => {
-      const searchValues = [
-        resident.name_RD || '',
-        resident.lastname1_RD || '',
-        resident.lastname2_RD || '',
-        resident.cedula_RD || ''
-      ].join(' ').toLowerCase();
-      
-      return searchValues.includes(searchTerm.toLowerCase());
-    });
-  }, [allResidents, searchTerm]);
+    if (paginatedResidentsData) {
+      return paginatedResidentsData.residents;
+    }
+    
+    return [];
+  }, [isFiltering, filteredResidents, paginatedResidentsData]);
 
-  // Paginar los resultados filtrados para mantener la consistencia de la interfaz
-  const paginatedResidents = useMemo(() => {
-    const startIndex = (pageNumber - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredResidents.slice(startIndex, endIndex);
-  }, [filteredResidents, pageNumber, pageSize]);
+  // Determinar el número total de páginas
+  const totalPages = useMemo(() => {
+    if (isFiltering && filteredResidents) {
+      return filteredResidents.totalPages;
+    }
+    
+    if (paginatedResidentsData) {
+      return paginatedResidentsData.totalPages;
+    }
+    
+    return 1;
+  }, [isFiltering, filteredResidents, paginatedResidentsData]);
 
-  // Calcular el número total de páginas basado en los resultados filtrados
-  const totalPages = Math.ceil(filteredResidents.length / pageSize);
-
-  // Regresar a la primera página cuando cambia el término de búsqueda
+  // Efecto para aplicar cambios de búsqueda con un pequeño debounce
   useEffect(() => {
-    setPageNumber(1);
+    const delayDebounce = setTimeout(() => {
+      if (searchTerm.trim()) {
+        // Activar el modo de filtrado
+        setIsFiltering(true);
+        
+        // Dividir el searchTerm para intentar extraer nombre, apellidos o cédula
+        const searchParts = searchTerm.trim().split(' ');
+        
+        const newFilters: ResidentFilter = {
+          pageNumber: 1,
+          pageSize: pageSize
+        };
+        
+        // Si hay al menos una parte, asumimos que es el nombre
+        if (searchParts.length >= 1) {
+          newFilters.nombre = searchParts[0];
+        }
+        
+        // Si hay al menos dos partes, asumimos que la segunda es el primer apellido
+        if (searchParts.length >= 2) {
+          newFilters.apellido1 = searchParts[1];
+        }
+        
+        // Si hay al menos tres partes, asumimos que la tercera es el segundo apellido
+        if (searchParts.length >= 3) {
+          newFilters.apellido2 = searchParts[2];
+        }
+        
+        // Si parece una cédula (solo números), lo ponemos en el campo cédula
+        if (/^\d+$/.test(searchTerm.trim())) {
+          newFilters.cedula = searchTerm.trim();
+          // Y limpiamos el nombre si se puso ahí
+          delete newFilters.nombre;
+        }
+        
+        setFilters(newFilters);
+        filterResidents(newFilters);
+        setPageNumber(1);
+      } else {
+        // Desactivar el modo de filtrado cuando no hay término de búsqueda
+        setIsFiltering(false);
+        setFilters({
+          pageNumber: 1,
+          pageSize: pageSize
+        });
+      }
+    }, 300); // 300ms de debounce
+
+    return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
+
+  // Efecto para cambiar de página
+  useEffect(() => {
+    if (isFiltering) {
+      // Si estamos filtrando, actualizamos el filtro con la nueva página
+      filterResidents({
+        ...filters,
+        pageNumber: pageNumber
+      });
+    }
+    // No es necesario hacer nada para el caso de paginación normal, 
+    // ya que useResidents se actualiza automáticamente cuando cambia pageNumber
+  }, [pageNumber, isFiltering]);
 
   const { handleSubmit } = useUpdateResidentDetails(selectedResident?.id_Resident ?? 0);
 
@@ -143,12 +233,16 @@ function ResidentList() {
     }
   };
 
-  if (isLoading) {
+  // Mostrar skeleton mientras se cargan los datos
+  const isLoading = isLoadingAll || isLoadingFiltered || isLoadingPaginated;
+  const error = errorAll || errorFiltered || errorPaginated;
+
+  if (isLoading && !residentsToDisplay.length) {
     return <Skeleton count={5} />;
   }
 
-  if (error) {
-    return <div>Error al cargar los residentes</div>;
+  if (error && !residentsToDisplay.length) {
+    return <div>Error al cargar los residentes: {error?.message || 'Error desconocido'}</div>;
   }
 
   return (
@@ -184,7 +278,7 @@ function ResidentList() {
       </div>
 
       <ReusableTableRequests<Resident>
-        data={paginatedResidents}
+        data={residentsToDisplay}
         headers={['Nombre', 'Primer apellido', 'Segundo apellido', 'Cédula', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
@@ -219,7 +313,7 @@ function ResidentList() {
       />
 
       {/* Mensaje y botón para limpiar búsqueda cuando no hay resultados */}
-      {filteredResidents.length === 0 && searchTerm && (
+      {residentsToDisplay.length === 0 && searchTerm && (
         <div className="text-center mt-4">
           <p className={`mb-3 text-lg ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
             No se encontraron residentes que coincidan con "<span className="font-semibold">{searchTerm}</span>".

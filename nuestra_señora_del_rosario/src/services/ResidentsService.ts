@@ -26,6 +26,31 @@ class ResidentsService extends ApiService<Resident> {
     });
   }
 
+  // Filtrar residentes por nombre, apellidos y cédula
+  public filterResidents(
+    nombre?: string, 
+    apellido1?: string, 
+    apellido2?: string, 
+    cedula?: string, 
+    pageNumber: number = 1, 
+    pageSize: number = 10
+  ) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+    
+    // Construir la URL con los parámetros de consulta
+    let url = '/Residents/filter?';
+    if (nombre) url += `nombre=${encodeURIComponent(nombre)}&`;
+    if (apellido1) url += `apellido1=${encodeURIComponent(apellido1)}&`;
+    if (apellido2) url += `apellido2=${encodeURIComponent(apellido2)}&`;
+    if (cedula) url += `cedula=${encodeURIComponent(cedula)}&`;
+    url += `pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    
+    return this.getWithHeaders<{residents: Resident[], totalPages: number}>(url, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
   // Obtener un residente por ID
   public getResidentById(id: number) {
     const token = Cookies.get("authToken");
