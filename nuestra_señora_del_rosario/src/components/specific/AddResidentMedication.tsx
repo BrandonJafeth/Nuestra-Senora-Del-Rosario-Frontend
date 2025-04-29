@@ -5,12 +5,17 @@ import { useMedicationSpecific } from "../../hooks/useMedicationSpecific";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { useCreateResidentMedication } from "../../hooks/useCreateResidentMedication";
 import { useThemeDark } from "../../hooks/useThemeDark";
+import { useToast } from "../../hooks/useToast";
+import { useQueryClient } from "react-query";
+import Toast from "../common/Toast";
 
 const AddMedicationPage: React.FC = () => {
   const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
+  const { showToast, message, type } = useToast();
+  const queryClient = useQueryClient();
 
   const { register, handleSubmit, setValue, reset, watch } = useForm<ResidentMedication>();
   const mutation = useCreateResidentMedication();
@@ -21,12 +26,18 @@ const AddMedicationPage: React.FC = () => {
   const onSubmit = (data: ResidentMedication) => {
     mutation.mutate({ ...data, id_Resident: residentId }, {
       onSuccess: () => {
-        alert("Medicamento agregado con éxito!");
+        showToast("Medicamento agregado con éxito!", "success");
         reset();
-        navigate(`/dashboard/residente-info/${residentId}`);
+        // Invalidar consultas relacionadas con los medicamentos del residente para forzar una recarga
+        queryClient.invalidateQueries(["residentMedications", residentId]);
+        // Esperar un momento para que el toast sea visible antes de navegar
+        setTimeout(() => {
+          navigate(`/dashboard/residente-info/${residentId}`);
+        }, 1500);
       },
       onError: (error) => {
         console.error("Error al agregar medicamento:", error);
+        showToast("Error al agregar medicamento", "error");
       },
     });
   };
@@ -99,6 +110,9 @@ const AddMedicationPage: React.FC = () => {
           </button>
         </div>
       </form>
+
+      {/* Mostrar Toast con el mensaje */}
+      {message && <Toast message={message} type={type} />}
     </div>
   );
 };
