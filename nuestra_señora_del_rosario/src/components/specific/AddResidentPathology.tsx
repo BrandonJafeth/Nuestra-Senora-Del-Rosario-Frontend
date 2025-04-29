@@ -5,12 +5,17 @@ import { useCreateResidentPathology } from "../../hooks/useCreateResidentPatholo
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { usePathologies } from "../../hooks/usePathology";
 import { useThemeDark } from "../../hooks/useThemeDark";
+import { useToast } from "../../hooks/useToast";
+import { useQueryClient } from "react-query";
+import Toast from "../common/Toast";
 
 const AddPathologyPage: React.FC = () => {
   const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
+  const { showToast, message, type } = useToast();
+  const queryClient = useQueryClient();
 
   const { register, handleSubmit, setValue, reset, watch } = useForm<ResidentPathology>();
   const mutation = useCreateResidentPathology();
@@ -21,12 +26,18 @@ const AddPathologyPage: React.FC = () => {
   const onSubmit = (data: ResidentPathology) => {
     mutation.mutate({ ...data, id_Resident: residentId }, {
       onSuccess: () => {
-        alert("Patología agregada con éxito!");
+        showToast("Patología agregada con éxito!", "success");
         reset();
-        navigate(`/dashboard/residente-info/${residentId}`);
+        // Invalidar consultas relacionadas con el residente para forzar una recarga
+        queryClient.invalidateQueries(["residentInfo", residentId]);
+        // Esperar un momento para que el toast sea visible antes de navegar
+        setTimeout(() => {
+          navigate(`/dashboard/residente-info/${residentId}`);
+        }, 1500);
       },
       onError: (error) => {
         console.error("Error al agregar patología:", error);
+        showToast("Error al agregar patología", "error");
       },
     });
   };
@@ -57,9 +68,9 @@ const AddPathologyPage: React.FC = () => {
             className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           >
             <option value="">Seleccione una patología</option>
-            {data?.map((pathology) => (
-              <option key={pathology.id_Pathology} value={pathology.id_Pathology}>
-                {pathology.name_Pathology}
+            {data?.map((path) => (
+              <option key={path.id_Pathology} value={path.id_Pathology}>
+                {path.name_Pathology}
               </option>
             ))}
           </select>
@@ -108,6 +119,9 @@ const AddPathologyPage: React.FC = () => {
           </button>
         </div>
       </form>
+      
+      {/* Mostrar Toast con el mensaje */}
+      {message && <Toast message={message} type={type} />}
     </div>
   );
 };

@@ -6,6 +6,7 @@ interface SearchInputProps {
   placeholder?: string;
   isDarkMode?: boolean;
   className?: string;
+  disabled?: boolean; // Nueva propiedad
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -14,6 +15,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = 'Buscar',
   isDarkMode = false,
   className = '',
+  disabled = false, // Default a false
 }) => {
   // Usar una referencia para mantener el foco
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,11 +36,13 @@ const SearchInput: React.FC<SearchInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 
           ${isDarkMode ? 'bg-gray-700 text-white focus:ring-blue-400' : 'text-gray-700 focus:ring-blue-600'} 
+          ${disabled ? 'opacity-70 cursor-not-allowed' : ''}
           ${className}`}
       />
-      {value && (
+      {value && !disabled && (
         <button
           onClick={() => onChange('')}
           className="ml-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
