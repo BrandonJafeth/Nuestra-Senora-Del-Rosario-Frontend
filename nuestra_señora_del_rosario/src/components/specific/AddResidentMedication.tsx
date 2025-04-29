@@ -28,8 +28,8 @@ const AddMedicationPage: React.FC = () => {
       onSuccess: () => {
         showToast("Medicamento agregado con éxito!", "success");
         reset();
-        // Invalidar consultas relacionadas con los medicamentos del residente para forzar una recarga
-        queryClient.invalidateQueries(["residentMedications", residentId]);
+        // Invalidar consultas relacionadas con el residente para forzar una recarga
+        queryClient.invalidateQueries(["residentInfo", residentId]);
         // Esperar un momento para que el toast sea visible antes de navegar
         setTimeout(() => {
           navigate(`/dashboard/residente-info/${residentId}`);
