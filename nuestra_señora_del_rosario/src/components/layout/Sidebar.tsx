@@ -31,7 +31,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
     { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['SuperAdmin','Admin'] },
     { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['SuperAdmin','Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
     { name: 'Cardex', link: '/dashboard/cardex', roles: ['SuperAdmin','Enfermeria'] }, 
-    { name : 'Configuracion', link : '/dashboard/Configuracion'},
+    { name : 'Configuracion', link : '/dashboard/Configuracion', roles: ['SuperAdmin','Admin', 'Enfermeria', 'Inventario', 'Fisioterapia'] },
   ];
 
   const settingsItems = [
@@ -167,25 +167,28 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
                 <span className="ml-2">Egreso de Productos</span>
               </Link>
             </li>
-            <li>
-              <Link
-                to="inventario/lista-activos"
-                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
-                  isActive("/dashboard/inventario/lista-activos") 
-                    ? isDarkMode 
-                      ? 'bg-gray-700 text-white' 
-                      : 'bg-gray-200 text-black'
-                    : isDarkMode 
-                      ? 'hover:bg-gray-600 dark:text-white' 
-                      : 'hover:bg-gray-100 text-black'
-                }`}
-              >
-                <span className="flex items-center justify-center w-5 h-5">
-                  {getIcon('Lista de productos')}
-                </span>
-                <span className="ml-2">Lista de activos</span>
-              </Link>
-            </li>
+            {/* Mostrar opción de activos solo para SuperAdmin y Admin */}
+            {['SuperAdmin', 'Admin'].includes(rol) && (
+              <li>
+                <Link
+                  to="inventario/lista-activos"
+                  className={`flex items-center px-4 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                    isActive("/dashboard/inventario/lista-activos") 
+                      ? isDarkMode 
+                        ? 'bg-gray-700 text-white' 
+                        : 'bg-gray-200 text-black'
+                      : isDarkMode 
+                        ? 'hover:bg-gray-600 dark:text-white' 
+                        : 'hover:bg-gray-100 text-black'
+                  }`}
+                >
+                  <span className="flex items-center justify-center w-5 h-5">
+                    {getIcon('Lista de productos')}
+                  </span>
+                  <span className="ml-2">Lista de activos</span>
+                </Link>
+              </li>
+            )}
           </>
         )}
       </ul>

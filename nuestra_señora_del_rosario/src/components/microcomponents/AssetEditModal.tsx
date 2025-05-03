@@ -117,7 +117,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
         }}
         contentLabel="Editar activo"
         className="flex items-center justify-center min-h-screen"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
       >
         <div
           className={`p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto ${

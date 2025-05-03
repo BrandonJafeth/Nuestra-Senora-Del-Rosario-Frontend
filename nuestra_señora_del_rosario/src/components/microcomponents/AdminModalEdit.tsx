@@ -22,7 +22,7 @@ const AdminModalEdit: React.FC<AdminModalEditProps> = ({ isOpen, title, onClose,
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className={`p-6 rounded-lg shadow-lg w-96 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"}`}>
         <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>{title}</h2>
         <input

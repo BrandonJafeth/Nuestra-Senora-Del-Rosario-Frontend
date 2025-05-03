@@ -75,7 +75,7 @@ const InventoryMovementForm: React.FC<InventoryMovementFormProps> = ({ isOpen, o
     },
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      zIndex: 40,
+      zIndex: 50,
     },
   };
 

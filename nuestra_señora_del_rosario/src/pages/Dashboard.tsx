@@ -167,7 +167,7 @@ function Dashboard() {
                 } />
 
               <Route path="inventario/lista-activos" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin', 'Fisioterapia']}>
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
                 <AssetTable />
                 </RoleBasedRoute>
                 } />
