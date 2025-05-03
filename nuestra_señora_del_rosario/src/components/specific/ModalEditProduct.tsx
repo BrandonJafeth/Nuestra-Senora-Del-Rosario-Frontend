@@ -121,7 +121,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({
         }}
         contentLabel="Editar producto"
         className="flex items-center justify-center min-h-screen"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
       >
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">

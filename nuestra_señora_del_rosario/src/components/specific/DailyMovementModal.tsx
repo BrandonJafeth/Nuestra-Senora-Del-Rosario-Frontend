@@ -47,8 +47,19 @@ const DailyMovementsModal: React.FC<DailyMovementsModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Movimientos Diarios"
-      className={`relative z-50 w-full max-w-xl mx-auto p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
-      overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40"
+      className={`relative w-full max-w-xl mx-auto p-6 rounded-lg shadow-lg z-50 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
+      overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999]"
+      style={{
+        overlay: {
+          zIndex: 50,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.75)'
+        }
+      }}
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Movimientos para {formattedDate}</h2>
 
