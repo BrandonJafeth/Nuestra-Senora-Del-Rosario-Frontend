@@ -83,12 +83,12 @@ const ResidentPDF = ({ resident }: { resident: Resident }) => (
         <Text style={styles.title}>📌 Medicamentos</Text>
         {resident?.medications?.length ? (
           resident.medications.map((med: any) => (
-            <View key={med.id_ResidentMedication} style={{ marginBottom: 12 }}>
-              <Text style={[styles.text, { fontSize: 13, fontWeight: "bold" }]}>
+            <View key={med.id_ResidentMedication} style={{ marginBottom: 12, marginTop: 6 }}>
+              <Text style={[styles.text, {marginLeft: 6}, { fontSize: 13, fontWeight: "bold" }]}>
                 {med.name_MedicamentSpecific} - {med.prescribedDose} {med.unitOfMeasureName}
               </Text>
               {med.notes && (
-                <Text style={{ fontSize: 11, fontStyle: "italic", color: "#555", marginTop: 4 }}>
+                <Text style={{ fontSize: 11, fontStyle: "italic", color: "#555", marginTop: 4, marginLeft: 6 }}>
                   📌 Notas: {med.notes}
                 </Text>
               )}
@@ -104,11 +104,11 @@ const ResidentPDF = ({ resident }: { resident: Resident }) => (
         <Text style={styles.title}>⚕️ Patologías</Text>
         {resident?.pathologies?.length ? (
           resident.pathologies.map((path: any) => (
-            <View key={path.id_ResidentPathology} style={{ marginBottom: 12 }}>
-              <Text style={[styles.text, { fontSize: 13, fontWeight: "bold" }]}>
+            <View key={path.id_ResidentPathology} style={{ marginBottom: 12, marginTop: 6 }}>
+              <Text style={[styles.text, {marginLeft: 6}, { fontSize: 13, fontWeight: "bold" }]}>
                 {path.name_Pathology}
               </Text>
-              <Text style={{ fontSize: 12, marginTop: 4 }}>{path.resume_Pathology}</Text>
+              <Text style={  { fontSize: 11, fontStyle: "italic", color: "#555", marginTop: 4, marginLeft: 6 }}>{path.resume_Pathology}</Text>
             </View>
           ))
         ) : (
