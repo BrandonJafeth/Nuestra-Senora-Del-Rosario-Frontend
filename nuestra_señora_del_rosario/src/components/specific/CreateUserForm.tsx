@@ -9,41 +9,43 @@ import { useToast } from '../../hooks/useToast';
 
 const CreateUserForm: React.FC = () => {
   const navigate = useNavigate();
-  const { isDarkMode } = useThemeDark(); // Hook para detectar el modo oscuro
+  const { isDarkMode } = useThemeDark(); // Deteción de modo oscuro
 
-  // Estado para los datos del formulario
+  // Estado para datos del formulario
   const [formData, setFormData] = useState({
     dni: '',
     email: '',
     id_Role: 0,
     password: '',
-    fullName: '', // 📌 Nuevo campo para el nombre completo
-    isActive: true,
+    fullName: '',
+    // isActive siempre será true, no se modifica
   });
 
-  const employeeDni = formData.dni; // Assuming you want to use the dni from formData
-  const { roles, isLoadingRoles, isErrorRoles } = useRoles(Number(employeeDni)); // 📌 Obtenemos los roles
-  const {message, showToast, type} = useToast (); // Hook para mostrar mensajes de Toast
-
-  // Hook de creación de usuario
+  const employeeDni = formData.dni;
+  const { roles, isLoadingRoles, isErrorRoles } = useRoles(Number(employeeDni));
+  const { message, showToast, type } = useToast();
   const { mutate: createUser, isLoading, isError, error } = useCreateUser();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'isActive' ? value === 'true' : value, // Convierte 'isActive' a booleano
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!/^\d+$/.test(formData.dni)) {
+
+    // Validaciones de formulario
+    if (!/^[0-9]+$/.test(formData.dni)) {
       showToast('El DNI debe contener solo números', 'error');
       return;
     }
-    if ((formData.dni.length >= 9) && (formData.dni.length <= 12)) {
-      showToast('El DNI debe tener al menos 9 dígitos y no tener mas de 12', 'error');
+    if (formData.dni.length < 9 || formData.dni.length > 12) {
+      showToast('El DNI debe tener entre 9 y 12 dígitos', 'error');
       return;
     }
     if (!formData.email.includes('@') || !formData.email.includes('.com')) {
@@ -58,6 +60,8 @@ const CreateUserForm: React.FC = () => {
       showToast('Debe seleccionar un rol', 'error');
       return;
     }
+
+    // Envío de solicitud de creación de usuario con isActive siempre true
     createUser(
       {
         id_User: 0,
@@ -66,25 +70,20 @@ const CreateUserForm: React.FC = () => {
         dni: Number(formData.dni),
         email: formData.email,
         password: formData.password,
-        fullName: formData.fullName, // 📌 Agregando fullName a la solicitud
-        is_Active: formData.isActive,
+        fullName: formData.fullName,
+        is_Active: true,
         isActive: false,
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
       },
       {
         onSuccess: () => {
           showToast('Usuario creado con éxito', 'success');
-        
-
-          setTimeout(() => {
-            navigate('/dashboard/usuarios'); // Redirige después de 3 segundos
-          }, 3000);
+          setTimeout(() => navigate('/dashboard/usuarios'), 1000);
         },
         onError: (err: any) => {
           showToast(err.response?.data?.message || 'Error al crear usuario', 'error');
-         
         },
       }
     );
@@ -93,17 +92,19 @@ const CreateUserForm: React.FC = () => {
   useEffect(() => {
     if (isError && error) {
       showToast(error.message || 'Error al crear usuario', 'error');
-   
     }
   }, [isError, error]);
 
   return (
     <div
-      className={`w-full max-w-3xl mx-auto p-10 rounded-xl shadow-xl transition-all duration-300 ${
-        isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-900'
-      }`}
+      className={`w-full max-w-3xl mx-auto p-10 rounded-xl shadow-xl transition-all duration-300 ${{
+        true: 'bg-[#0D313F] text-white',
+        false: 'bg-white text-gray-900',
+      }[String(isDarkMode)]}`}
     >
-      <h2 className="text-3xl font-bold text-center mb-6">Registro de usuario</h2>
+      <h2 className="text-3xl font-bold text-center mb-6">
+        Registro de usuario
+      </h2>
 
       {message && <Toast message={message} type={type || 'info'} />}
 
@@ -119,9 +120,10 @@ const CreateUserForm: React.FC = () => {
             name="dni"
             value={formData.dni}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-            }`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${{
+              true: 'bg-gray-700 text-white border-gray-600',
+              false: 'bg-gray-100 text-gray-900 border-gray-300',
+            }[String(isDarkMode)]}`}
             placeholder="Ingrese la cédula"
             required
           />
@@ -138,38 +140,41 @@ const CreateUserForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-            }`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${{
+              true: 'bg-gray-700 text-white border-gray-600',
+              false: 'bg-gray-100 text-gray-900 border-gray-300',
+            }[String(isDarkMode)]}`}
             placeholder="Ingrese su correo"
             required
           />
         </div>
 
-        {/* Contraseña */}
+        {/* Contraseña generada automáticamente */}
         <div>
-  <label htmlFor="password" className="block text-lg font-medium">
-    Contraseña
-  </label>
-  <input
-    type="password"
-    id="password"
-    name="password"
-    value={formData.password}
-    readOnly // 📌 Hace que el input no sea editable
-    className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition ${
-      isDarkMode ? 'bg-gray-700 text-white border-gray-600 cursor-not-allowed' : 'bg-gray-100 text-gray-900 border-gray-300 cursor-not-allowed'
-    }`}
-    placeholder="Contraseña generada automáticamente"
-  />
-  <p className="text-sm font-bold text-gray-500 mt-1">
-    La contraseña se generará automáticamente y será enviada al usuario.
-  </p>
-</div>
-        {/* 📌 Nombre Completo */}
+          <label htmlFor="password" className="block text-lg font-medium">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            readOnly
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition ${{
+              true: 'bg-gray-700 text-white border-gray-600 cursor-not-allowed',
+              false: 'bg-gray-100 text-gray-900 border-gray-300 cursor-not-allowed',
+            }[String(isDarkMode)]}`}
+            placeholder="Contraseña generada automáticamente"
+          />
+          <p className="text-sm font-bold text-gray-500 mt-1">
+            La contraseña se generará automáticamente y será enviada al usuario.
+          </p>
+        </div>
+
+        {/* Nombre Completo */}
         <div>
           <label htmlFor="fullName" className="block text-lg font-medium">
-            Nombre de usuario
+            Nombre completo
           </label>
           <input
             type="text"
@@ -177,15 +182,16 @@ const CreateUserForm: React.FC = () => {
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-            }`}
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${{
+              true: 'bg-gray-700 text-white border-gray-600',
+              false: 'bg-gray-100 text-gray-900 border-gray-300',
+            }[String(isDarkMode)]}`}
             placeholder="Ingrese su nombre completo"
             required
           />
         </div>
 
-        {/* Estado Activo */}
+        {/* Estado Activo (fijo) */}
         <div>
           <label htmlFor="isActive" className="block text-lg font-medium">
             Estado
@@ -193,19 +199,25 @@ const CreateUserForm: React.FC = () => {
           <select
             id="isActive"
             name="isActive"
-            value={String(formData.isActive)}
-            onChange={handleChange}
-            className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-            }`}
+            value="true"
+            disabled
+            className={`w-full p-3 rounded-md shadow-sm focus:outline-none transition ${{
+              true: 'bg-gray-700 text-white border-gray-600 cursor-not-allowed',
+              false: 'bg-gray-100 text-gray-900 border-gray-300 cursor-not-allowed',
+            }[String(isDarkMode)]}`}
           >
             <option value="true">Activo</option>
-            <option value="false">Inactivo</option>
           </select>
+          <p className="text-sm font-bold text-gray-500 mt-1">
+            El usuario siempre se crea como activo
+          </p>
         </div>
 
+        {/* Roles */}
         <div>
-          <label htmlFor="id_Role" className="block text-lg font-medium">Rol</label>
+          <label htmlFor="id_Role" className="block text-lg font-medium">
+            Rol
+          </label>
           {isLoadingRoles ? (
             <p className="text-gray-500">Cargando roles...</p>
           ) : isErrorRoles ? (
@@ -216,11 +228,14 @@ const CreateUserForm: React.FC = () => {
               name="id_Role"
               value={formData.id_Role}
               onChange={handleChange}
-              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'
-              }`}
+              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${{
+                true: 'bg-gray-700 text-white border-gray-600',
+                false: 'bg-gray-100 text-gray-900 border-gray-300',
+              }[String(isDarkMode)]}`}
             >
-              <option value={0} disabled>Seleccione un rol</option>
+              <option value={0} disabled>
+                Seleccione un rol
+              </option>
               {roles?.map((role) => (
                 <option key={role.idRole} value={role.idRole}>
                   {role.nameRole}
@@ -230,16 +245,15 @@ const CreateUserForm: React.FC = () => {
           )}
         </div>
 
-
         {/* Botones */}
         <div className="col-span-2 flex justify-center gap-6 mt-6">
-
           <button
             type="submit"
             disabled={isLoading}
-            className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all ${
-              isLoading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
-            }`}
+            className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all ${{
+              true: 'bg-blue-400',
+              false: 'bg-blue-500 hover:bg-blue-600',
+            }[String(isLoading)]}`}
           >
             {isLoading ? <LoadingSpinner /> : 'Agregar'}
           </button>
