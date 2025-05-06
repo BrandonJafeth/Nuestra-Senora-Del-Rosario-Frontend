@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
-import { useThemeDark } from '../../hooks/useThemeDark';
-import 'react-loading-skeleton/dist/skeleton.css';
-import InventoryReportViewer from '../microcomponents/InventoryReportViewer';
-import InventoryMovementForm from './InventoryMovementForm';
-import ProductAddModal from './AddProductModal';
-import ProductEditModal from './ModalEditProduct';
-import { Product } from '../../types/ProductType';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { useProductsByCategory } from '../../hooks/useProductByCategory';
-import CategoryDropdown from '../microcomponents/CategoryDropdown';
-import ConvertProductModal from '../microcomponents/ConvertProductModal';
-import { ConvertedData } from '../../types/ProductType';
+import React, { useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import { useThemeDark } from "../../hooks/useThemeDark";
+import "react-loading-skeleton/dist/skeleton.css";
+import InventoryReportViewer from "../microcomponents/InventoryReportViewer";
+import InventoryMovementForm from "./InventoryMovementForm";
+import ProductAddModal from "./AddProductModal";
+import ProductEditModal from "./ModalEditProduct";
+import { Product } from "../../types/ProductType";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useProductsByCategory } from "../../hooks/useProductByCategory";
+import CategoryDropdown from "../microcomponents/CategoryDropdown";
+import ConvertProductModal from "../microcomponents/ConvertProductModal";
+import { ConvertedData } from "../../types/ProductType";
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -24,8 +24,11 @@ const InventoryTable: React.FC = () => {
   const [categoryId, setCategoryId] = useState<number>(0);
 
   // Llamada a la query, pero solo si categoryId != 0
-  const { data, isLoading: productsLoading, isError: productsError } =
-    useProductsByCategory(categoryId, pageNumber, pageSize);
+  const {
+    data,
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useProductsByCategory(categoryId, pageNumber, pageSize);
 
   const products = data?.item1 || [];
   const totalPages = data?.item2 || 1;
@@ -39,8 +42,11 @@ const InventoryTable: React.FC = () => {
 
   // Modal de Conversión...
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
-  const [convertData, setConvertData] =
-    useState<{ productId: number; targetUnit: string } | null>(null);
+  const [convertData, setConvertData] = useState<{
+    productId: number;
+    targetUnit: string;
+    productName: string; // Añadir el nombre del producto
+  } | null>(null);
 
   // Estado para almacenar productos convertidos
   const [convertedProducts, setConvertedProducts] = useState<{
@@ -48,10 +54,10 @@ const InventoryTable: React.FC = () => {
   }>({});
 
   const filteredProducts = searchTerm.trim()
-  ? products.filter((asset: Product) =>
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : products;
+    ? products.filter((asset: Product) =>
+        asset.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : products;
   // Función para actualizar el producto con datos convertidos
   const handleConversionComplete = (updatedData: ConvertedData) => {
     setConvertedProducts((prevState) => ({
@@ -93,6 +99,7 @@ const InventoryTable: React.FC = () => {
     setConvertData({
       productId: product.productID,
       targetUnit: product.unitOfMeasure,
+      productName: product.name,
     });
     setIsConvertModalOpen(true);
   };
@@ -100,7 +107,6 @@ const InventoryTable: React.FC = () => {
     setIsConvertModalOpen(false);
     setConvertData(null);
   };
-
 
   // Paginación
   const handleNextPage = () => {
@@ -120,56 +126,56 @@ const InventoryTable: React.FC = () => {
     <div
       className={`
         relative w-full max-w-[1169px] mx-auto px-4 py-6 sm:px-2 sm:py-4
-        ${isDarkMode ? 'bg-[#0D313F]' : 'bg-white'} 
+        ${isDarkMode ? "bg-[#0D313F]" : "bg-white"} 
         rounded-[20px] shadow-2xl
       `}
     >
-     {/* Fila 1: Título, Botón, Dropdown y Visor de Reportes */}
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-  {/* Sección izquierda: Título + Botón */}
-  <div className="flex items-center gap-4">
-    <button
-      onClick={openProductModal}
-      className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
-    >
-      Agregar Producto
-    </button>
-    <h2
-      className={`text-3xl ml-64 font-bold font-poppins ${
-        isDarkMode ? "text-white" : "text-gray-800"
-      }`}
-    >
-      Inventario
-    </h2>
-  </div>
+      {/* Fila 1: Título, Botón, Dropdown y Visor de Reportes */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        {/* Sección izquierda: Título + Botón */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={openProductModal}
+            className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200"
+          >
+            Agregar Producto
+          </button>
+          <h2
+            className={`text-3xl ml-64 font-bold font-poppins ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}
+          >
+            Inventario
+          </h2>
+        </div>
 
-  {/* Sección derecha: Dropdown y visor de reportes */}
-  <div className="flex flex-col sm:flex-row items-center gap-3">
-    <CategoryDropdown
-      selectedCategory={categoryId}
-      onCategorySelect={handleCategorySelect}
-    />
-    <InventoryReportViewer
-      month={new Date().getMonth() + 1}
-      year={new Date().getFullYear()}
-    />
-  </div>
-</div>
+        {/* Sección derecha: Dropdown y visor de reportes */}
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <CategoryDropdown
+            selectedCategory={categoryId}
+            onCategorySelect={handleCategorySelect}
+          />
+          <InventoryReportViewer
+            month={new Date().getMonth() + 1}
+            year={new Date().getFullYear()}
+          />
+        </div>
+      </div>
 
-{/* Fila 2: Input de Búsqueda */}
-<div className="mb-4 flex justify-center">
-  <input
-    type="text"
-    placeholder="Buscar por nombre"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-      isDarkMode
-        ? "bg-gray-700 text-white focus:ring-blue-400"
-        : "bg-white text-gray-700 focus:ring-blue-600"
-    }`}
-  />
-</div>
+      {/* Fila 2: Input de Búsqueda */}
+      <div className="mb-4 flex justify-center">
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+            isDarkMode
+              ? "bg-gray-700 text-white focus:ring-blue-400"
+              : "bg-white text-gray-700 focus:ring-blue-600"
+          }`}
+        />
+      </div>
 
       {categoryId === 0 ? (
         <p className="text-center mt-4 font-medium text-lg">
@@ -181,11 +187,21 @@ const InventoryTable: React.FC = () => {
           <table className="min-w-full bg-white dark:bg-[#0D313F] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
-                <th className="py-2 px-4 border dark:border-gray-500">Producto</th>
-                <th className="py-2 px-4 border dark:border-gray-500">Unidad de medida</th>
-                <th className="py-2 px-4 border dark:border-gray-500">Cantidad</th>
-                <th className="py-2 px-4 border dark:border-gray-500">Categoría</th>
-                <th className="py-2 px-4 border dark:border-gray-500">Acciones</th>
+                <th className="py-2 px-4 border dark:border-gray-500">
+                  Producto
+                </th>
+                <th className="py-2 px-4 border dark:border-gray-500">
+                  Unidad de medida
+                </th>
+                <th className="py-2 px-4 border dark:border-gray-500">
+                  Cantidad
+                </th>
+                <th className="py-2 px-4 border dark:border-gray-500">
+                  Categoría
+                </th>
+                <th className="py-2 px-4 border dark:border-gray-500">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -212,7 +228,7 @@ const InventoryTable: React.FC = () => {
           </table>
         </div>
       ) : productsError ? (
-        <p className={`px-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+        <p className={`px-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
           Error al cargar los productos.
         </p>
       ) : (
@@ -223,11 +239,15 @@ const InventoryTable: React.FC = () => {
               <thead>
                 <tr
                   className={`${
-                    isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'
+                    isDarkMode
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-100 text-gray-800"
                   } text-center`}
                 >
                   <th className="p-4 border dark:border-gray-500">Producto</th>
-                  <th className="p-4 border dark:border-gray-500">Unidad de medida</th>
+                  <th className="p-4 border dark:border-gray-500">
+                    Unidad de medida
+                  </th>
                   <th className="p-4 border dark:border-gray-500">Cantidad</th>
                   <th className="p-4 border dark:border-gray-500">Categoría</th>
                   <th className="p-4 border dark:border-gray-500">Acciones</th>
@@ -242,8 +262,8 @@ const InventoryTable: React.FC = () => {
                       key={item.productID}
                       className={`${
                         isDarkMode
-                          ? 'bg-gray-600 text-white hover:bg-gray-700'
-                          : 'bg-white text-gray-800 hover:bg-gray-200'
+                          ? "bg-gray-600 text-white hover:bg-gray-700"
+                          : "bg-white text-gray-800 hover:bg-gray-200"
                       } transition-colors`}
                     >
                       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
@@ -252,13 +272,15 @@ const InventoryTable: React.FC = () => {
                       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                         {converted
                           ? converted.unitOfMeasure
-                          : item.unitOfMeasure || 'N/A'}
+                          : item.unitOfMeasure || "N/A"}
                       </td>
                       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                        {converted ? converted.totalQuantity : item.totalQuantity}
+                        {converted
+                          ? converted.totalQuantity
+                          : item.totalQuantity}
                       </td>
                       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
-                        {item.categoryName || 'N/A'}
+                        {item.categoryName || "N/A"}
                       </td>
                       <td className="py-2 px-4 border border-gray-300 dark:border-gray-500">
                         {/* Botón Agregar Movimiento */}
@@ -277,8 +299,11 @@ const InventoryTable: React.FC = () => {
                           Editar
                         </button>
 
-                        {/* Botón Convertir (sólo para "leche") */}
-                        {item.name.toLowerCase() === 'leche' && (
+                        {/* Botón Convertir (para leche, pañales* y café*) */}
+                        {(item.name.toLowerCase() === "leche" ||
+                          item.name.toLowerCase().startsWith("pañales") ||
+                          item.name.toLowerCase().startsWith("cafe") ||
+                          item.name.toLowerCase().startsWith("café")) && (
                           <button
                             onClick={() => openConvertModal(item)}
                             className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition duration-200"
@@ -304,7 +329,7 @@ const InventoryTable: React.FC = () => {
               <FaArrowLeft />
             </button>
 
-            <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <span className={`${isDarkMode ? "text-white" : "text-gray-800"}`}>
               Página {pageNumber} de {totalPages}
             </span>
 
@@ -329,7 +354,10 @@ const InventoryTable: React.FC = () => {
       )}
 
       {/* Modal para agregar producto */}
-      <ProductAddModal isOpen={isProductModalOpen} onRequestClose={closeProductModal} />
+      <ProductAddModal
+        isOpen={isProductModalOpen}
+        onRequestClose={closeProductModal}
+      />
 
       {/* Modal para editar producto */}
       {selectedProduct && (
@@ -348,6 +376,7 @@ const InventoryTable: React.FC = () => {
           onRequestClose={closeConvertModal}
           productId={convertData.productId}
           targetUnit={convertData.targetUnit}
+          productName={convertData.productName} // Añadir el nombre del producto
           onConversionComplete={handleConversionComplete}
         />
       )}

@@ -1,15 +1,16 @@
 // FILE: components/ConvertProductModal.tsx
-import React, { useState } from 'react';
-import Modal from 'react-modal';
-import { useConvertProductUnit } from '../../hooks/useConvertProductUInit';
-import { ConvertedData } from '../../types/ProductType';
-import LoadingSpinner from './LoadingSpinner';
+import React, { useState } from "react";
+import Modal from "react-modal";
+import { useConvertProductUnit } from "../../hooks/useConvertProductUInit";
+import { ConvertedData } from "../../types/ProductType";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface ConvertProductModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   productId: number;
   targetUnit: string;
+  productName: string;
   onConversionComplete: (updatedData: ConvertedData) => void;
 }
 
@@ -18,16 +19,22 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
   onRequestClose,
   productId,
   targetUnit,
-  onConversionComplete
+  productName,
+  onConversionComplete,
 }) => {
   // Estado para la unidad de conversión. Inicialmente se usa targetUnit.
   const [conversionUnit, setConversionUnit] = useState<string>(targetUnit);
 
   // Se ejecuta el hook con la unidad actual seleccionada.
-  const { data, isLoading, isError } = useConvertProductUnit(productId, conversionUnit);
+  const { data, isLoading, isError } = useConvertProductUnit(
+    productId,
+    conversionUnit
+  );
 
   // Forzamos el tipo para evitar que TS piense que data es un array.
-  const typedData = (!Array.isArray(data) ? data : undefined) as ConvertedData | undefined;
+  const typedData = (!Array.isArray(data) ? data : undefined) as
+    | ConvertedData
+    | undefined;
 
   // Función para confirmar la conversión.
   const handleConfirmConversion = () => {
@@ -49,10 +56,13 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
       <h2 className="text-xl font-bold mb-4 text-center dark:text-white">
         Conversión de Producto
       </h2>
-      
+
       {/* Dropdown para seleccionar la unidad de medida */}
       <div className="mb-4">
-        <label htmlFor="conversionUnit" className="block text-center mb-2 dark:text-white">
+        <label
+          htmlFor="conversionUnit"
+          className="block text-center mb-2 dark:text-white"
+        >
           Selecciona la unidad a convertir:
         </label>
         <select
@@ -62,9 +72,31 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
           className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
         >
           <option value="">Seleccione una unidad de medida</option>
-          <option value="paquete">Paquete</option>
-          <option value="caja">Caja</option>
-          <option value="litros">Litros</option>
+
+          {/* Opciones para leche: solo caja y litros */}
+          {productName.toLowerCase() === "leche" && (
+            <>
+              <option value="caja">Caja</option>
+              <option value="litros">Litros</option>
+            </>
+          )}
+
+          {/* Opciones para pañales: paquete y unidad */}
+          {productName.toLowerCase().startsWith("pañales") && (
+            <>
+              <option value="paquete">Paquete</option>
+              <option value="unidad">Unidad</option>
+            </>
+          )}
+
+          {/* Opciones para café: gramos y kilogramos */}
+          {(productName.toLowerCase().startsWith("café") ||
+            productName.toLowerCase().startsWith("cafe")) && (
+            <>
+              <option value="gramos">Gramos</option>
+              <option value="kilogramos">Kilogramos</option>
+            </>
+          )}
         </select>
       </div>
 
@@ -91,10 +123,12 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
             <strong>Cantidad original:</strong> {typedData.totalQuantity}
           </p>
           <p>
-            <strong>Unidad convertida:</strong> {typedData.convertedUnitOfMeasure}
+            <strong>Unidad convertida:</strong>{" "}
+            {typedData.convertedUnitOfMeasure}
           </p>
           <p>
-            <strong>Cantidad convertida:</strong> {typedData.convertedTotalQuantity}
+            <strong>Cantidad convertida:</strong>{" "}
+            {typedData.convertedTotalQuantity}
           </p>
         </div>
       )}
