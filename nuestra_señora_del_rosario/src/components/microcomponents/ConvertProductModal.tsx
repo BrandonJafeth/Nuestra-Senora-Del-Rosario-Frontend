@@ -77,7 +77,7 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
           {productName.toLowerCase() === "leche" && (
             <>
               <option value="caja">Caja</option>
-              <option value="litros">Litros</option>
+              <option value="litro">Litros</option>
             </>
           )}
 
@@ -93,8 +93,8 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
           {(productName.toLowerCase().startsWith("café") ||
             productName.toLowerCase().startsWith("cafe")) && (
             <>
-              <option value="gramos">Gramos</option>
-              <option value="kilogramos">Kilogramos</option>
+              <option value="gramo">Gramos</option>
+              <option value="kilogramo">Kilogramos</option>
             </>
           )}
         </select>
