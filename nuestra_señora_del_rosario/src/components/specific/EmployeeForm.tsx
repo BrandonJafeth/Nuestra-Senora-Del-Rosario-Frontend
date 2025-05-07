@@ -26,21 +26,58 @@ function EmployeeForm() {
      if (!firstName.trim()) {
       showToast('El nombre es requerido', 'error');
       return;
+    } if (firstName.length < 3) {
+      showToast('El nombre debe tener al menos 3 caracteres', 'error');
+      return;
+    }
+    if (firstName.length > 25) {
+      showToast('El nombre no puede tener más de 25 caracteres', 'error');
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(firstName)) {
+      showToast('El nombre solo puede contener letras y espacios', 'error');
+      return;
     }
     if (!lastName1.trim()) {
       showToast('El primer apellido es requerido', 'error');
+      return;
+    }
+    if (lastName1.length < 3) {
+      showToast('El primer apellido debe tener al menos 3 caracteres', 'error');
+      return;
+    }
+    if (lastName1.length > 25) {
+      showToast('El primer apellido no puede tener más de 25 caracteres', 'error');
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(lastName1)) {
+      showToast('El primer apellido solo puede contener letras y espacios', 'error');
+      return;
+    }
+    if (!lastName2.trim()) {
+      showToast('El segundo apellido es requerido', 'error');
+      return;
+    } if (lastName2.length < 3) {
+      showToast('El segundo apellido debe tener al menos 3 caracteres', 'error');
+      return;
+    }
+    if (lastName2.length > 25) {
+      showToast('El segundo apellido no puede tener más de 25 caracteres', 'error');
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(lastName2)) {
+      showToast('El segundo apellido solo puede contener letras y espacios', 'error');
       return;
     }
     if ((!dni.trim() || (dni.length < 9 || dni.length > 12) || !/^\d+$/.test(dni))) {
       showToast('La cédula debe contener solo numeros entre 9 y 12 dígitos', 'error');
       return;
     }
-    if (!lastName2.trim()) {
-      showToast('El segundo apellido es requerido', 'error');
-      return;
-    }
     if (!email.trim() || !email.includes('@') || !email.includes('.com')) {
       showToast('Ingrese un correo electrónico válido', 'error');
+      return;
+    } if (email.length > 50) {
+      showToast('El correo electrónico no puede tener más de 50 caracteres', 'error');
       return;
     }
     if ((!phoneNumber.trim()) || (phoneNumber.length !== 8) || (!/^\d+$/.test(phoneNumber))) {
@@ -49,6 +86,16 @@ function EmployeeForm() {
     }
     if (!address.trim()) {
       showToast('La dirección es requerida', 'error');
+      return;
+    } if (address.length < 5) {
+      showToast('La dirección debe tener al menos 5 caracteres', 'error');
+      return;
+    } if (address.length > 50) {
+      showToast('La dirección no puede tener más de 50 caracteres', 'error');
+      return;
+    }
+    if (!/^[a-zA-Z0-9\s,.-]+$/.test(address)) {
+      showToast('La dirección solo puede contener letras, números y espacios', 'error');
       return;
     }
     if (id_Profession === 0) {
@@ -160,7 +207,7 @@ setTypeOfSalaryId(0);
             <input
               type="email"
               className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
-              placeholder="Ingrese su correo"
+              placeholder="Ingrese su correo, ejemplo: example@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
