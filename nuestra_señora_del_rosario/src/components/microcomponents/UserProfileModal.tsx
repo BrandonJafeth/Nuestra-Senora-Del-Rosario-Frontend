@@ -5,11 +5,12 @@ import { User } from "../../types/UserType";
 import LoadingSpinner from "./LoadingSpinner";
 import ConfirmationModal from "./ConfirmationModal";
 import Toast from "../common/Toast";
+import { useToast } from "../../hooks/useToast";
 import { useThemeDark } from "../../hooks/useThemeDark";
 
 // Set the app element for accessibility
-if (typeof window !== 'undefined') {
-  Modal.setAppElement('#root');
+if (typeof window !== "undefined") {
+  Modal.setAppElement("#root");
 }
 
 interface UserProfileModalProps {
@@ -18,29 +19,41 @@ interface UserProfileModalProps {
   user: User;
 }
 
-const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, user }) => {
+const UserProfileModal: React.FC<UserProfileModalProps> = ({
+  isOpen,
+  onClose,
+  user,
+}) => {
   const { isDarkMode } = useThemeDark();
-  const { mutate: updateUserProfile, isLoading, isSuccess } = useUpdateUserProfile();
+  const { mutate: updateUserProfile, isLoading, isSuccess } =
+    useUpdateUserProfile();
+  const { showToast, message, type } = useToast();
+
   const [fullName, setFullName] = useState(user.fullName);
   const [email, setEmail] = useState(user.email);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  // Estado para Toasts
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<"success" | "error" | null>(null);
+  // When profile update succeeds, show toast and close modal
+  useEffect(() => {
+    if (isSuccess) {
+      showToast("✅ Perfil actualizado correctamente", "success");
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 2000);
+    }
+  }, [isSuccess, showToast, onClose]);
 
   const handleConfirm = () => {
-    setIsConfirmOpen(false); // Cerrar modal de confirmación
+    setIsConfirmOpen(false);
     updateUserProfile(
       { fullName, email },
       {
         onSuccess: () => {
-          setToastMessage("✅ Perfil actualizado correctamente");
-          setToastType("success");
+          showToast("✅ Perfil actualizado correctamente", "success");
         },
         onError: () => {
-          setToastMessage("❌ Error al actualizar el perfil");
-          setToastType("error");
+          showToast("❌ Error al actualizar el perfil", "error");
         },
       }
     );
@@ -48,22 +61,16 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // If no changes were made, show warning toast and abort
+    if (fullName === user.fullName && email === user.email) {
+      showToast("⚠️ Debes realizar cambios antes de guardar", "warning");
+      return;
+    }
+
+    // Otherwise open the confirmation dialog
     setIsConfirmOpen(true);
   };
-
-  // Cierra el modal automáticamente después de mostrar el Toast
-  useEffect(() => {
-    if (isSuccess) {
-      setToastMessage("✅ Perfil actualizado correctamente");
-      setToastType("success");
-
-      // Espera 2 segundos antes de cerrar el modal
-      setTimeout(() => {
-        onClose();
-        window.location.reload();
-      }, 2000);
-    }
-  }, [isSuccess, onClose]);
 
   return (
     <Modal
@@ -75,10 +82,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
       overlayClassName="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center overflow-y-auto z-[100]"
       contentLabel="Actualizar perfil"
     >
-      <h2 className="text-2xl font-bold text-center mb-4">Actualizar perfil</h2>
+      <h2 className="text-2xl font-bold text-center mb-4">
+        Actualizar perfil
+      </h2>
 
-      {/* Toasts */}
-      {toastMessage && <Toast message={toastMessage} type={toastType || "error"} />}
+      {/* Renderizamos el toast manager */}
+      <Toast message={message} type={type} />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Nombre de Usuario */}
@@ -89,7 +98,6 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
             className="w-full p-2 rounded-md shadow-sm border border-gray-300 text-black"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            required
           />
         </div>
 
@@ -101,7 +109,6 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
             className="w-full p-2 rounded-md shadow-sm border border-gray-300 text-black"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
         </div>
 
@@ -110,7 +117,9 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
           <button
             type="submit"
             className={`px-4 py-2 text-white rounded-lg shadow-md transition duration-200 ${
-              isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+              isLoading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
             }`}
             disabled={isLoading}
           >
