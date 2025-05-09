@@ -224,7 +224,11 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           <div>
             <label className="block mb-2 text-lg">Teléfono</label>
             <input
-              {...register('phone_GD', { required: 'El teléfono es obligatorio' })}
+              {...register('phone_GD', { required: 'El teléfono es obligatorio',
+                maxLength: { value: 8, message: 'Debe contener 8 caracteres' },
+    minLength: { value: 8, message: 'Debe contener 8 caracteres' },
+    pattern: { value: /^\d+$/, message: 'Debe contener solo números' }
+              })}
               className={`w-full p-3 rounded-md ${
                 isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
               }`}

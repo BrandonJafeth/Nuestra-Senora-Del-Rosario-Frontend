@@ -7,10 +7,14 @@ import SearchInput from '../common/SearchInput';
 import 'react-loading-skeleton/dist/skeleton.css';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
 import { EmployeeFilterDTO } from '../../services/EmployeeService';
+import EditEmployeeModal from '../microcomponents/EdiitEmployeeModal';
 
 const EmployeeList: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [editingDni, setEditingDni] = useState<number | null>(null);
 
   // Estado para el filtro local
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,6 +126,11 @@ const EmployeeList: React.FC = () => {
     setPageNumber(1);
   };
 
+  const handleEditClick = (dni: number) => {
+    setEditingDni(dni);
+    setEditModalOpen(true);
+  };
+
   // Determinar si se está cargando
   const loading = isFiltering ? filterLoading : isLoading;
 
@@ -208,12 +217,20 @@ const EmployeeList: React.FC = () => {
             <td className="p-4">{employee.professionName}</td>
             <td className="p-4">{employee.phone_Number}</td>
             <td className="p-4 text-center">
+              <div className='flex justify-center gap-2'>
+            <button
+                onClick={() => handleEditClick(employee.dni)}
+                className="px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
+              >
+                Editar
+              </button>
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
                 onClick={() => handleGenerateReceipt(employee)}
               >
                 Generar comprobante
               </button>
+              </div>
             </td>
           </tr>
         )}
@@ -234,6 +251,14 @@ const EmployeeList: React.FC = () => {
             Limpiar búsqueda
           </button>
         </div>
+      )}
+
+{editingDni !== null && (
+        <EditEmployeeModal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          dni={editingDni}
+        />
       )}
     </div>
   );
