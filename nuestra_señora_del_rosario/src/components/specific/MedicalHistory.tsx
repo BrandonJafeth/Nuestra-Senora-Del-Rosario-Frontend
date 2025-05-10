@@ -44,6 +44,14 @@ const MedicalHistory: React.FC = () => {
 
   return (
     <div className={`p-6 rounded-xl shadow-xl w-full max-w-3xl mx-auto relative ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <button
+        onClick={() => navigate(-1)}
+        className={`absolute top-4 left-4 p-2 rounded-full flex items-center justify-center ${isDarkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"} transition-colors`}
+        aria-label="Volver"
+      >
+        <FaArrowLeft />
+      </button>
+      
       <h2 className="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
         <FaNotesMedical className="text-red-500" size={24} />
         Historial Médico

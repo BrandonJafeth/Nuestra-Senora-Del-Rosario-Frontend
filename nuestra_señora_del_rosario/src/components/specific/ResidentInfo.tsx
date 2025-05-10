@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useResidentInfoById } from "../../hooks/useResidentInfoById";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
-import { FaEdit, FaFilePdf } from "react-icons/fa";
+import { FaEdit, FaFilePdf, FaArrowLeft } from "react-icons/fa";
 import ResidentPDF from "../microcomponents/ResidentPDF";
 import { pdf } from "@react-pdf/renderer";
 
@@ -44,9 +44,19 @@ const ResidentDetail: React.FC = () => {
         isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"
       }`}
     >
+      {/* Botón para regresar a la página anterior */}
+      <button
+        onClick={() => navigate(-1)}
+        className={`absolute top-4 left-4 p-2 rounded-full flex items-center justify-center ${
+          isDarkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"
+        } transition-colors`}
+        aria-label="Volver"
+      >
+        <FaArrowLeft />
+      </button>
 
- {/* Botón PDF en la parte superior derecha */}
- {resident && (
+      {/* Botón PDF en la parte superior derecha */}
+      {resident && (
         <div className="absolute top-4 right-4">
           <button
             onClick={handleDownloadPDF}
@@ -57,8 +67,6 @@ const ResidentDetail: React.FC = () => {
           </button>
         </div>
       )}
-
-
 
       <h2 className="text-2xl font-bold mb-4 text-center">
         {resident?.name_RD} {resident?.lastname1_RD} {resident?.lastname2_RD}
