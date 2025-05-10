@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useResidentInfoById } from "../../hooks/useResidentInfoById";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
-import { FaEdit, FaFilePdf, FaArrowLeft } from "react-icons/fa";
+import { FaEdit, FaFilePdf, FaArrowLeft, FaNotesMedical } from "react-icons/fa";
 import ResidentPDF from "../microcomponents/ResidentPDF";
 import { pdf } from "@react-pdf/renderer";
 
@@ -44,13 +44,13 @@ const ResidentDetail: React.FC = () => {
         isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"
       }`}
     >
-      {/* Botón para regresar a la página anterior */}
+      {/* Botón para regresar a la página de cardex */}
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate('/dashboard/cardex')}
         className={`absolute top-4 left-4 p-2 rounded-full flex items-center justify-center ${
           isDarkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"
         } transition-colors`}
-        aria-label="Volver"
+        aria-label="Volver al cardex"
       >
         <FaArrowLeft />
       </button>
@@ -182,6 +182,17 @@ const ResidentDetail: React.FC = () => {
         ) : (
           <p className="text-gray-500 text-center">No tiene citas médicas registradas.</p>
         )}
+      </div>
+
+      {/* Botón para ir al historial médico */}
+      <div className="mt-6 flex justify-center">
+        <button
+          className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition flex items-center"
+          onClick={() => navigate(`/dashboard/historial-medico/${residentId}`)}
+        >
+          <FaNotesMedical className="mr-2" />
+          Ver Historial Médico
+        </button>
       </div>
     </div>
   );
