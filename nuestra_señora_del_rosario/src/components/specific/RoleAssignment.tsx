@@ -21,23 +21,31 @@ const RoleAssignment: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, userI
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userId && idRole) {
-      mutate(
-        { id_User: userId, id_Role: idRole, message: 'Assigning role' },
-        {
-          onSuccess: (response) => {
-            setToastMessage(response.message); // Mensaje del backend
-            setToastType('success');
-            setTimeout(onClose, 2000); // Cierra el modal después de 2 segundos
-          },
-          onError: (err: any) => {
-            setToastMessage(err.response?.data?.message || 'Error al asignar rol');
-            setToastType('error');
-          }
-        }
-      );
+  
+    // VALIDACIÓN: Debe seleccionar un rol antes de asignar
+    if (!idRole) {
+      setToastMessage('Por favor selecciona un rol');
+      setToastType('error');
+      return;
     }
+  
+    // Si pasó la validación, seguimos con la mutación
+    mutate(
+      { id_User: userId, id_Role: idRole, message: 'Assigning role' },
+      {
+        onSuccess: (response) => {
+          setToastMessage(response.message);
+          setToastType('success');
+          setTimeout(onClose, 2000);
+        },
+        onError: (err: any) => {
+          setToastMessage(err.response?.data?.message || 'Error al asignar rol');
+          setToastType('error');
+        }
+      }
+    );
   };
+  
 
   useEffect(() => {
     if (isSuccess && data) {

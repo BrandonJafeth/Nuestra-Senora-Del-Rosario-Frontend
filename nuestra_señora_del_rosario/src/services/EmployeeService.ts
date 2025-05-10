@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import ApiService from "./GenericService/ApiService";
 import { EmployeeType } from "../types/EmployeeType";
+import { EmployeeUpdateDto } from "../types/EmployeeUpdateType";
 
 // Tipo para el filtro de empleados
 export interface EmployeeFilterDTO {
@@ -58,7 +59,7 @@ class EmployeeService extends ApiService<EmployeeType> {
   }
 
   // PUT /api/Employee/{id}
-  public updateEmployee(id: number, data: Partial<EmployeeType>) {
+  public updateEmployee(id: number, data: EmployeeUpdateDto) {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
 
