@@ -23,9 +23,10 @@ const EditResidentPathology: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("info");
 
-  // Estado para almacenar el nombre de la patología y la fecha de registro
+  // Estado para almacenar el nombre de la patología y las fechas
   const [pathologyName, setPathologyName] = useState<string>("");
   const [registerDate, setRegisterDate] = useState<string>("");
+  const [diagnosisDate, setDiagnosisDate] = useState<string>("");
 
   // Obtener la fecha actual en formato YYYY-MM-DD
   const todayDate = new Date().toISOString().split("T")[0];
@@ -39,8 +40,15 @@ const EditResidentPathology: React.FC = () => {
         setValue("id_Pathology", pathologyToEdit.id_Pathology);
         setValue("id_Resident", residentId); // Se envía el ID del residente
         setValue("resume_Pathology", pathologyToEdit.resume_Pathology);
-        setValue("diagnosisDate", todayDate); // Fecha actual para diagnóstico
         setValue("notes", pathologyToEdit.notes);
+
+        // Procesar la fecha de diagnóstico
+        const formattedDiagnosisDate = pathologyToEdit.diagnosisDate 
+          ? pathologyToEdit.diagnosisDate.split("T")[0] 
+          : todayDate;
+        
+        setValue("diagnosisDate", formattedDiagnosisDate);
+        setDiagnosisDate(formattedDiagnosisDate);
 
         // Asegurar que la fecha de registro no sea null ni undefined
         const formattedRegisterDate = pathologyToEdit.registerDate 
@@ -98,27 +106,25 @@ const EditResidentPathology: React.FC = () => {
         </div>
 
         {/* Resumen */}
-        {/* Resumen (Textarea más grande) */}
-<div>
-  <label className="block">Resumen</label>
-  <textarea
-    {...register("resume_Pathology")}
-    className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
-    rows={4} // Hace el campo más grande
-  ></textarea>
-</div>
+        <div>
+          <label className="block">Resumen</label>
+          <textarea
+            {...register("resume_Pathology")}
+            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            rows={4} // Hace el campo más grande
+          ></textarea>
+        </div>
 
-
-        {/* Fecha de Diagnóstico (No editable, siempre es hoy) */}
+        {/* Fecha de Diagnóstico (Ahora muestra la fecha correcta) */}
         <div>
           <label className="block">Fecha de diagnóstico</label>
           <input
             type="date"
-            value={todayDate} // Muestra la fecha de hoy
+            value={diagnosisDate}
             className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
             disabled
           />
-          <input type="hidden" {...register("diagnosisDate")} value={todayDate} /> {/* Enviar la fecha actual */}
+          <input type="hidden" {...register("diagnosisDate")} value={diagnosisDate} />
         </div>
 
         {/* Fecha de Registro (No editable, usa la que ya está registrada) */}
