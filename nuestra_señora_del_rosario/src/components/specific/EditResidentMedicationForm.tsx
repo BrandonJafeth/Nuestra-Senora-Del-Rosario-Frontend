@@ -7,14 +7,15 @@ import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { ResidentMedication } from "../../types/ResidentMedicationType";
 import Toast from "../common/Toast";
 import { useThemeDark } from "../../hooks/useThemeDark";
+import { useQueryClient } from "react-query";
 
-const EditResidentMedicationForm: React.FC = () => {
-  const { id, id_ResidentMedication } = useParams<{ id: string; id_ResidentMedication: string }>(); 
-  const residentId = Number(id);
+const EditResidentMedicationForm: React.FC = () => {  const { id, id_ResidentMedication } = useParams<{ id: string; id_ResidentMedication: string }>();   const residentId = Number(id);
   const residentMedicationId = Number(id_ResidentMedication);
   const navigate = useNavigate();
-
-  const { register, handleSubmit, setValue } = useForm<Partial<ResidentMedication>>();
+  const queryClient = useQueryClient();
+  const { register, handleSubmit, setValue, formState: { errors,  isValid } } = useForm<Partial<ResidentMedication>>({
+    mode: 'onChange' // Validar cuando cambie cualquier campo
+  });
   const mutation = useUpdateResidentMedication();
   const { data: resident, isLoading, error } = useResidentInfoById(residentId);
   
@@ -55,18 +56,44 @@ const EditResidentMedicationForm: React.FC = () => {
       }
     }
   }, [resident, residentMedicationId, residentId, setValue]);
-
   if (isLoading) return <LoadingSpinner />;
   if (error) return <p className="text-red-500">Error al cargar la información.</p>;
-
+  
   const onSubmit = (data: Partial<ResidentMedication>) => {
+    // Validaciones adicionales
+    if (data.prescribedDose && data.prescribedDose <= 0) {
+      setToastMessage("La dosis prescrita debe ser mayor que 0");
+      setToastType("error");
+      return;
+    }
+    
+    if (data.endDate && startDate && new Date(data.endDate) < new Date(startDate)) {
+      setToastMessage("La fecha de fin no puede ser anterior a la fecha de inicio");
+      setToastType("error");
+      return;
+    }
+    
+    // Si todo está bien, continuar con el envío
     mutation.mutate(
       { id: residentMedicationId, data },
       {
         onSuccess: () => {
-          setToastMessage("Medicamento actualizado con éxito!");
-          setToastType("success");
-          setTimeout(() => navigate(`/dashboard/residente-info/${residentId}`), 3000);
+          // Invalidate all relevant query patterns
+          queryClient.invalidateQueries(['resident', residentId]);
+          queryClient.invalidateQueries(['residentInfo', residentId]);
+          queryClient.invalidateQueries(['residentMedications', residentId]);
+          queryClient.invalidateQueries(['/MedicationSpecific']);
+          
+          // Store success message in sessionStorage to show it in ResidentInfo
+          sessionStorage.setItem('medicationToast', JSON.stringify({
+            message: "Medicamento actualizado con éxito!",
+            type: "success"
+          }));
+          
+          // Force a refetch of the data before navigating
+          queryClient.refetchQueries(['residentInfo', residentId]);
+          // Navigate immediately
+          navigate(`/dashboard/residente-info/${residentId}`);
         },
         onError: () => {
           setToastMessage("Hubo un error al actualizar el medicamento.");
@@ -97,12 +124,18 @@ const EditResidentMedicationForm: React.FC = () => {
 
         {/* Dosis Prescrita */}
         <div>
-          <label className="block mb-1">Dosis prescrita</label>
-          <input
+          <label className="block mb-1">Dosis prescrita</label>          <input
             type="number"
-            {...register("prescribedDose")}
-            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            {...register("prescribedDose", {
+              required: "La dosis prescrita es obligatoria",
+              min: { value: 0.1, message: "La dosis debe ser mayor que 0" },
+              validate: value => (!value || Number(value) > 0) || "La dosis debe ser mayor que 0"
+            })}
+            className={`w-full p-2 border rounded-md ${errors.prescribedDose ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           />
+          {errors.prescribedDose && (
+            <p className="text-red-500 text-sm mt-1">{errors.prescribedDose.message}</p>
+          )}
         </div>
 
         {/* Fecha de Inicio (no editable) */}
@@ -119,12 +152,22 @@ const EditResidentMedicationForm: React.FC = () => {
 
         {/* Fecha de Fin */}
         <div>
-          <label className="block mb-1">Fecha de fin</label>
-          <input
+          <label className="block mb-1">Fecha de fin</label>          <input
             type="date"
-            {...register("endDate")}
-            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            {...register("endDate", {
+              validate: (value) => {
+                if (!value) return true; // Es opcional
+                if (startDate && new Date(value) < new Date(startDate)) {
+                  return "La fecha de fin no puede ser anterior a la fecha de inicio";
+                }
+                return true;
+              }
+            })}
+            className={`w-full p-2 border rounded-md ${errors.endDate ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           />
+          {errors.endDate && (
+            <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
+          )}
         </div>
 
         {/* Notas */}
@@ -136,11 +179,12 @@ const EditResidentMedicationForm: React.FC = () => {
           ></textarea>
         </div>
 
-        <div className="flex justify-center gap-5 mt-6">
-          <button
+        <div className="flex justify-center gap-5 mt-6">          <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            disabled={mutation.isLoading}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-md transition ${
+              !isValid || mutation.isLoading ? 'bg-blue-300 cursor-not-allowed' : 'hover:bg-blue-600'
+            }`}
+            disabled={mutation.isLoading || !isValid}
           >
             {mutation.isLoading ? "Guardando..." : "Actualizar"}
           </button>

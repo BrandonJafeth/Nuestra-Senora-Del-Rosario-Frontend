@@ -5,14 +5,44 @@ import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { FaEdit, FaFilePdf, FaArrowLeft, FaNotesMedical } from "react-icons/fa";
 import ResidentPDF from "../microcomponents/ResidentPDF";
 import { pdf } from "@react-pdf/renderer";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
+import Toast from "../common/Toast";
 
 const ResidentDetail: React.FC = () => {
   const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { isDarkMode } = useThemeDark();
   const { data: resident, isLoading, error } = useResidentInfoById(residentId);
+  
+  // Estado para mostrar el toast
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("success");
+
+  // Force a refresh of the resident data when component mounts
+  useEffect(() => {
+    // Refetch data when component mounts to ensure it's fresh
+    queryClient.refetchQueries(['residentInfo', residentId]);
+    
+    // Check for toast messages in sessionStorage
+    const medicationToast = sessionStorage.getItem('medicationToast');
+    const pathologyToast = sessionStorage.getItem('pathologyToast');
+    
+    if (medicationToast) {
+      const { message, type } = JSON.parse(medicationToast);
+      setToastMessage(message);
+      setToastType(type);
+      sessionStorage.removeItem('medicationToast');
+    } else if (pathologyToast) {
+      const { message, type } = JSON.parse(pathologyToast);
+      setToastMessage(message);
+      setToastType(type);
+      sessionStorage.removeItem('pathologyToast');
+    }
+  }, [residentId, queryClient]);
 
   const handleDownloadPDF = async () => {
     if (!resident) return;
@@ -38,12 +68,14 @@ const ResidentDetail: React.FC = () => {
   if (error)
     return <p className="text-red-500">Error al cargar la información del residente.</p>;
 
-  return (
-    <div
+  return (    <div
       className={`relative p-6 rounded-xl shadow-xl w-full max-w-3xl mx-auto ${
         isDarkMode ? "bg-[#0D313F] text-white" : "bg-white text-gray-900"
       }`}
     >
+      {/* Mostrar Toast si hay mensaje */}
+      {toastMessage && <Toast message={toastMessage} type={toastType} />}
+
       {/* Botón para regresar a la página de cardex */}
       <button
         onClick={() => navigate('/dashboard/cardex')}
@@ -124,8 +156,7 @@ const ResidentDetail: React.FC = () => {
         <h3 className="text-lg font-semibold mb-2">⚕️ Patologías</h3>
         {resident?.pathologies?.length ? (
           <ul className="list-disc pl-6 flex-grow">
-            {resident.pathologies.map((path) => (
-              <li key={path.id_ResidentPathology} className="flex justify-between items-center mb-2">
+            {resident.pathologies.map((path) => (              <li key={path.id_ResidentPathology} className="flex justify-between items-center mb-2">
                 <div>
                   <strong>{path.name_Pathology}</strong> : {path.resume_Pathology}
                   <br />

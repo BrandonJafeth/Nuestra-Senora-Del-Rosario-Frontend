@@ -6,14 +6,15 @@ import { useMedicalHistory } from "../../hooks/useCreateMedicalHistory";
 import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import Toast from "../common/Toast";
 import { useThemeDark } from "../../hooks/useThemeDark";
+import { MedicalHistoryInput } from "../../types/MedicalHistoryInputType";
 
-const AddMedicalHistoryForm: React.FC = () => {
-  const { residentId } = useParams();
+const AddMedicalHistoryForm: React.FC = () => {  const { residentId } = useParams();
   const resident_Id = Number(residentId);
   const navigate = useNavigate();
-  const { isDarkMode } = useThemeDark();
-
-  const { register, handleSubmit, reset } = useForm({
+  const { isDarkMode } = useThemeDark();  
+  
+  const { register, handleSubmit, reset, formState: { errors, isDirty, isValid } } = useForm<MedicalHistoryInput>({
+    mode: 'onBlur', // Validar cuando el campo pierde el foco
     defaultValues: {
       id_Resident: resident_Id,
       diagnosis: "",
@@ -22,18 +23,20 @@ const AddMedicalHistoryForm: React.FC = () => {
     },
   });
 
-  const mutation = useMedicalHistory();
-
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const mutation = useMedicalHistory();  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
-
-  const onSubmit = (data: any) => {
+    // Utilizamos MedicalHistoryInput para el formulario
+  const onSubmit = (data: MedicalHistoryInput) => {
     mutation.mutate(data, {
       onSuccess: () => {
-        setToastMessage("Historial médico agregado con éxito!");
-        setToastType("success");
+        // Almacenar el mensaje de toast en sessionStorage
+        sessionStorage.setItem('medicalHistoryToast', JSON.stringify({
+          message: "Historial médico agregado con éxito!",
+          type: "success"
+        }));
         reset();
-        setTimeout(() => navigate(`/dashboard/historial-medico/${resident_Id}`), 2000);
+        // Navegar inmediatamente sin esperar
+        navigate(`/dashboard/historial-medico/${resident_Id}`);
       },
       onError: () => {
         setToastMessage("Hubo un error al agregar el historial médico.");
@@ -60,48 +63,72 @@ const AddMedicalHistoryForm: React.FC = () => {
         <h2 className="text-2xl font-bold">Agregar Historial médico</h2>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">        <div>
           <label className="block text-lg font-semibold mb-2">Diagnóstico</label>
           <textarea
-            {...register("diagnosis", { required: true })}
+            {...register("diagnosis", { 
+              required: "El diagnóstico es obligatorio",
+              minLength: { value: 5, message: "El diagnóstico debe tener al menos 5 caracteres" }
+            })}
             rows={3}
             className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.diagnosis ? "border-red-500 " : ""
+            }${
               isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
             }`}
             placeholder="Ingrese el diagnóstico del paciente..."
           />
+          {errors.diagnosis && (
+            <p className="text-red-500 text-sm mt-1">{errors.diagnosis.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-lg font-semibold mb-2">Tratamiento</label>
           <textarea
-            {...register("treatment", { required: true })}
+            {...register("treatment", { 
+              required: "El tratamiento es obligatorio",
+              minLength: { value: 5, message: "El tratamiento debe tener al menos 5 caracteres" }
+            })}
             rows={3}
             className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.treatment ? "border-red-500 " : ""
+            }${
               isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
             }`}
             placeholder="Ingrese el tratamiento a seguir..."
           />
+          {errors.treatment && (
+            <p className="text-red-500 text-sm mt-1">{errors.treatment.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-lg font-semibold mb-2">Observaciones</label>
           <textarea
-            {...register("observations", { required: true })}
+            {...register("observations", { 
+              required: "Las observaciones son obligatorias",
+              minLength: { value: 5, message: "Las observaciones deben tener al menos 5 caracteres" }
+            })}
             rows={3}
             className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.observations ? "border-red-500 " : ""
+            }${
               isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"
             }`}
             placeholder="Ingrese observaciones adicionales..."
           />
-        </div>
-
-        <div className="flex justify-center gap-5 mt-6">
-          <button
+          {errors.observations && (
+            <p className="text-red-500 text-sm mt-1">{errors.observations.message}</p>
+          )}
+        </div>        <div className="flex justify-center gap-5 mt-6">          <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition flex items-center gap-2"
-            disabled={mutation.isLoading}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-md transition flex items-center gap-2 ${
+              (!isValid && isDirty) || mutation.isLoading 
+                ? "bg-blue-300 cursor-not-allowed" 
+                : "hover:bg-blue-600"
+            }`}
+            disabled={(!isValid && isDirty) || mutation.isLoading}
           >
             {mutation.isLoading ? <LoadingSpinner /> : "Agregar"}
           </button>
