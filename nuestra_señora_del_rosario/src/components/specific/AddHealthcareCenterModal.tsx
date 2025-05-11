@@ -24,7 +24,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
 
   const [name_HC, setName_HC] = useState('');
   const [location_HC, setLocation_HC] = useState('');
-  const [type_HC, setType_HC] = useState('Público'); // Valor inicial: 'Público'
+  const [type_HC, setType_HC] = useState(''); // Valor inicial: 'Público'
   const {showToast, message, type} = useToast();
 
   const { mutate, isLoading } = useCreateHealthcareCenter();
@@ -41,23 +41,66 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
     };
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutate(
-      { id_HC: 0, name_HC, location_HC, type_HC },
-      {
-        onSuccess: () => {
-          showToast('Centro de atención creado exitosamente', 'success');
-          setTimeout(() => {
-            onClose();
-          }, 2000);
-        },
-        onError: () => {
+ const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Validaciones
+  if (!name_HC.trim()) {
+    showToast('El nombre es obligatorio.', 'error');
+    return;
+  }
+
+  if (name_HC.trim().length < 3) {
+    showToast('El nombre debe tener al menos 3 caracteres.', 'error');
+    return;
+  }
+
+  if (name_HC.trim().length > 50) {
+    showToast('El nombre no puede exceder los 50 caracteres.', 'error');  
+    return;
+  }
+
+  if (!/^[a-zA-Z\s]+$/.test(name_HC)) {
+    showToast('El nombre solo puede contener letras y espacios.', 'error');
+    return;
+  }
+
+  if (!location_HC.trim()) {
+    showToast('La ubicación es obligatoria.', 'error');
+    return;
+  }
+
+  if (location_HC.trim().length < 3) {
+    showToast('La ubicación debe tener al menos 3 caracteres.', 'error');
+    return;
+  }
+
+  if (location_HC.trim().length > 50) {
+    showToast('La ubicación no puede exceder los 50 caracteres.', 'error');
+    return;
+  }
+
+  if (!type_HC || type_HC === "") {
+    showToast('El tipo es obligatorio.', 'error');
+    return;
+  }
+
+  // Si todas las validaciones pasan, se procede con la mutación.
+  mutate(
+    { id_HC: 0, name_HC, location_HC, type_HC },
+    {
+      onSuccess: () => {
+        showToast('Centro de atención creado exitosamente', 'success');
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      },
+      onError: () => {
         showToast('Error al crear el centro de atención.', 'error');
-        }
-      }
-    );
-  };
+      },
+    }
+  );
+};
 
   // Estilos condicionales basados en el modo oscuro
   const inputStyles = `w-full p-2 border rounded ${
@@ -108,7 +151,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             type="text"
             value={name_HC}
             onChange={(e) => setName_HC(e.target.value)}
-            required
+            
             className={inputStyles}
           />
         </div>
@@ -120,7 +163,7 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
             type="text"
             value={location_HC}
             onChange={(e) => setLocation_HC(e.target.value)}
-            required
+            
             className={inputStyles}
           />
         </div>
@@ -131,10 +174,10 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
           <select
             value={type_HC}
             onChange={(e) => setType_HC(e.target.value)}
-            required
+            
             className={`${inputStyles}`}
             >
-            <option value="" disabled>Seleccione un tipo</option>
+            <option value="" >Seleccione un tipo</option>
            <option value="Público">Público</option>
             <option value="Privado">Privado</option>
           </select>
@@ -159,8 +202,8 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
           </button>
         </div>
       </form>
-    </Modal>
       <Toast message={message} type={type} />
+    </Modal>
             </>
   );
 };

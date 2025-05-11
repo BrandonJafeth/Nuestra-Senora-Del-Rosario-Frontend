@@ -46,9 +46,9 @@ const AdminTable: React.FC<AdminTableProps> = ({
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handleGoBack}
-          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center space-x-2"
+          className=" top-4 left-4 p-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 flex items-center space-x-2"
         >
-          <FaArrowLeft /> <span>Regresar</span>
+          <FaArrowLeft />
         </button>
         <h3 className="text-2xl font-bold">{title}</h3>
         <button
