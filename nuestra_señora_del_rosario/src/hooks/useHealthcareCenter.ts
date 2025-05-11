@@ -10,7 +10,7 @@ export const useCreateHealthcareCenter = () => {
     (data: HealthcareCenter) => healthcareCenterService.createHealthcareCenter(data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('healthcareCenters'); // Refrescar centros
+        queryClient.invalidateQueries('HealthcareCenter'); // Refrescar centros
       },
       onError: (error) => {
         console.error('Error al crear el centro de atención:', error);
