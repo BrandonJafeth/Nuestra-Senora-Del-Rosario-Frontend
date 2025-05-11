@@ -24,11 +24,10 @@ const EditResidentMedicationForm: React.FC = () => {  const { id, id_ResidentMed
   // Estado para manejar Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("info");
-
-  // Estado para almacenar el nombre del medicamento y la fecha de inicio
+  // Estado para almacenar el nombre del medicamento, la fecha de inicio y la unidad de medida
   const [medicationName, setMedicationName] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
-
+  const [unitOfMeasure, setUnitOfMeasure] = useState<string>("");
   useEffect(() => {
     if (resident && resident.medications) {
       const medicationToEdit = resident.medications.find(
@@ -43,8 +42,9 @@ const EditResidentMedicationForm: React.FC = () => {  const { id, id_ResidentMed
         setValue("endDate", medicationToEdit.endDate ? medicationToEdit.endDate.split("T")[0] : "");
         setValue("notes", medicationToEdit.notes);
 
-        // Guardar el nombre del medicamento en el estado
+        // Guardar el nombre del medicamento y la unidad de medida en el estado
         setMedicationName(medicationToEdit.name_MedicamentSpecific || "Desconocido");
+        setUnitOfMeasure(medicationToEdit.unitOfMeasureName || "");
 
         // Formatear la fecha de inicio
         const formattedStartDate = medicationToEdit.startDate 
@@ -109,8 +109,7 @@ const EditResidentMedicationForm: React.FC = () => {  const { id, id_ResidentMed
 
       {toastMessage && <Toast message={toastMessage} type={toastType} />}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Medicamento Asignado (solo visual) */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">        {/* Medicamento Asignado (solo visual) */}
         <div>
           <label className="block mb-1">Medicamento Asignado</label>
           <input
@@ -121,6 +120,20 @@ const EditResidentMedicationForm: React.FC = () => {  const { id, id_ResidentMed
           />
           <input type="hidden" {...register("id_MedicamentSpecific")} />
         </div>
+
+        {/* Unidad de medida (solo visual) */}
+        {unitOfMeasure && (
+          <div>
+            <label className="block mb-1">Unidad de medida</label>
+            <input
+              type="text"
+              value={unitOfMeasure}
+              readOnly
+              className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-600 border-gray-500 text-gray-300" : "bg-gray-100 border-gray-200 text-gray-700"}`}
+              disabled
+            />
+          </div>
+        )}
 
         {/* Dosis Prescrita */}
         <div>

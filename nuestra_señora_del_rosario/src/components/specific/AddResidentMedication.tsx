@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
 import { ResidentMedication } from "../../types/ResidentMedicationType";
@@ -14,14 +15,16 @@ const AddMedicationPage: React.FC = () => {  const { id } = useParams();
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
   const { showToast, message, type } = useToast();
-  const queryClient = useQueryClient();
-  const { register, handleSubmit, setValue, reset, watch, formState: { errors, isValid } } = useForm<ResidentMedication>({
+  const queryClient = useQueryClient();  const { register, handleSubmit, setValue, reset, watch, formState: { errors, isValid } } = useForm<ResidentMedication>({
     mode: 'onChange' // Validar cuando cambie cualquier campo
   });
   const mutation = useCreateResidentMedication();
   const selectedMedicament = watch("id_MedicamentSpecific");
+  
+  // Estado para almacenar la unidad de medida del medicamento seleccionado
+  const [unitOfMeasure, setUnitOfMeasure] = useState<string>("");
 
-  const { data, isLoading, error } = useMedicationSpecific();  const onSubmit = (data: ResidentMedication) => {
+  const { data, isLoading, error } = useMedicationSpecific();const onSubmit = (data: ResidentMedication) => {
     // Validación adicional
     if (data.prescribedDose <= 0) {
       showToast("La dosis prescrita debe ser mayor que 0", "error");
@@ -89,9 +92,7 @@ const AddMedicationPage: React.FC = () => {  const { id } = useParams();
           {errors.prescribedDose && (
             <p className="text-red-500 text-sm mt-1">{errors.prescribedDose.message}</p>
           )}
-        </div>
-
-        <div>
+        </div>        <div>
           <label className="block">Seleccionar medicamento</label>
           <select
             {...register("id_MedicamentSpecific", { 
@@ -99,7 +100,22 @@ const AddMedicationPage: React.FC = () => {  const { id } = useParams();
               validate: value => Number(value) > 0 || "Debe seleccionar un medicamento"
             })}
             value={selectedMedicament ?? ""}
-            onChange={(e) => setValue("id_MedicamentSpecific", Number(e.target.value))}
+            onChange={(e) => {
+              const medicamentId = Number(e.target.value);
+              setValue("id_MedicamentSpecific", medicamentId);
+              
+              // Buscar la unidad de medida del medicamento seleccionado
+              if (medicamentId > 0 && data?.data) {
+                const selectedMed = data.data.find(med => med.id_MedicamentSpecific === medicamentId);
+                if (selectedMed) {
+                  setUnitOfMeasure(selectedMed.unitOfMeasureName);
+                } else {
+                  setUnitOfMeasure("");
+                }
+              } else {
+                setUnitOfMeasure("");
+              }
+            }}
             className={`w-full p-2 border rounded-md ${errors.id_MedicamentSpecific ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           >
             <option value="">Seleccione un medicamento</option>
@@ -111,6 +127,19 @@ const AddMedicationPage: React.FC = () => {  const { id } = useParams();
           </select>
           {errors.id_MedicamentSpecific && (
             <p className="text-red-500 text-sm mt-1">{errors.id_MedicamentSpecific.message}</p>
+          )}
+          
+          {/* Campo para mostrar la unidad de medida (solo visible cuando hay un medicamento seleccionado) */}
+          {unitOfMeasure && (
+            <div className="mt-2">
+              <label className="block text-sm">Unidad de medida</label>
+              <input
+                type="text"
+                value={unitOfMeasure}
+                readOnly
+                className={`w-full px-3 py-2 border rounded-md bg-gray-100 ${isDarkMode ? "bg-gray-600 border-gray-500 text-gray-300" : "bg-gray-100 border-gray-200 text-gray-700"}`}
+              />
+            </div>
           )}
         </div>
 

@@ -8,20 +8,29 @@ import { useThemeDark } from "../../hooks/useThemeDark";
 import { useToast } from "../../hooks/useToast";
 import { useQueryClient } from "react-query";
 import Toast from "../common/Toast";
+import { useResidentInfoById } from "../../hooks/useResidentInfoById";
+import { AxiosError } from "axios";
 
 const AddPathologyPage: React.FC = () => {  const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
   const { showToast, message, type } = useToast();
-  const queryClient = useQueryClient();
-  const { register, handleSubmit, setValue, reset, watch, formState: { errors,  isValid } } = useForm<ResidentPathology>({
-    mode: 'onChange' // Validar cuando cambie cualquier campo
+  const queryClient = useQueryClient();  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<ResidentPathology>({
+    mode: 'onChange', // Validar cuando cambie cualquier campo
+    defaultValues: {
+      diagnosisDate: new Date().toISOString().split("T")[0],
+      registerDate: new Date().toISOString().split("T")[0],
+      notes: "",
+    }
   });
   const mutation = useCreateResidentPathology();
-  const selectedPathology = watch("id_Pathology");
+  const selectedPathology = watch("id_Pathology");  // Obtener info del residente para verificar las patologías existentes
+  const { data: resident } = useResidentInfoById(residentId);
 
-  const { data, isLoading, error } = usePathologies();  const onSubmit = (data: ResidentPathology) => {
+  const { data, isLoading, error } = usePathologies();const onSubmit = (data: ResidentPathology) => {
+  
+    
     // Validación adicional
     if (!data.resume_Pathology || !data.resume_Pathology.trim()) {
       showToast("El resumen es obligatorio", "error");
@@ -36,19 +45,36 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
     if (!data.diagnosisDate) {
       showToast("La fecha de diagnóstico es obligatoria", "error");
       return;
+    }      
+    // Validar si la patología ya está asignada al residente
+    if (resident?.pathologies?.some(path => path.id_Pathology === Number(data.id_Pathology))) {
+      showToast("Esta patología ya ha sido asignada a este residente", "error");
+      return;
     }
-      if (new Date(data.diagnosisDate) > new Date()) {
+
+    // Normalizar las fechas para compararlas correctamente
+    const diagnosisDate = new Date(data.diagnosisDate);
+    diagnosisDate.setHours(0, 0, 0, 0);
+    
+    const registerDate = new Date(data.registerDate);
+    registerDate.setHours(0, 0, 0, 0);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Validar que las fechas no sean futuras
+    if (diagnosisDate > today) {
       showToast("La fecha de diagnóstico no puede ser futura", "error");
       return;
     }
     
-    if (new Date(data.registerDate) > new Date()) {
+    if (registerDate > today) {
       showToast("La fecha de registro no puede ser futura", "error");
       return;
     }
     
     // Si la fecha de diagnóstico es posterior a la fecha de registro, mostrar un error
-    if (new Date(data.diagnosisDate) > new Date(data.registerDate)) {
+    if (diagnosisDate > registerDate) {
       showToast("La fecha de diagnóstico no puede ser posterior a la fecha de registro", "error");
       return;
     }
@@ -64,15 +90,36 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
         // Invalidar todas las consultas relacionadas
         queryClient.invalidateQueries(["resident", residentId]);
         queryClient.invalidateQueries(["residentInfo", residentId]);
-        queryClient.invalidateQueries(["residentPathologies", residentId]);
-        
-        // Navegar inmediatamente, sin esperar
+        queryClient.invalidateQueries(["residentPathologies", residentId]);        // Navegar inmediatamente, sin esperar
         queryClient.refetchQueries(["residentInfo", residentId]);
         navigate(`/dashboard/residente-info/${residentId}`);
-      },
-      onError: (error) => {
-        console.error("Error al agregar patología:", error);
-        showToast("Error al agregar patología", "error");
+      },      onError: (error: unknown) => {
+        // Intentar obtener un mensaje más específico del error
+        let errorMessage = "Error al agregar patología";
+        
+        if (error instanceof AxiosError && error.response) {
+          // Si el backend devuelve un mensaje específico
+          if (error.response.data?.message) {
+            errorMessage = error.response.data.message;
+          }
+          
+          // Si el error es por patología duplicada (status 400 o 409 normalmente en APIs)
+          if (error.response.status === 400 || error.response.status === 409) {
+            const responseData = error.response.data;
+            
+            // Verificar si el mensaje contiene referencias a duplicados
+            if ((responseData?.error && typeof responseData.error === 'string' && 
+                 responseData.error.includes("duplicate")) || 
+                (responseData?.message && typeof responseData.message === 'string' && 
+                 (responseData.message.includes("duplicate") || 
+                  responseData.message.includes("ya existe") || 
+                  responseData.message.includes("ya asignada")))) {
+              errorMessage = "Esta patología ya ha sido asignada a este residente";
+            }
+          }
+        }
+        
+        showToast(errorMessage, "error");
       },
     });
   };
@@ -97,13 +144,21 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
           {errors.resume_Pathology && (
             <p className="text-red-500 text-sm mt-1">{errors.resume_Pathology.message}</p>
           )}
-        </div>
-
-        <div>
-          <label className="block">Seleccionar patología</label>          <select
+        </div>        <div>
+          <label className="block">Seleccionar patología</label>            <select
             {...register("id_Pathology", { 
               required: "Debe seleccionar una patología",
-              validate: value => Number(value) > 0 || "Debe seleccionar una patología"
+              validate: value => {
+                // Validar que se seleccionó una patología
+                if (!value || Number(value) <= 0) return "Debe seleccionar una patología";
+                
+                // Validar que la patología no esté duplicada
+                if (resident?.pathologies?.some(path => path.id_Pathology === Number(value))) {
+                  return "Esta patología ya ha sido asignada a este residente";
+                }
+                
+                return true;
+              }
             })}
             value={selectedPathology ?? ""}
             onChange={(e) => setValue("id_Pathology", Number(e.target.value))}
@@ -123,11 +178,16 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
 
         <div>
           <label className="block">Fecha de diagnóstico</label>          <input
-            type="date"
-            {...register("diagnosisDate", { 
+            type="date"            {...register("diagnosisDate", { 
               required: "La fecha de diagnóstico es obligatoria",
               validate: value => {
-                if (new Date(value) > new Date()) return "La fecha no puede ser futura";
+                if (!value) return "La fecha de diagnóstico es obligatoria";
+                // Convertir las fechas a UTC para comparación consistente
+                const valueDate = new Date(value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                valueDate.setHours(0, 0, 0, 0);
+                if (valueDate > today) return "La fecha no puede ser futura";
                 return true;
               }
             })}
@@ -141,14 +201,28 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
 
         <div>
           <label className="block">Fecha de registro</label>          <input
-            type="date"
-            {...register("registerDate", { 
+            type="date"            {...register("registerDate", { 
               required: "La fecha de registro es obligatoria",
               validate: value => {
-                if (new Date(value) > new Date()) return "La fecha no puede ser futura";
+                if (!value) return "La fecha de registro es obligatoria";
+                
+                // Convertir las fechas a UTC para comparación consistente
+                const valueDate = new Date(value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                valueDate.setHours(0, 0, 0, 0);
+                
+                if (valueDate > today) return "La fecha no puede ser futura";
+                
                 const diagnosisDate = watch("diagnosisDate");
-                if (diagnosisDate && new Date(diagnosisDate) > new Date(value)) 
-                  return "La fecha de registro no puede ser anterior a la fecha de diagnóstico";
+                if (diagnosisDate) {
+                  const diagDate = new Date(diagnosisDate);
+                  diagDate.setHours(0, 0, 0, 0);
+                  
+                  if (diagDate > valueDate) 
+                    return "La fecha de registro no puede ser anterior a la fecha de diagnóstico";
+                }
+                
                 return true;
               }
             })}
@@ -169,9 +243,9 @@ const AddPathologyPage: React.FC = () => {  const { id } = useParams();
         </div>        <div className="flex justify-center gap-5 mt-6">          <button
             type="submit"
             className={`bg-blue-500 text-white px-4 py-2 rounded-md transition ${
-              !isValid || mutation.isLoading ? 'bg-blue-300 cursor-not-allowed' : 'hover:bg-blue-600'
+              mutation.isLoading ? 'bg-blue-300 cursor-not-allowed' : 'hover:bg-blue-600'
             }`}
-            disabled={mutation.isLoading || !isValid}
+            disabled={mutation.isLoading}
           >
             {mutation.isLoading ? "Guardando..." : "Agregar"}
           </button>
