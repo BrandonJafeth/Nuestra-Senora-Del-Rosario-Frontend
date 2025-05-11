@@ -9,31 +9,57 @@ import { useToast } from "../../hooks/useToast";
 import { useQueryClient } from "react-query";
 import Toast from "../common/Toast";
 
-const AddMedicationPage: React.FC = () => {
-  const { id } = useParams();
+const AddMedicationPage: React.FC = () => {  const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
   const { isDarkMode } = useThemeDark();
   const { showToast, message, type } = useToast();
   const queryClient = useQueryClient();
-
-  const { register, handleSubmit, setValue, reset, watch } = useForm<ResidentMedication>();
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors, isValid } } = useForm<ResidentMedication>({
+    mode: 'onChange' // Validar cuando cambie cualquier campo
+  });
   const mutation = useCreateResidentMedication();
   const selectedMedicament = watch("id_MedicamentSpecific");
 
-  const { data, isLoading, error } = useMedicationSpecific();
-
-  const onSubmit = (data: ResidentMedication) => {
-    mutation.mutate({ ...data, id_Resident: residentId }, {
-      onSuccess: () => {
-        showToast("Medicamento agregado con éxito!", "success");
+  const { data, isLoading, error } = useMedicationSpecific();  const onSubmit = (data: ResidentMedication) => {
+    // Validación adicional
+    if (data.prescribedDose <= 0) {
+      showToast("La dosis prescrita debe ser mayor que 0", "error");
+      return;
+    }
+    
+    if (!data.id_MedicamentSpecific || Number(data.id_MedicamentSpecific) <= 0) {
+      showToast("Debe seleccionar un medicamento", "error");
+      return;
+    }
+    
+    if (!data.startDate) {
+      showToast("La fecha de inicio es obligatoria", "error");
+      return;
+    }
+    
+    if (new Date(data.startDate) > new Date()) {
+      showToast("La fecha de inicio no puede ser futura", "error");
+      return;
+    }
+    
+    // Si todo está bien, continuar con el envío
+    mutation.mutate({ ...data, id_Resident: residentId }, {onSuccess: () => {
+        // Guardar mensaje de toast en sessionStorage en lugar de mostrarlo
+        sessionStorage.setItem('medicationToast', JSON.stringify({
+          message: "Medicamento agregado con éxito!",
+          type: "success"
+        }));
         reset();
-        // Invalidar consultas relacionadas con el residente para forzar una recarga
+        // Invalidar todas las consultas relacionadas
+        queryClient.invalidateQueries(["resident", residentId]);
         queryClient.invalidateQueries(["residentInfo", residentId]);
-        // Esperar un momento para que el toast sea visible antes de navegar
-        setTimeout(() => {
-          navigate(`/dashboard/residente-info/${residentId}`);
-        }, 1500);
+        queryClient.invalidateQueries(["residentMedications", residentId]);
+        queryClient.invalidateQueries(["/MedicationSpecific"]);
+        
+        // Navegar inmediatamente, sin esperar
+        queryClient.refetchQueries(["residentInfo", residentId]);
+        navigate(`/dashboard/residente-info/${residentId}`);
       },
       onError: (error) => {
         console.error("Error al agregar medicamento:", error);
@@ -49,23 +75,32 @@ const AddMedicationPage: React.FC = () => {
       {isLoading && <LoadingSpinner />}
       {error instanceof Error && <p className="text-red-500">❌ {error.message}</p>}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">        <div>
           <label className="block">Dosis prescrita</label>
           <input
             type="number"
-            {...register("prescribedDose", { required: true })}
-            className={`w-full px-3 py-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            {...register("prescribedDose", { 
+              required: "La dosis prescrita es obligatoria",
+              min: { value: 0.1, message: "La dosis debe ser mayor que 0" },
+              validate: value => value > 0 || "La dosis debe ser mayor que 0"
+            })}
+            className={`w-full px-3 py-2 border rounded-md ${errors.prescribedDose ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           />
+          {errors.prescribedDose && (
+            <p className="text-red-500 text-sm mt-1">{errors.prescribedDose.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block">Seleccionar medicamento</label>
           <select
-            {...register("id_MedicamentSpecific", { required: true })}
+            {...register("id_MedicamentSpecific", { 
+              required: "Debe seleccionar un medicamento",
+              validate: value => Number(value) > 0 || "Debe seleccionar un medicamento"
+            })}
             value={selectedMedicament ?? ""}
             onChange={(e) => setValue("id_MedicamentSpecific", Number(e.target.value))}
-            className={`w-full p-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            className={`w-full p-2 border rounded-md ${errors.id_MedicamentSpecific ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           >
             <option value="">Seleccione un medicamento</option>
             {data?.data?.map((med) => (
@@ -74,15 +109,27 @@ const AddMedicationPage: React.FC = () => {
               </option>
             ))}
           </select>
+          {errors.id_MedicamentSpecific && (
+            <p className="text-red-500 text-sm mt-1">{errors.id_MedicamentSpecific.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block">Fecha de inicio</label>
           <input
             type="date"
-            {...register("startDate", { required: true })}
-            className={`w-full px-3 py-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
+            {...register("startDate", { 
+              required: "La fecha de inicio es obligatoria",
+              validate: value => {
+                if (new Date(value) > new Date()) return "La fecha no puede ser futura";
+                return true;
+              }
+            })}
+            className={`w-full px-3 py-2 border rounded-md ${errors.startDate ? "border-red-500" : ""} ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           />
+          {errors.startDate && (
+            <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
+          )}
         </div>
 
         <div>
@@ -91,13 +138,13 @@ const AddMedicationPage: React.FC = () => {
             {...register("notes")}
             className={`w-full px-3 py-2 border rounded-md ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-black"}`}
           ></textarea>
-        </div>
-
-        <div className="flex justify-center gap-5 mt-6">
+        </div>        <div className="flex justify-center gap-5 mt-6">
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            disabled={mutation.isLoading}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-md transition ${
+              !isValid || mutation.isLoading ? 'bg-blue-300 cursor-not-allowed' : 'hover:bg-blue-600'
+            }`}
+            disabled={mutation.isLoading || !isValid}
           >
             {mutation.isLoading ? "Guardando..." : "Agregar"}
           </button>

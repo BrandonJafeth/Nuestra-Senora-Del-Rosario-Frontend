@@ -8,19 +8,21 @@ import {  FaArrowLeft } from "react-icons/fa";
 import Toast from "../common/Toast";
 import { MedicalHistory } from "../../types/MedicalHistoryType";
 
-const UpdateMedicalHistory: React.FC = () => {
-  const { residentId, id_MedicalHistory } = useParams<{ residentId: string; id_MedicalHistory: string }>();
+const UpdateMedicalHistory: React.FC = () => {  const { residentId, id_MedicalHistory } = useParams<{ residentId: string; id_MedicalHistory: string }>();
   const resident_Id = Number(residentId);
   const history_Id = Number(id_MedicalHistory);
   const navigate = useNavigate();
-
-  const { register, handleSubmit, setValue } = useForm<Partial<MedicalHistory>>();
+  const { register, handleSubmit, setValue, formState: { errors, isDirty, isValid } } = useForm<Partial<MedicalHistory>>({
+    mode: 'onBlur'
+  });
   const mutation = useUpdateMedicalHistory();
   const { data: medicalHistory, isLoading, error } = useMedicalHistoryById(resident_Id);
-
   // Estado para manejar mensajes del Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("info");
+  
+  // Estado para controlar si el formulario está completo inicialmente
+  const [formLoaded, setFormLoaded] = useState(false);
 
   useEffect(() => {
     // Filtrar el historial médico usando el id_MedicalHistory
@@ -33,21 +35,26 @@ const UpdateMedicalHistory: React.FC = () => {
         setValue("diagnosis", selectedHistory.diagnosis || "");
         setValue("treatment", selectedHistory.treatment || "");
         setValue("observations", selectedHistory.observations || "");
+        // Marcar que el formulario ha sido cargado
+        setFormLoaded(true);
       }
     }
   }, [medicalHistory, history_Id, setValue]);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <p className="text-red-500">Error al cargar el historial médico.</p>;
-
   const onSubmit = (data: Partial<MedicalHistory>) => {
     mutation.mutate(
       { id: history_Id, data },
       {
         onSuccess: () => {
-          setToastMessage("Historial médico actualizado con éxito!");
-          setToastType("success");
-          setTimeout(() => navigate(`/dashboard/historial-medico/${resident_Id}`), 3000);
+          // Guardar mensaje de toast en sessionStorage
+          sessionStorage.setItem('medicalHistoryToast', JSON.stringify({
+            message: "Historial médico actualizado con éxito!",
+            type: "success"
+          }));
+          // Navegar inmediatamente sin esperar
+          navigate(`/dashboard/historial-medico/${resident_Id}`);
         },
         onError: () => {
           setToastMessage("Hubo un error al actualizar el historial médico.");
@@ -72,49 +79,70 @@ const UpdateMedicalHistory: React.FC = () => {
       {/* Componente Toast */}
       {toastMessage && <Toast message={toastMessage} type={toastType} />}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* 🔹 Diagnóstico */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">        {/* 🔹 Diagnóstico */}
         <div>
           <label className="block text-lg font-semibold mb-2">Diagnóstico</label>
           <textarea
-            {...register("diagnosis")}
+            {...register("diagnosis", { 
+              required: "El diagnóstico es obligatorio",
+              minLength: { value: 5, message: "El diagnóstico debe tener al menos 5 caracteres" }
+            })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.diagnosis ? "border-red-500" : ""
+            }`}
             placeholder="Ingrese el diagnóstico del paciente..."
-            required
           />
+          {errors.diagnosis && (
+            <p className="text-red-500 text-sm mt-1">{errors.diagnosis.message}</p>
+          )}
         </div>
 
         {/* 🔹 Tratamiento */}
         <div>
           <label className="block text-lg font-semibold mb-2">Tratamiento</label>
           <textarea
-            {...register("treatment")}
+            {...register("treatment", {
+              required: "El tratamiento es obligatorio",
+              minLength: { value: 5, message: "El tratamiento debe tener al menos 5 caracteres" }
+            })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.treatment ? "border-red-500" : ""
+            }`}
             placeholder="Ingrese el tratamiento a seguir..."
-            required
           />
+          {errors.treatment && (
+            <p className="text-red-500 text-sm mt-1">{errors.treatment.message}</p>
+          )}
         </div>
 
         {/* 🔹 Observaciones */}
         <div>
           <label className="block text-lg font-semibold mb-2">Observaciones</label>
           <textarea
-            {...register("observations")}
+            {...register("observations", {
+              required: "Las observaciones son obligatorias",
+              minLength: { value: 5, message: "Las observaciones deben tener al menos 5 caracteres" }
+            })}
             rows={3}
-            className="w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+            className={`w-full p-4 border rounded-lg text-lg focus:ring-2 focus:ring-blue-500 ${
+              errors.observations ? "border-red-500" : ""
+            }`}
             placeholder="Ingrese observaciones adicionales..."
-            required
           />
-        </div>
-
-        {/* 🔹 Botones */}
-        <div className="flex justify-center gap-5 mt-6">
-          <button
+          {errors.observations && (
+            <p className="text-red-500 text-sm mt-1">{errors.observations.message}</p>
+          )}
+        </div>        {/* 🔹 Botones */}
+        <div className="flex justify-center gap-5 mt-6">          <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            disabled={mutation.isLoading}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-md transition ${
+              (!isValid && isDirty) || (!formLoaded && !isDirty) || mutation.isLoading 
+                ? "bg-blue-300 cursor-not-allowed" 
+                : "hover:bg-blue-600"
+            }`}
+            disabled={(!isValid && isDirty) || (!formLoaded && !isDirty) || mutation.isLoading}
           >
             {mutation.isLoading ? <LoadingSpinner/>: "Actualizar"}
           </button>
