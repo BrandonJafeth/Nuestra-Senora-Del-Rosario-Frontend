@@ -252,7 +252,7 @@ function ResidentList() {
         <div className="flex space-x-4">
           <button
             onClick={() => navigate('/dashboard/solicitudesAprobadas')}
-            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-800 hover:bg-blue-900'} text-white`}
+            className={`px-6 py-2 rounded-lg transition duration-200 ${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
           >
             Solicitudes aprobadas
           </button>

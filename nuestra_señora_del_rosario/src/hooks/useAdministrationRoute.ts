@@ -6,7 +6,9 @@ export const useAdministrationRoute = () => {
   return useQuery<AdministrationRouteType[], Error>(
     "/AdministrationRoute",
     async () => {
-      const response = await administrationRouteService.getAllAdministrationRouteRequests();
+      const page = 1; // Define the default page number
+      const pageSize = 10; // Define the default page size
+      const response = await administrationRouteService.getAllAplicationPages(page, pageSize);
 
       // Si tu backend retorna algo tipo: { data: [...] }
       // ajusta la lectura del array

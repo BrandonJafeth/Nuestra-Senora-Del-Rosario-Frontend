@@ -10,7 +10,6 @@ import { Product } from "../../types/ProductType";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useProductsByCategory } from "../../hooks/useProductByCategory";
 import CategoryDropdown from "../microcomponents/CategoryDropdown";
-import ConvertProductModal from "../microcomponents/ConvertProductModal";
 import { ConvertedData } from "../../types/ProductType";
 
 const InventoryTable: React.FC = () => {
@@ -39,14 +38,6 @@ const InventoryTable: React.FC = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  // Modal de Conversión...
-  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
-  const [convertData, setConvertData] = useState<{
-    productId: number;
-    targetUnit: string;
-    productName: string; // Añadir el nombre del producto
-  } | null>(null);
 
   // Estado para almacenar productos convertidos
   const [convertedProducts, setConvertedProducts] = useState<{
@@ -95,18 +86,7 @@ const InventoryTable: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const openConvertModal = (product: Product) => {
-    setConvertData({
-      productId: product.productID,
-      targetUnit: product.unitOfMeasure,
-      productName: product.name,
-    });
-    setIsConvertModalOpen(true);
-  };
-  const closeConvertModal = () => {
-    setIsConvertModalOpen(false);
-    setConvertData(null);
-  };
+ 
 
   // Paginación
   const handleNextPage = () => {
@@ -299,18 +279,7 @@ const InventoryTable: React.FC = () => {
                           Editar
                         </button>
 
-                        {/* Botón Convertir (para leche, pañales* y café*) */}
-                        {(item.name.toLowerCase() === "leche" ||
-                          item.name.toLowerCase().startsWith("pañales") ||
-                          item.name.toLowerCase().startsWith("cafe") ||
-                          item.name.toLowerCase().startsWith("café")) && (
-                          <button
-                            onClick={() => openConvertModal(item)}
-                            className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition duration-200"
-                          >
-                            Convertir
-                          </button>
-                        )}
+                     
                       </td>
                     </tr>
                   );
@@ -361,25 +330,16 @@ const InventoryTable: React.FC = () => {
 
       {/* Modal para editar producto */}
       {selectedProduct && (
-        <ProductEditModal
-          isOpen={isEditModalOpen}
-          onRequestClose={closeEditModal}
-          productId={selectedProduct.productID}
-          initialProductData={selectedProduct}
-        />
+       <ProductEditModal
+  isOpen={isEditModalOpen}
+  onRequestClose={closeEditModal}
+  productId={selectedProduct.productID}
+  initialProductData={selectedProduct}
+  onConversionComplete={handleConversionComplete}  // ← importante
+/>
+
       )}
 
-      {/* Modal para convertir producto */}
-      {convertData && (
-        <ConvertProductModal
-          isOpen={isConvertModalOpen}
-          onRequestClose={closeConvertModal}
-          productId={convertData.productId}
-          targetUnit={convertData.targetUnit}
-          productName={convertData.productName} // Añadir el nombre del producto
-          onConversionComplete={handleConversionComplete}
-        />
-      )}
     </div>
   );
 };

@@ -49,7 +49,6 @@ const TableNotes: React.FC = () => {
       return;
     }
 
-    console.log("🛠️ Editando:", item);
     setEditNote({ id_Note: item.id_Note, reason: item.reason, noteDate: item.noteDate, description: item.description });
     setPendingEditValue(item.description); // ✅ Se edita solo la descripción en el modal
     setIsEditModalOpen(true);
