@@ -1,5 +1,5 @@
 import { FiLock } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useResetPassword } from '../../hooks/useResetPassword';
 import Toast from '../common/Toast'; // Importamos el componente Toast
 import { useState } from 'react';
@@ -18,6 +18,7 @@ function ResetPasswordForm() {
 
   // Estado para manejar errores de validación
   const [error, setError] = useState('');
+  const Navigate = useNavigate();
 
   // Función para validar la longitud de la contraseña
   const validatePassword = (password: string | any[]) => {
@@ -35,6 +36,10 @@ function ResetPasswordForm() {
           e.preventDefault();
           if (newPassword.length >= 8) {
             handleSubmit(e);  // Sólo permite el envío si la contraseña tiene al menos 8 caracteres
+           setTimeout(() => {
+            Navigate('/'); // Redirige al inicio de sesión después de 3 segundos
+          }
+          , 2000);
           } else {
             setError('La contraseña debe tener al menos 8 caracteres.');
           }

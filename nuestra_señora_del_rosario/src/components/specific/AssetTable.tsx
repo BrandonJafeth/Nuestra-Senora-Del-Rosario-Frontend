@@ -198,8 +198,6 @@ const AssetTable: React.FC = () => {
     });
     
     if (isFiltering) {
-      // Para modo filtrado, usamos directamente el array de assets del hook
-      console.log("Mostrando activos filtrados:", filteredAssets);
       return filteredAssets || [];
     } else if (data) {
       // Para queries normales
@@ -214,11 +212,10 @@ const AssetTable: React.FC = () => {
   // Total de páginas
   const totalPages = useMemo(() => {
     if (isFiltering) {
-      // Usamos el totalRecords del filtrado
-      console.log("Calculando páginas en modo filtrado:", filteredTotalRecords);
+
       return Math.max(1, Math.ceil(filteredTotalRecords / pageSize));
     } else if (data) {
-      console.log("Calculando páginas en modo normal:", data);
+
       const total = data.totalRecords || (Array.isArray(data) ? data.length : 0);
       return Math.max(1, Math.ceil(total / pageSize));
     }
