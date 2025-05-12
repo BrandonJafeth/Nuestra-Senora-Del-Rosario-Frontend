@@ -54,7 +54,7 @@ const ResidentDocumentsPage: React.FC = () => {
     if (selectedDocument) {
       deleteFile(selectedDocument.id);
       showToast("Se ha eliminado el archivo exitosamente", "success")
-      setTimeout(() => setDeleteModalOpen(false), 2000);
+      setDeleteModalOpen(false);
     } 
       
   };

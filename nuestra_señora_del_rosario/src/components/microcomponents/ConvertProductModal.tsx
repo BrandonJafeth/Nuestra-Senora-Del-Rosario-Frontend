@@ -4,6 +4,8 @@ import Modal from "react-modal";
 import { useConvertProductUnit } from "../../hooks/useConvertProductUInit";
 import { ConvertedData } from "../../types/ProductType";
 import LoadingSpinner from "./LoadingSpinner";
+import { useToast } from "../../hooks/useToast";
+import Toast from "../common/Toast";
 
 interface ConvertProductModalProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
 }) => {
   // Estado para la unidad de conversión. Inicialmente se usa targetUnit.
   const [conversionUnit, setConversionUnit] = useState<string>(targetUnit);
+  const {showToast, message, type} = useToast ();
 
   // Se ejecuta el hook con la unidad actual seleccionada.
   const { data, isLoading, isError } = useConvertProductUnit(
@@ -40,11 +43,16 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
   const handleConfirmConversion = () => {
     if (typedData) {
       onConversionComplete(typedData);
+showToast("Conversión exitosa", "success");
+setTimeout(() => {
       onRequestClose();
+      }, 2000);
     }
   };
 
   return (
+    <>
+    
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
@@ -150,6 +158,8 @@ const ConvertProductModal: React.FC<ConvertProductModalProps> = ({
         </button>
       </div>
     </Modal>
+      <Toast message={message} type={type} />
+      </>
   );
 };
 

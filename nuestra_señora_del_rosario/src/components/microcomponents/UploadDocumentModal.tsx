@@ -33,10 +33,13 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
   
     mutate({ cedula, file: selectedFile }, {
       onSuccess: () => {
-        showToast('Documento subido con éxito!', 'success');
+        showToast('Documento subido con éxito! ✅', 'success');
+       setTimeout(() => {
+          onClose();
+        }, 2000); // Cierra el modal después de 2 segundos
       },
       onError: (err) => {
-        showToast(`Error al subir documento: ${err}`, 'error');
+        showToast(`Error al subir documento 🚨: ${err}`, 'error');
       }
     });
   };
@@ -65,7 +68,7 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, cedul
           </div>
         </form>
         {/* Se renderiza el Toast si hay mensaje */}
-        {message && <Toast message={message} type={type as any} />}
+        {message && <Toast message={message} type={type} />}
       </div>
     </div>
   );
