@@ -164,30 +164,52 @@ function ApplicationRequests() {
     );
   };
 
-  const handleSaveEdit = () => {
-    if (!editingApplication) return;
+const handleSaveEdit = () => {
+  if (!editingApplication) return;
 
-    const {
-      id_ApplicationForm,
-      ...applicationData
-    } = editingApplication;
-
-    updateApplication(
-      {
-        id: id_ApplicationForm,
-        applicationData,
-      },
-      {
-        onSuccess: () => {
-          setEditingApplication(null);
-          showToast('Solicitud actualizada correctamente', 'success');
-        },
-        onError: () => {
-          showToast('Error al actualizar la solicitud', 'error');
-        },
-      }
-    );
+  const fieldLabels: Record<string, string> = {
+    name_AP: 'Nombre',
+    lastName1_AP: 'Primer Apellido',
+    lastName2_AP: 'Segundo Apellido',
+    age_AP: 'Edad',
+    cedula_AP: 'Cédula',
+    location_AP: 'Domicilio',
+    guardianName: 'Nombre del Encargado',
+    guardianLastName1: 'Primer Apellido del Encargado',
+    guardianCedula: 'Cédula del Encargado',
+    guardianPhone: 'Teléfono del Encargado',
+    guardianEmail: 'Email del Encargado'
   };
+
+  const emptyFields = Object.keys(fieldLabels).filter(
+    (field) => !editingApplication[field as keyof ApplicationRequest]?.toString().trim()
+  );
+
+  if (emptyFields.length > 0) {
+    const fieldNames = emptyFields.map((field) => fieldLabels[field]).join(', ');
+    showToast(`Por favor, completa los siguientes campos: ${fieldNames}.`, 'warning');
+    return;
+  }
+
+  const { id_ApplicationForm, ...applicationData } = editingApplication;
+
+  updateApplication(
+    {
+      id: id_ApplicationForm,
+      applicationData,
+    },
+    {
+      onSuccess: () => {
+        setEditingApplication(null);
+        showToast('Solicitud actualizada correctamente', 'success');
+      },
+      onError: () => {
+        showToast('Error al actualizar la solicitud', 'error');
+      },
+    }
+  );
+};
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
