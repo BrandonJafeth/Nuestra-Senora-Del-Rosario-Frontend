@@ -30,10 +30,7 @@ const NotesComponent: React.FC = () => {
     deleteEntity.mutate(confirmDelete, {
       onSuccess: () => {
         setConfirmDelete(null);
-        setTimeout(() => {  
-         showToast("Se ha eliminado la nota exitosamente", "success")
-        }
-        , 2000);
+        showToast("Se ha eliminado la nota exitosamente", "success")
       },
     });
   };

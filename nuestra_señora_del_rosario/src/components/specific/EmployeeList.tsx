@@ -242,14 +242,6 @@ const EmployeeList: React.FC = () => {
           <p className={`mb-3 text-lg ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
             No se encontraron empleados que coincidan con "<span className="font-semibold">{searchTerm}</span>".
           </p>
-          <button 
-            onClick={() => setSearchTerm('')} 
-            className={`px-4 py-2 rounded-lg transition duration-200 ${
-              isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'
-            } text-white`}
-          >
-            Limpiar búsqueda
-          </button>
         </div>
       )}
 

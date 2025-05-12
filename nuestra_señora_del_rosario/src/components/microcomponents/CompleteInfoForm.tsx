@@ -35,34 +35,69 @@ const CompleteInformationForm: React.FC<CompleteInformationFormProps> = ({
   const { createResident, isLoading, error, isSuccess } = useCreateResidentfromApplicant();
 
   const handleSave = async () => {
-    if (!selectedRequest) return;
+  if (!selectedRequest) return;
 
-    if (!dependencyLevel || !roomNumber || !entryDate || !sexo || !fechaNacimiento) {
-      showToast('Por favor completa todos los campos obligatorios.', 'error');
-      return;
-    }
+  if (!sexo) {
+    showToast('Por favor, selecciona el sexo.', 'error');
+    return;
+  }
 
-    // Construimos el objeto según el tipo `ResidentPostFromApplicantForm`
-    const residentData: ResidentPostFromApplicantForm = {
-      id_ApplicationForm: selectedRequest.id_ApplicationForm,
-      id_Room: parseInt(roomNumber, 10),
-      entryDate: new Date(entryDate).toISOString(),
-      sexo,
-      fechaNacimiento: new Date(fechaNacimiento).toISOString(),
-      id_DependencyLevel: parseInt(dependencyLevel, 10),
-    };
+  if (!dependencyLevel) {
+    showToast('Por favor, selecciona el grado de dependencia.', 'error');
+    return;
+  }
 
-    // Ejecutamos la función sin react-query
-    await createResident(residentData);
+  if (!fechaNacimiento) {
+    showToast('Por favor, ingresa la fecha de nacimiento.', 'error');
+    return;
+  }
 
-    if (isSuccess) {
-      showToast('Residente creado exitosamente', 'success');
-      setTimeout(() => onClose(), 2000);
-      navigate('/dashboard/residentes');
-    } else if (error) {
-      showToast('Ocurrió un error al guardar los datos.', 'error');
-    }
+  // Validación de edad
+  const birthDate = new Date(fechaNacimiento);
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const dayDiff = today.getDate() - birthDate.getDate();
+
+  const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+  if (adjustedAge < 65) {
+    showToast('La edad debe ser igual o mayor a 65 años.', 'error');
+    return;
+  }
+
+  if (!roomNumber) {
+    showToast('Por favor, selecciona una habitación.', 'error');
+    return;
+  }
+
+  if (!entryDate) {
+    showToast('Por favor, ingresa la fecha de entrada.', 'error');
+    return;
+  }
+
+  // Todos los campos están correctos, se construye el objeto
+  const residentData: ResidentPostFromApplicantForm = {
+    id_ApplicationForm: selectedRequest.id_ApplicationForm,
+    id_Room: parseInt(roomNumber, 10),
+    entryDate: new Date(entryDate).toISOString(),
+    sexo,
+    fechaNacimiento: birthDate.toISOString(),
+    id_DependencyLevel: parseInt(dependencyLevel, 10),
   };
+
+  // Creación del residente
+  await createResident(residentData);
+
+  if (isSuccess) {
+    showToast('Residente creado exitosamente.', 'success');
+    setTimeout(() => onClose(), 2000);
+    navigate('/dashboard/residentes');
+  } else if (error) {
+    showToast('Ocurrió un error al guardar los datos: ' + error, 'error');
+  }
+};
+
 
   return (
     <>
