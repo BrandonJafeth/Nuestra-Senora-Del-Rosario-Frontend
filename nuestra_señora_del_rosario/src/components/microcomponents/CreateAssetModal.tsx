@@ -5,6 +5,8 @@ import { useAssetCategory } from "../../hooks/useAssetCategory";
 import { useModel } from "../../hooks/useModel";
 import { AssetType } from "../../types/AssetType";
 import { useCreateAsset } from "../../hooks/useCreaateAsset";
+import { useToast } from "../../hooks/useToast";
+import Toast from "../common/Toast";
 
 interface CreateAssetModalProps {
   isOpen: boolean;
@@ -58,57 +60,57 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
     });
   };
 
-  const handleSubmit = () => {
-    // Validar campos obligatorios
-    if (
-      !newAsset.assetName.trim() ||
-      !newAsset.serialNumber.trim() ||
-      !newAsset.plate.trim() ||
-      !newAsset.purchaseDate ||
-      !newAsset.location.trim() ||
-      !newAsset.assetCondition.trim() ||
-      Number(newAsset.idAssetCategory) === 0 ||
-      Number(newAsset.idLaw) === 0
-    ) {
-      alert("Por favor completa todos los campos obligatorios.");
-      return;
-    }
+// Dentro del componente:
+const { showToast, message, type } = useToast();
 
-    createAsset(newAsset, {
-      onSuccess: () => {
-        // Limpiar el formulario
-        setNewAsset({
-          idAsset: 0,
-          assetName: "",
-          serialNumber: "",
-          plate: "",
-          originalCost: 0,
-          purchaseDate: "",
-          location: "",
-          assetCondition: "",
-          idAssetCategory: 0,
-          idModel: 0,
-          idLaw: 0,
-          categoryName: "",
-          modelName: "",
-          brandName: "",
-          lawName: ""
-        });
-        
-        // Cerrar el modal
-        onClose();
-        
-        // Llamar al callback de éxito si existe
-        if (onSuccess) {
-          onSuccess();
-        }
-      },
-      onError: (error) => {
-        console.error("Error al crear el activo:", error);
-        alert("Ocurrió un error al crear el activo. Por favor intenta nuevamente.");
-      }
-    });
-  };
+const handleSubmit = () => {
+  if (
+    !newAsset.assetName.trim() ||
+    !newAsset.serialNumber.trim() ||
+    !newAsset.plate.trim() ||
+    !newAsset.purchaseDate ||
+    !newAsset.location.trim() ||
+    !newAsset.assetCondition.trim() ||
+    Number(newAsset.idAssetCategory) === 0 ||
+    Number(newAsset.idLaw) === 0
+  ) {
+    showToast("Por favor, completa todos los campos obligatorios.", "error");
+    return;
+  }
+
+  createAsset(newAsset, {
+    onSuccess: () => {
+      setNewAsset({
+        idAsset: 0,
+        assetName: "",
+        serialNumber: "",
+        plate: "",
+        originalCost: 0,
+        purchaseDate: "",
+        location: "",
+        assetCondition: "",
+        idAssetCategory: 0,
+        idModel: 0,
+        idLaw: 0,
+        categoryName: "",
+        modelName: "",
+        brandName: "",
+        lawName: "",
+      });
+
+      showToast("Activo creado exitosamente.", "success");
+      onClose();
+
+      if (onSuccess) onSuccess();
+    },
+    onError: (error: any) => {
+      console.error("Error al crear el activo:", error);
+      const backendMessage = error?.response?.data?.message || "Ocurrió un error al crear el activo.";
+      showToast(backendMessage, "error");
+    },
+  });
+};
+
 
   if (!isOpen) return null;
 
@@ -246,6 +248,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
           </button>
         </div>
       </div>
+      <Toast message={message} type={type} />
     </div>
   );
 };

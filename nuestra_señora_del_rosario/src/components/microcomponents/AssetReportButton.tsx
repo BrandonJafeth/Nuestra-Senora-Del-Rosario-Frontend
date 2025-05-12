@@ -3,8 +3,13 @@ import React from "react";
 import { pdf } from "@react-pdf/renderer";
 import AssetReportPDF from "../specific/AssetReportPdf";
 import { useAllAssets } from "../../hooks/useAllAssets";
+import { AssetType } from "../../types/AssetType";
 
-const AssetReportButton: React.FC = () => {
+interface AssetReportButtonProps {
+  assets: AssetType[];
+}
+
+const AssetReportButton: React.FC<AssetReportButtonProps> = ({  }) =>  {
   const { data: allAssets, isLoading } = useAllAssets();
 
   const handleDownload = async () => {
