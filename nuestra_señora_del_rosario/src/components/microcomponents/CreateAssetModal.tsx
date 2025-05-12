@@ -104,7 +104,6 @@ const handleSubmit = () => {
       if (onSuccess) onSuccess();
     },
     onError: (error: any) => {
-      console.error("Error al crear el activo:", error);
       const backendMessage = error?.response?.data?.message || "Ocurrió un error al crear el activo.";
       showToast(backendMessage, "error");
     },
