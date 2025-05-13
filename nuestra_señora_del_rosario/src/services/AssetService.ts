@@ -138,19 +138,24 @@ class AssetService extends ApiService<AssetType> {
   }
 
   public getAllAssetsUnpaged() {
-  const token = Cookies.get("authToken");
-  if (!token) throw new Error("No se encontró un token de autenticación");
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");
 
-  return this.getWithHeaders<{
-    data: AssetType[];
-    totalRecords: number;
-    pageNumber: number;
-    pageSize: number;
-  }>(`/Asset/paged?pageNumber=1&pageSize=10000`, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
+    return this.getWithHeaders<{
+      data: AssetType[];
+      totalRecords: number;
+      pageNumber: number;
+      pageSize: number;
+    }>(`/Asset/paged?pageNumber=1&pageSize=10000`, {
+      Authorization: `Bearer ${token}`,
+    });  }  
+  public checkPlateExists(plate: string) {
+    const token = Cookies.get("authToken");
+    if (!token) throw new Error("No se encontró un token de autenticación");   
+    return this.getWithHeaders<boolean | { exists: boolean }>(`/Asset/verify-plate?plate=${encodeURIComponent(plate)}`, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const assetService = new AssetService();
