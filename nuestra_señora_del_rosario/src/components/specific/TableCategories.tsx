@@ -6,16 +6,18 @@ import AdminModalAdd from "../microcomponents/AdminModalAdd";
 import AdminModalEdit from "../microcomponents/AdminModalEdit";
 import { useManagmentCategories } from "../../hooks/useManagmentCategories";
 import { useCategories } from "../../hooks/useCategories";
+import FormField from "../common/FormField";
 
 const TableCategories: React.FC = () => {
   const { deleteEntity, createEntity, updateEntity, toast } = useManagmentCategories();
   const { data: categories, isLoading } = useCategories();
   const [pageNumber] = useState(1);
   const totalPages = 3;
-
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newCategory, setNewCategory] = useState({ categoryName: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 📌 Estado del modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -31,9 +33,9 @@ const TableCategories: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // 📌 Modal para agregar
-  const openAddModal = () => setIsAddModalOpen(true);
-  const closeAddModal = () => {
+  const openAddModal = () => setIsAddModalOpen(true);  const closeAddModal = () => {
     setNewCategory({ categoryName: "" });
+    setErrors({});
     setIsAddModalOpen(false);
   };
 
@@ -106,12 +108,42 @@ const TableCategories: React.FC = () => {
         },
       });
     }
+  };  const handleAddCategory = () => {
+    if (!validateAddForm()) return;
+    
+    setIsSubmitting(true);
+    createEntity.mutate(
+      { categoryName: newCategory.categoryName, categoryID: 0 },
+      {
+        onSuccess: () => {
+          setIsSubmitting(false);
+          closeAddModal();
+        },
+        onError: (error: any) => {
+          setIsSubmitting(false);
+          // Si el backend devuelve errores específicos
+          if (error.response?.data?.message) {
+            setErrors({ categoryName: error.response.data.message });
+          } else {
+            setErrors({ categoryName: "Error al crear la categoría" });
+          }
+        }
+      }
+    );
   };
 
-  const handleAddCategory = () => {
-    if (newCategory.categoryName.trim() === "") return;
-    createEntity.mutate({ categoryName: newCategory.categoryName, categoryID: 0 });
-    closeAddModal();
+  // Función para validar el formulario
+  const validateAddForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!newCategory.categoryName.trim()) {
+      newErrors.categoryName = 'El nombre de la categoría es obligatorio';
+    } else if (newCategory.categoryName.length < 2) {
+      newErrors.categoryName = 'El nombre debe tener al menos 2 caracteres';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   return (
@@ -132,22 +164,44 @@ const TableCategories: React.FC = () => {
         totalPages={totalPages}
         onNextPage={() => {}}
         onPreviousPage={() => {}}
-      />
-
-      {/* 📌 Modal para Agregar */}
-      <AdminModalAdd isOpen={isAddModalOpen} title="Agregar nueva categoría" onClose={closeAddModal}>
-        <input
-          type="text"
+      />      {/* 📌 Modal para Agregar */}
+      <AdminModalAdd 
+        isOpen={isAddModalOpen} 
+        title="Agregar nueva categoría" 
+        onClose={closeAddModal}
+        errors={errors}
+        width="w-[400px]"
+      >
+        <FormField
+          label="Nombre de la categoría"
+          name="categoryName"
           value={newCategory.categoryName}
           onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
-          className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+          error={errors.categoryName}
+          required
           placeholder="Nombre de la categoría"
         />
-        <div className="flex justify-center space-x-4">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" onClick={handleAddCategory}>
-            Guardar
+        <div className="flex justify-center space-x-4 mt-4">
+          <button 
+            className={`px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300`}
+            onClick={handleAddCategory}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Guardando...
+              </span>
+            ) : "Guardar"}
           </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onClick={closeAddModal}>
+          <button 
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" 
+            onClick={closeAddModal}
+            disabled={isSubmitting}
+          >
             Cancelar
           </button>
         </div>
