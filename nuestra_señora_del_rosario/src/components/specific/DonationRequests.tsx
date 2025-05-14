@@ -354,7 +354,7 @@ function DonationRequests() {
             </td>
             <td className="px-6 py-4">
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
+                className="px-4 py-2 bg-orange-400 text-white rounded-xl hover:bg-orange-500 transition"
                 onClick={() => setSelectedDonation(donation)}
               >
                 Editar
