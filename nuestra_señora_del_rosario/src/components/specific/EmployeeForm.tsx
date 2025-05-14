@@ -3,6 +3,8 @@ import { useEmployeeForm } from '../../hooks/useRegisterEmployee';
 import { useTypeSalary } from '../../hooks/useTypeSalary';
 import { useProfession } from '../../hooks/useProfession';
 import { useToast } from '../../hooks/useToast';
+import { useEffect } from 'react';
+import { useFetchEmployeeInfo } from '../../hooks/useFetchEmployeeInfo';
 
 function EmployeeForm() {
 
@@ -18,6 +20,26 @@ function EmployeeForm() {
   const { data: professionData } = useProfession(); // Hook para obtener profesiones
 
   const { showToast, message, type } = useToast();
+
+  const { data: personInfo } = useFetchEmployeeInfo(dni);
+
+
+  const capitalize = (s: string) =>
+  s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+    useEffect(() => {
+    const results = personInfo?.results;
+    if (results?.length) {
+      const p = results[0];
+      const nombres = [p.firstname]
+        .filter(Boolean)
+        .map(capitalize)
+        .join(' ');
+      setFirstName(nombres);
+      setLastName1(capitalize(p.lastname1));
+      setLastName2(capitalize(p.lastname2));
+    }
+  }, [personInfo, setFirstName, setLastName1, setLastName2]);
 
   // Manejador del envío del formulario
   const handleFormSubmit = async (e: { preventDefault: () => void; }) => {
@@ -112,6 +134,7 @@ function EmployeeForm() {
       showToast('El contacto de emergencia debe contener solo números y ser de 8 digitos', 'error');
       return;
     }
+
     
     const success = await handleSubmit(e); // Verificar si el registro fue exitoso
     
@@ -143,6 +166,19 @@ setTypeOfSalaryId(0);
       <form className="grid grid-cols-2 gap-6" onSubmit={handleFormSubmit}>
         {/* Columna izquierda */}
         <div className="space-y-6">
+          {/* Cedula */}
+          <div>
+            <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+              <span className="ml-2">Cédula</span>
+            </label>
+            <input
+              type="text"
+              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
+              placeholder="Ingrese su cédula"
+              value={dni}
+              onChange={(e) => setDni(e.target.value)}
+            />
+          </div>
           {/* Nombre */}
           <div>
             <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -185,19 +221,6 @@ setTypeOfSalaryId(0);
             />
           </div>
 
-          {/* Cedula */}
-          <div>
-            <label className={`text-lg font-poppins flex items-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              <span className="ml-2">Cédula</span>
-            </label>
-            <input
-              type="text"
-              className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
-              placeholder="Ingrese su cédula"
-              value={dni}
-              onChange={(e) => setDni(e.target.value)}
-            />
-          </div>
 
           {/* Correo Electrónico */}
           <div>
