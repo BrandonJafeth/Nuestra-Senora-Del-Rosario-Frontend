@@ -40,57 +40,58 @@ function NewResidentForm() {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Nombre completo
-    if (!residentData.name_RD.trim()) {
-      showToast('El nombre del residente es requerido', 'error');
-      return;
-    }
-    if (residentData.name_RD.length < 3) {
-      showToast('El nombre debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.name_RD.length > 25) {
-      showToast('El nombre no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.name_RD)) {
-      showToast('El nombre solo puede contener letras y espacios', 'error');
-      return;
-    }
-    // Primer apellido
-    if (!residentData.lastname1_RD.trim()) {
-      showToast('El primer apellido es requerido', 'error');
-      return;
-    }
-    if (residentData.lastname1_RD.length < 3) {
-      showToast('El primer apellido debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.lastname1_RD.length > 25) {
-      showToast('El primer apellido no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.lastname1_RD)) {
-      showToast('El primer apellido solo puede contener letras y espacios', 'error');
-      return;
-    }
-    // Segundo apellido
-    if (!residentData.lastname2_RD.trim()) {
-      showToast('El segundo apellido es requerido', 'error');
-      return;
-    }
-    if (residentData.lastname2_RD.length < 3) {
-      showToast('El segundo apellido debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.lastname2_RD.length > 25) {
-      showToast('El segundo apellido no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.lastname2_RD)) {
-      showToast('El segundo apellido solo puede contener letras y espacios', 'error');
-      return;
-    }
+   if (!residentData.name_RD.trim()) {
+  showToast('El nombre del residente es requerido', 'error');
+  return;
+}
+if (residentData.name_RD.length < 3) {
+  showToast('El nombre debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.name_RD.length > 25) {
+  showToast('El nombre no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.name_RD)) {
+  showToast('El nombre solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
+
+// Validación del primer apellido
+if (!residentData.lastname1_RD.trim()) {
+  showToast('El primer apellido es requerido', 'error');
+  return;
+}
+if (residentData.lastname1_RD.length < 3) {
+  showToast('El primer apellido debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.lastname1_RD.length > 25) {
+  showToast('El primer apellido no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname1_RD)) {
+  showToast('El primer apellido solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
+
+// Validación del segundo apellido
+if (!residentData.lastname2_RD.trim()) {
+  showToast('El segundo apellido es requerido', 'error');
+  return;
+}
+if (residentData.lastname2_RD.length < 3) {
+  showToast('El segundo apellido debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.lastname2_RD.length > 25) {
+  showToast('El segundo apellido no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
+  showToast('El segundo apellido solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
     // Cédula (9 dígitos)
     if (!/^\d{9}$/.test(residentData.cedula_RD)) {
       showToast('La cédula debe ser un número de 9 dígitos', 'error');
@@ -183,7 +184,7 @@ function NewResidentForm() {
           <FaArrowLeft size={20} />
           <span className="text-lg font-semibold">Regresar</span>
         </button>
-        <h1 className="text-3xl font-bold mr-64">Añadir información</h1>
+        <h1 className="text-3xl font-bold mr-[425px]">Añadir información</h1>
       </div>
       {!isGuardianAdded ? (
         <AddGuardianForm setIsGuardianAdded={setIsGuardianAdded} setGuardianId={setGuardianId} />
