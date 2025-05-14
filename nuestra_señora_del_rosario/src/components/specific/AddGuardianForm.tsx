@@ -6,6 +6,7 @@ import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast'; 
 import Cookies from 'js-cookie';
 import { Guardian } from '../../types/GuardianType';
+import { useFetchGuardianInfo } from '../../hooks/useFetchGuardianInfo';
 
 interface AddGuardianFormProps {
   setIsGuardianAdded: (added: boolean) => void;
@@ -21,8 +22,14 @@ type GuardianFormInputs = {
   phone_GD: string;
 };
 
+const capitalize = (str?: string) => {
+  if (!str) return '';
+  return str.toLowerCase().replace(/(^|\s)\S/g, (l) => l.toUpperCase());
+};
+
+
 function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormProps) {
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<GuardianFormInputs>();
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<GuardianFormInputs>({ defaultValues: { cedula_GD: '' }});
   const { showToast, message, type } = useToast(); 
   const { isDarkMode } = useThemeDark();
   const { mutate: saveGuardian } = useGuardianMutation();
@@ -32,6 +39,25 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   const [isNewGuardian, setIsNewGuardian] = useState(false);
   const [, setSelectedGuardian] = useState<Guardian | null>(null);
 
+  const cedulaValue = watch('cedula_GD');
+  const { data: guardianData } = useFetchGuardianInfo(cedulaValue);
+
+useEffect(() => {
+  if (guardianData?.results?.length) {
+    const person = guardianData.results[0];
+
+    // Nombre compuesto (primer nombre + segundo nombre)
+    const firstNames = [person.firstname]
+      .filter(Boolean)
+      .map(n => capitalize(n))
+      .join(' ');
+    setValue('name_GD', firstNames);
+
+    // Apellidos tal cual vienen
+    setValue('lastname1_GD', capitalize(person.lastname1));
+    setValue('lastname2_GD', capitalize(person.lastname2));
+  }
+}, [guardianData, setValue]);
   // Cargar guardianes
   useEffect(() => {
     (async () => {
@@ -145,6 +171,21 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
           {/* Campos con validaciones reforzadas */}
+                <div>
+                  <label className="block mb-2 text-lg">Cédula del encargado</label>
+                  <input
+        {...register('cedula_GD', {
+          required: 'La cédula es obligatoria',
+          maxLength: { value: 9, message: 'Debe contener 9 caracteres' },
+          minLength: { value: 9, message: 'Debe contener 9 caracteres' },
+          pattern: { value: /^\d+$/, message: 'Debe contener solo números' }
+        })}
+        className={`w-full p-3 rounded-md ${
+          isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
+        }`}
+      />
+                  {errors.cedula_GD && <p className="text-red-500">{errors.cedula_GD.message}</p>}
+                </div>
           <div>
             <label className="block mb-2 text-lg">Nombre del encargado</label>
             <input
@@ -190,21 +231,6 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
             {errors.lastname2_GD && <p className="text-red-500">{errors.lastname2_GD.message}</p>}
           </div>
 
-          <div>
-            <label className="block mb-2 text-lg">Cédula</label>
-            <input
-  {...register('cedula_GD', {
-    required: 'La cédula es obligatoria',
-    maxLength: { value: 9, message: 'Debe contener 9 caracteres' },
-    minLength: { value: 9, message: 'Debe contener 9 caracteres' },
-    pattern: { value: /^\d+$/, message: 'Debe contener solo números' }
-  })}
-  className={`w-full p-3 rounded-md ${
-    isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
-  }`}
-/>
-            {errors.cedula_GD && <p className="text-red-500">{errors.cedula_GD.message}</p>}
-          </div>
 
           <div>
             <label className="block mb-2 text-lg">Correo Electrónico</label>

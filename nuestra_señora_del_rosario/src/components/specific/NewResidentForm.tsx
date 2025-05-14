@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRoom } from '../../hooks/useRoom';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
@@ -10,6 +10,8 @@ import Toast from '../common/Toast';
 import { FaArrowLeft } from 'react-icons/fa';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useCreateResident } from '../../hooks/useCreateResident ';
+import { useFetchResidentInfo } from '../../hooks/useFetchResidentInfo';
+
 
 function NewResidentForm() {
   const { data: rooms } = useRoom();
@@ -18,7 +20,6 @@ function NewResidentForm() {
   const { isDarkMode } = useThemeDark();
   const navigate = useNavigate();
   const { mutate: createResident, isLoading } = useCreateResident();
-
   const [residentData, setResidentData] = useState<ResidentPostType>({
     name_RD: '',
     lastname1_RD: '',
@@ -32,6 +33,11 @@ function NewResidentForm() {
     id_DependencyLevel: 0,
     location_RD: '',
   });
+
+  const { data: residentInfo } = useFetchResidentInfo(residentData.cedula_RD);
+  
+  const capitalize = (s: string) =>
+    s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   const [isGuardianAdded, setIsGuardianAdded] = useState(false);
   const [guardianId, setGuardianId] = useState<number | null>(null);
 
@@ -172,6 +178,26 @@ if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
     });
   };
 
+  useEffect(() => {
+  const results = residentInfo?.results;
+  if (results && results.length > 0) {
+    const person = results[0];
+    // Nombres: firstname + firstname2 (si existe)
+    const nombres = [person.firstname]
+      .filter(Boolean)
+      .map(capitalize)
+      .join(' ');
+    // Actualiza el estado
+    setResidentData(rd => ({
+      ...rd,
+      name_RD: nombres,
+      lastname1_RD: capitalize(person.lastname1),
+      lastname2_RD: capitalize(person.lastname2),
+    }));
+  }
+}, [residentInfo]);
+
+
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${
       isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'
@@ -191,6 +217,15 @@ if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
       ) : (
         <form onSubmit={handleFormSubmit} noValidate className="grid grid-cols-2 gap-6">
           {/* Campos del residente */}
+          <div>
+            <label className="block mb-2 text-lg">Cédula Residente</label>
+            <input
+              type="text"
+              value={residentData.cedula_RD}
+              onChange={e => setResidentData({ ...residentData, cedula_RD: e.target.value })}
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+            />
+          </div>
           <div>
             <label className="block mb-2 text-lg">Nombre residente</label>
             <input
@@ -215,15 +250,6 @@ if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
               type="text"
               value={residentData.lastname2_RD}
               onChange={e => setResidentData({ ...residentData, lastname2_RD: e.target.value })}
-              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg">Cédula Residente</label>
-            <input
-              type="text"
-              value={residentData.cedula_RD}
-              onChange={e => setResidentData({ ...residentData, cedula_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
             />
           </div>
