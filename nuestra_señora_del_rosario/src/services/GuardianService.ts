@@ -44,6 +44,13 @@ class GuardianService extends ApiService<Guardian> {
     });
   }
 
+  public updateGuardianPut(id: number, data: Partial<Guardian>, token: string) {
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.updateWithHeaders(`/Guardian/${id}`, data, {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
   // Eliminar un guardián con token
   public deleteGuardian(id: number) {
     const token = Cookies.get('authToken');

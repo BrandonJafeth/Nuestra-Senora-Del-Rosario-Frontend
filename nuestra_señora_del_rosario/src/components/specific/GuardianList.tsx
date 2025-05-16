@@ -5,6 +5,8 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useGetAllGuardians } from '../../hooks/useGetAllGuardians';
 import GuardianFormModal from '../microcomponents/GuardianFormModal';
+import GuardianEditModal from '../microcomponents/GuardianEditModal';
+import { Guardian } from '../../types/GuardianType';
 
 const GuardianList: React.FC = () => {
   const { data: guardians = [], isLoading, isError, error } = useGetAllGuardians();
@@ -14,6 +16,8 @@ const GuardianList: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedGuardian, setSelectedGuardian] = useState<Guardian | null>(null);
 
   if (isError) return <p>Error al cargar encargados: {error?.message}</p>;
 
@@ -95,8 +99,11 @@ const GuardianList: React.FC = () => {
                       <td className="p-4">{g.email_GD}</td>
                       <td className="p-4">{g.phone_GD}</td>
                       <td className="p-4 flex space-x-2 justify-center">
-                        <button
-                          onClick={() => {/* Abrir modal de edición con g */}}
+                         <button
+                          onClick={() => {
+                            setSelectedGuardian(g);
+                            setIsEditModalOpen(true);
+                          }}
                           className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg"
                         >
                           Editar
@@ -147,6 +154,13 @@ const GuardianList: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+{ selectedGuardian && (
+   <GuardianEditModal
+     isOpen={isEditModalOpen}
+     onClose={() => setIsEditModalOpen(false)}
+   guardian={selectedGuardian}   // ahora siempre es un Guardian, nunca null
+   />
+ ) }
     </>
   );
 };
