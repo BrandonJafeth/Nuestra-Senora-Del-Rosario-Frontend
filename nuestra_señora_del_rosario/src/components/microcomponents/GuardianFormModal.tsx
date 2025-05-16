@@ -7,6 +7,7 @@ import { useGuardianMutation } from '../../hooks/useGuardian';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import { useFetchGuardianInfo } from '../../hooks/useFetchGuardianInfo';
+import LoadingSpinner from './LoadingSpinner';
 
 interface Props {
   isOpen: boolean;
@@ -32,6 +33,7 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
   const { isDarkMode } = useThemeDark();
   const mutation = useGuardianMutation();
   const { showToast, message, type } = useToast();
+    const { isLoading: loading } = mutation;
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } =
     useForm<GuardianFormInputs>({
@@ -207,11 +209,12 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
             >
               Cancelar
             </button>
-            <button
+           <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+              disabled={loading}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Guardar
+              {loading ? <LoadingSpinner/> : 'Guardar'}
             </button>
           </div>
         </form>
