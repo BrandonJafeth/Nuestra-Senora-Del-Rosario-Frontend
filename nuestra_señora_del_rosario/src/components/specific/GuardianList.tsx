@@ -5,6 +5,7 @@ import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useGetAllGuardians } from '../../hooks/useGetAllGuardians';
+import GuardianFormModal from '../microcomponents/GuardianFormModal';
 
 const PAGE_SIZE = 5;
 
@@ -12,6 +13,7 @@ const GuardianList: React.FC = () => {
   const { data: guardians = [], isLoading, isError, error } = useGetAllGuardians();
   const { isDarkMode } = useThemeDark();
   const [pageNumber, setPageNumber] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isError) return <p>Error al cargar encargados: {error?.message}</p>;
 
@@ -23,6 +25,7 @@ const GuardianList: React.FC = () => {
   }, [guardians, pageNumber]);
 
   return (
+    <>
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${
       isDarkMode ? 'bg-[#0D313F]' : 'bg-white'
     }`}>
@@ -32,11 +35,11 @@ const GuardianList: React.FC = () => {
           Encargados Legales
         </h2>
         <button
-          onClick={() => {/* Navegar a ruta de creación */}}
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-all"
-        >
-          Nuevo Encargado
-        </button>
+  onClick={() => setIsModalOpen(true)}
+  className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-all"
+>
+  Nuevo Encargado
+</button>
       </div>
 
       {/* Tabla */}
@@ -81,9 +84,9 @@ const GuardianList: React.FC = () => {
                     <td className="p-4 flex space-x-2 justify-center">
                       <button
                         onClick={() => {/* Abrir modal de edición con g */}}
-                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+                        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg"
                       >
-                        Ver más
+                        Editar
                       </button>
                     </td>
                   </tr>
@@ -127,6 +130,11 @@ const GuardianList: React.FC = () => {
         </button>
       </div>
     </div>
+      <GuardianFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        />
+        </>
   );
 };
 
