@@ -29,6 +29,7 @@ const Sidebar = ({ isSidebarOpen }: SidebarProps) => {
   const menuItems = [
     { name: 'Residentes', link: '/dashboard/residentes', roles: ['SuperAdmin','Admin'] },
     { name: 'Usuarios', link: '/dashboard/usuarios', roles: ['SuperAdmin','Admin'] },
+    { name: 'Encargados', link: '/dashboard/encargados', roles: ['SuperAdmin','Admin'] },
     { name: 'Cronograma de Citas', link: '/dashboard/cronograma-citas', roles: ['SuperAdmin','Enfermeria', 'Admin', 'Fisioterapia','Encargado'] },
     { name: 'Cardex', link: '/dashboard/cardex', roles: ['SuperAdmin','Enfermeria'] }, 
     { name : 'Configuracion', link : '/dashboard/Configuracion', roles: ['SuperAdmin','Admin', 'Enfermeria', 'Inventario', 'Fisioterapia'] },
