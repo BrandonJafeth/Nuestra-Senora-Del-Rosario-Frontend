@@ -55,6 +55,7 @@ import TableMedicationSpecific from '../components/specific/TableMedication';
 import TableAdministrationRoute from '../components/specific/TableAdministrationRoute';
 import RoleBasedRoute from '../components/layout/RoleBasedRoute';
 import PageNotFound from '../components/layout/PageNotFound';
+import GuardianList from '../components/specific/GuardianList';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -115,6 +116,12 @@ function Dashboard() {
               <Route path="personal/registro" element={
                 <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
                 <EmployeeForm />
+                </RoleBasedRoute>
+                } />
+
+              <Route path="encargados" element={
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Admin']}>
+                <GuardianList />
                 </RoleBasedRoute>
                 } />
 

@@ -22,6 +22,7 @@ export const IconProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Usuarios: <FaUsers />,
     Cardex: <FaClipboardList />,
     Personal: <FaUsers />,
+    Encargados: <FaUsers />,
     Inventario: <FaWarehouse />,
     Solicitudes: <FaClipboardList />,
     'Solicitudes de ingreso': <FaClipboardList />,
