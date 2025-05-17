@@ -3,9 +3,9 @@ import { useCreateUserFromEmployee } from '../../hooks/useCreateUserFromEmployee
 import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast';
 import RoleDropdown from '../microcomponents/RoleDrodown';
-import EmployeeDropdown from '../microcomponents/EmployeeDropdown';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
+import DropdwonEmployeeWithoutUser from '../microcomponents/DropdwonEmployeeWithoutUser';
 
 const CreateUserFromEmployeeForm: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -76,7 +76,7 @@ const CreateUserFromEmployeeForm: React.FC = () => {
           >
             Seleccionar empleado
           </label>
-          <EmployeeDropdown value={dniEmployee || 0} onChange={setDniEmployee} />
+          <DropdwonEmployeeWithoutUser value={dniEmployee || 0} onChange={setDniEmployee} />
         </div>
 
         <div>
