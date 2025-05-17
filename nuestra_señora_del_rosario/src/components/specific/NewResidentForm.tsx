@@ -11,6 +11,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useCreateResident } from '../../hooks/useCreateResident ';
 import { useFetchResidentInfo } from '../../hooks/useFetchResidentInfo';
+import { useVerifyCedula } from '../../hooks/useVerifyCedula';
 
 
 function NewResidentForm() {
@@ -34,7 +35,26 @@ function NewResidentForm() {
     location_RD: '',
   });
 
-  const { data: residentInfo } = useFetchResidentInfo(residentData.cedula_RD);
+  const [debouncedCedula, setDebouncedCedula] = useState(residentData.cedula_RD)
+useEffect(() => {
+  const id = setTimeout(() => setDebouncedCedula(residentData.cedula_RD), 500)
+  return () => clearTimeout(id)
+}, [residentData.cedula_RD])
+
+// justo después del debounce
+const {
+  data: cedulaCheck,
+  isFetching: isVerifyingCedula
+} = useVerifyCedula(debouncedCedula)
+
+
+  const { data: externalInfo } = useFetchResidentInfo(debouncedCedula, {
+  enabled:
+    !!debouncedCedula &&
+    debouncedCedula.length === 9 &&
+    cedulaCheck?.exists === false
+})
+
   
   const capitalize = (s: string) =>
     s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
@@ -177,25 +197,34 @@ if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
       }
     });
   };
-
+useEffect(() => {
+  if (cedulaCheck?.exists) {
+    showToast('La cédula ya existe en el sistema', 'error')
+  }
+}, [cedulaCheck, showToast])
   useEffect(() => {
-  const results = residentInfo?.results;
-  if (results && results.length > 0) {
-    const person = results[0];
-    // Nombres: firstname + firstname2 (si existe)
-    const nombres = [person.firstname]
-      .filter(Boolean)
-      .map(capitalize)
-      .join(' ');
-    // Actualiza el estado
+  if (!debouncedCedula || debouncedCedula.length !== 9) {
     setResidentData(rd => ({
       ...rd,
-      name_RD: nombres,
-      lastname1_RD: capitalize(person.lastname1),
-      lastname2_RD: capitalize(person.lastname2),
-    }));
+      name_RD: '',
+      lastname1_RD: '',
+      lastname2_RD: '',
+    }))
   }
-}, [residentInfo]);
+}, [debouncedCedula])
+
+useEffect(() => {
+  const results = externalInfo?.results
+  if (!cedulaCheck?.exists && results && results.length > 0) {
+    const p = results[0]
+    setResidentData(rd => ({
+      ...rd,
+      name_RD: capitalize(p.firstname),
+      lastname1_RD: capitalize(p.lastname1),
+      lastname2_RD: capitalize(p.lastname2),
+    }))
+  }
+}, [cedulaCheck, externalInfo])
 
 
   return (
@@ -320,7 +349,7 @@ if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
           <div className="flex justify-center space-x-4 col-span-2 mt-8">
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isVerifyingCedula || cedulaCheck?.exists}
               className={`px-7 py-4 rounded-lg shadow-lg transition duration-200 ${isLoading ? 'bg-gray-400' : isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
             >
               {isLoading ? <LoadingSpinner/> : 'Registrar Residente'}
