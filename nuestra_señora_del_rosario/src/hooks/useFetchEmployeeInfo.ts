@@ -1,17 +1,34 @@
-// hooks/useFetchEmployeeInfo.ts
-import axios from 'axios';
-import { useQuery } from 'react-query';
+// src/hooks/useFetchEmployeeInfo.ts
+import axios from 'axios'
+import { useQuery, UseQueryOptions } from 'react-query'
 
-const fetchEmployeeInfo = async (cedula: string) => {
-  const response = await axios.get(`https://apis.gometa.org/cedulas/${cedula}`);
-  return response.data;
-};
+// src/types/FetchEmployeeInfo.ts
+export interface MetaPerson {
+  firstname: string
+  lastname1: string
+  lastname2: string
+  // cualquier otro campo que venga
+}
 
-export const useFetchEmployeeInfo = (cedula: string | undefined) => {
-  return useQuery({
+export interface FetchEmployeeInfoResponse {
+  results: MetaPerson[]
+}
+
+
+const fetchEmployeeInfo = async (cedula: string): Promise<FetchEmployeeInfoResponse> => {
+  const response = await axios.get<FetchEmployeeInfoResponse>(`https://apis.gometa.org/cedulas/${cedula}`)
+  return response.data
+}
+
+export const useFetchEmployeeInfo = (
+  cedula: string | undefined,
+  options?: UseQueryOptions<FetchEmployeeInfoResponse>
+) => {
+  return useQuery<FetchEmployeeInfoResponse>({
     queryKey: ['EmployeeInfo', cedula],
     queryFn: () => fetchEmployeeInfo(cedula!),
-    enabled: !!cedula && cedula.length === 9, // Valida que cedula no sea undefined primero
+    enabled: !!cedula && cedula.length === 9,
     retry: false,
-  });
-};
+    ...options
+  })
+}

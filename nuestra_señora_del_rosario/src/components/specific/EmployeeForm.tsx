@@ -5,6 +5,7 @@ import { useProfession } from '../../hooks/useProfession';
 import { useToast } from '../../hooks/useToast';
 import { useEffect } from 'react';
 import { useFetchEmployeeInfo } from '../../hooks/useFetchEmployeeInfo';
+import { useVerifyCedula } from '../../hooks/useVerifyCedula';
 
 function EmployeeForm() {
 
@@ -20,14 +21,43 @@ function EmployeeForm() {
   const { data: professionData } = useProfession(); // Hook para obtener profesiones
 
   const { showToast, message, type } = useToast();
+  const {
+  data: cedulaCheck,
+  isFetching: isVerifyingCedula,
+  isError: cedulaError
+} = useVerifyCedula(dni);
 
-  const { data: personInfo } = useFetchEmployeeInfo(dni);
+  const { data: personInfo } = useFetchEmployeeInfo(dni, {
+    enabled: !!dni && dni.trim().length > 0 && cedulaCheck?.exists === false,
+  });
 
+
+useEffect(() => {
+  if (cedulaCheck?.exists) {
+    // Diccionario para traducir entityName → español
+    const traducciones: Record<string,string> = {
+      Employee: 'Empleado',
+      Resident: 'Residente',
+      Guardian: 'Encargado'
+    };
+
+    const mensajes = cedulaCheck.entities
+      .filter(e => e.existsInEntity)
+      .map(e => {
+        const entidadEsp = traducciones[e.entityName] || e.entityName;
+        const display = e.displayName ? ` (${e.displayName})` : '';
+        return `${entidadEsp}${display}`;
+      })
+      .join(', ');
+
+    showToast(`La cédula ya existe en: ${mensajes}`, 'error');
+  }
+}, [cedulaCheck, showToast]);
 
   const capitalize = (s: string) =>
   s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
-    useEffect(() => {
+useEffect(() => {
     const results = personInfo?.results;
     if (results?.length) {
       const p = results[0];
@@ -39,12 +69,24 @@ function EmployeeForm() {
       setLastName1(capitalize(p.lastname1));
       setLastName2(capitalize(p.lastname2));
     }
-  }, [personInfo, setFirstName, setLastName1, setLastName2]);
+  }, [cedulaCheck, personInfo, setFirstName, setLastName1, setLastName2]);    
 
   // Manejador del envío del formulario
   const handleFormSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    
+
+     if (isVerifyingCedula) {
+      showToast('Esperando validación de cédula…', 'error');
+      return;
+    }
+      if (cedulaCheck?.exists) {
+      // ya mostramos toast en el effect, pero prevenimos aquí de nuevo
+      return;
+    }
+    if (cedulaError) {
+      showToast('Error al verificar cédula. Intenta de nuevo.', 'error');
+      return;
+    }
      if (!firstName.trim()) {
       showToast('El nombre es requerido', 'error');
       return;
