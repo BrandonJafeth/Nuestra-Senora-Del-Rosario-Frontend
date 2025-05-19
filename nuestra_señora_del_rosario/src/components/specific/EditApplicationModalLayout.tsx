@@ -9,7 +9,7 @@ interface ModalProps {
   actions?: React.ReactNode;
 }
 
-const ReusableModalRequests: React.FC<ModalProps> = ({
+const EditApplicationModalLayout: React.FC<ModalProps> = ({
   title,
   isOpen,
   onClose,
@@ -37,7 +37,7 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
           bg-white dark:bg-gray-800 
           p-8 rounded-2xl shadow-xl 
           w-full max-w-xl relative
-          hide-scrollbar  /* Usar la clase que oculta el scrollbar */
+          hide-scrollbar
         `}
         style={{ 
           maxHeight: '90vh', 
@@ -63,12 +63,10 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
           text-gray-800 dark:text-gray-100
         ">
           {title}
-        </h3>
-
-        {/* Contenido (grid de 2 columnas en >=sm) */}
+        </h3>        {/* Contenido (grid de 2 columnas en todos los tamaños) */}
         <div 
           className="
-            grid grid-cols-2 sm:grid-cols-2 
+            grid grid-cols-2
             gap-x-8 gap-y-4 mb-6 
             text-lg text-gray-700 dark:text-gray-300 
             break-words
@@ -96,4 +94,4 @@ const ReusableModalRequests: React.FC<ModalProps> = ({
   );
 };
 
-export default ReusableModalRequests;
+export default EditApplicationModalLayout;

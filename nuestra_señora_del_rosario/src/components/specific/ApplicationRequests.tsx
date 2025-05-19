@@ -15,6 +15,7 @@ import { useDeleteApplicationRequest } from '../../hooks/useDeleteApplication';
 import ConfirmationModal from '../microcomponents/ConfirmationModal';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useUpdateApplicationRequest } from '../../hooks/useUpdateApplicationRequest';
+import EditApplicationModal from './EditApplicationModal';
 
 function ApplicationRequests() {
   const { isDarkMode } = useThemeDark();
@@ -36,8 +37,7 @@ function ApplicationRequests() {
   const [confirmDelete, setConfirmDelete] = useState<ApplicationRequest | null>(null);
   const { mutate: deleteApplication, isLoading: isDeleting } = useDeleteApplicationRequest();
 
-  const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);
-  const [editingApplication, setEditingApplication] = useState<ApplicationRequest | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationRequest | null>(null);  const [editingApplication, setEditingApplication] = useState<ApplicationRequest | null>(null);
 
   const { showToast, message, type } = useToast();
   const { mutate: updateApplicationStatus } = useUpdateApplicationStatus();
@@ -164,35 +164,9 @@ function ApplicationRequests() {
     );
   };
 
-const handleSaveEdit = () => {
-  if (!editingApplication) return;
-
-  const fieldLabels: Record<string, string> = {
-    name_AP: 'Nombre',
-    lastName1_AP: 'Primer Apellido',
-    lastName2_AP: 'Segundo Apellido',
-    age_AP: 'Edad',
-    cedula_AP: 'Cédula',
-    location_AP: 'Domicilio',
-    guardianName: 'Nombre del Encargado',
-    guardianLastName1: 'Primer Apellido del Encargado',
-    guardianCedula: 'Cédula del Encargado',
-    guardianPhone: 'Teléfono del Encargado',
-    guardianEmail: 'Email del Encargado'
-  };
-
-  const emptyFields = Object.keys(fieldLabels).filter(
-    (field) => !editingApplication[field as keyof ApplicationRequest]?.toString().trim()
-  );
-
-  if (emptyFields.length > 0) {
-    const fieldNames = emptyFields.map((field) => fieldLabels[field]).join(', ');
-    showToast(`Por favor, completa los siguientes campos: ${fieldNames}.`, 'warning');
-    return;
-  }
-
-  const { id_ApplicationForm, ...applicationData } = editingApplication;
-
+const handleSaveEdit = (updatedApplication: ApplicationRequest) => {
+  const { id_ApplicationForm, ...applicationData } = updatedApplication;
+  
   updateApplication(
     {
       id: id_ApplicationForm,
@@ -209,17 +183,6 @@ const handleSaveEdit = () => {
     }
   );
 };
-
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    if (!editingApplication) return;
-    setEditingApplication({
-      ...editingApplication,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const handleReject = (application: ApplicationRequest) => {
     setIsRejecting(true);
@@ -486,214 +449,15 @@ const handleSaveEdit = () => {
           confirmText="Eliminar"
           isLoading={isDeleting}
         />
-      </ReusableModalRequests>
-
-      <ReusableModalRequests
+      </ReusableModalRequests>     
+       <EditApplicationModal
         isOpen={!!editingApplication}
-        title="Editar solicitud"
         onClose={() => setEditingApplication(null)}
-        actions={
-          <div className="flex space-x-4 justify-end">
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-              onClick={handleSaveEdit}
-              disabled={isUpdating}
-            >
-              {isUpdating ? <LoadingSpinner /> : 'Guardar'}
-            </button>
-            <button
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-              onClick={() => setEditingApplication(null)}
-            >
-              Cancelar
-            </button>
-          </div>
-        }
-      >
-        {editingApplication && (
-          <>
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
-              <input
-                type="text"
-                name="name_AP"
-                value={editingApplication.name_AP}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer apellido</label>
-              <input
-                type="text"
-                name="lastName1_AP"
-                value={editingApplication.lastName1_AP}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className=" font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo apellido</label>
-              <input
-                type="text"
-                name="lastName2_AP"
-                value={editingApplication.lastName2_AP || ''}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula</label>
-              <input
-                type="text"
-                name="cedula_AP"
-                value={editingApplication.cedula_AP}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Edad</label>
-              <input
-                type="number"
-                name="age_AP"
-                value={editingApplication.age_AP}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Domicilio</label>
-              <input
-                type="text"
-                name="location_AP"
-                value={editingApplication.location_AP}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Nombre del encargado</label>
-              <input
-                type="text"
-                name="guardianName"
-                value={editingApplication.guardianName}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Primer apellido encargado</label>
-              <input
-                type="text"
-                name="guardianLastName1"
-                value={editingApplication.guardianLastName1}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Segundo apellido encargado</label>
-              <input
-                type="text"
-                name="guardianLastName2"
-                value={editingApplication.guardianLastName2 || ''}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Cédula encargado</label>
-              <input
-                type="text"
-                name="guardianCedula"
-                value={editingApplication.guardianCedula}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Teléfono del encargado</label>
-              <input
-                type="text"
-                name="guardianPhone"
-                value={editingApplication.guardianPhone}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-1">Email del encargado</label>
-              <input
-                type="email"
-                name="guardianEmail"
-                value={editingApplication.guardianEmail}
-                onChange={handleInputChange}
-                className={`w-full rounded-md border p-2 ${
-                  isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-black-800'
-                }`}
-              />
-            </div>
-          </>
-        )}
-      </ReusableModalRequests>
+        application={editingApplication}
+        onSave={handleSaveEdit}
+        isUpdating={isUpdating}
+        isDarkMode={isDarkMode}
+      />
 
       <Toast message={message} type={type} />
     </div>
