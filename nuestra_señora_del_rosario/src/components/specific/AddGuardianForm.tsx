@@ -6,6 +6,8 @@ import { useThemeDark } from '../../hooks/useThemeDark';
 import Toast from '../common/Toast'; 
 import Cookies from 'js-cookie';
 import { Guardian } from '../../types/GuardianType';
+import { useFetchGuardianInfo } from '../../hooks/useFetchGuardianInfo';
+import { useVerifyCedula } from '../../hooks/useVerifyCedula';
 
 interface AddGuardianFormProps {
   setIsGuardianAdded: (added: boolean) => void;
@@ -21,8 +23,14 @@ type GuardianFormInputs = {
   phone_GD: string;
 };
 
+const capitalize = (str?: string) => {
+  if (!str) return '';
+  return str.toLowerCase().replace(/(^|\s)\S/g, (l) => l.toUpperCase());
+};
+
+
 function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormProps) {
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<GuardianFormInputs>();
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<GuardianFormInputs>({ defaultValues: { cedula_GD: '' }});
   const { showToast, message, type } = useToast(); 
   const { isDarkMode } = useThemeDark();
   const { mutate: saveGuardian } = useGuardianMutation();
@@ -31,6 +39,64 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
   const [filteredGuardians, setFilteredGuardians] = useState<Guardian[]>([]);
   const [isNewGuardian, setIsNewGuardian] = useState(false);
   const [, setSelectedGuardian] = useState<Guardian | null>(null);
+
+  const cedula = watch('cedula_GD')
+
+  const [debouncedCedula, setDebouncedCedula] = useState(cedula);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedCedula(cedula);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [cedula]);
+
+ const {
+    data: cedulaCheck,
+    isFetching: isVerifying,
+  } = useVerifyCedula(debouncedCedula)
+
+  // 2) Traer datos de la API externa *solo si* la cédula NO existe
+  const { data: guardianData } = useFetchGuardianInfo(debouncedCedula, {
+    enabled: !!debouncedCedula && debouncedCedula.length === 9 && cedulaCheck?.exists === false
+  });
+
+   useEffect(() => {
+    if (cedulaCheck?.exists) {
+      const trad: Record<string,string> = {
+        Employee: 'Empleado',
+        Resident: 'Residente',
+        Guardian: 'Encargado'
+      }
+      const where = cedulaCheck.entities
+        .filter(e => e.existsInEntity)
+        .map(e => `${trad[e.entityName] || e.entityName}${e.displayName ? ` (${e.displayName})` : ''}`)
+        .join(', ')
+      showToast(`La cédula ya existe en: ${where}`, 'error')
+    }
+  }, [cedulaCheck, showToast])
+
+// dentro de AddGuardianForm
+
+// Efecto 0: limpiar campos si la cédula cambia y ya no es de 9 dígitos
+useEffect(() => {
+  if (!debouncedCedula || debouncedCedula.length !== 9) {
+    setValue('name_GD', '')
+    setValue('lastname1_GD', '')
+    setValue('lastname2_GD', '')
+  }
+}, [debouncedCedula, setValue])
+
+// Efecto 1: autocompletar solo si cedulaCheck.exists === false y hay datos
+useEffect(() => {
+  const results = guardianData?.results
+  if (!cedulaCheck?.exists && results?.length) {
+    const p = results[0]
+    setValue('name_GD', capitalize(p.firstname))
+    setValue('lastname1_GD', capitalize(p.lastname1))
+    setValue('lastname2_GD', capitalize(p.lastname2))
+  }
+}, [cedulaCheck, guardianData, setValue])
+
 
   // Cargar guardianes
   useEffect(() => {
@@ -145,6 +211,21 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
           {/* Campos con validaciones reforzadas */}
+                <div>
+                  <label className="block mb-2 text-lg">Cédula del encargado</label>
+                  <input
+        {...register('cedula_GD', {
+          required: 'La cédula es obligatoria',
+          maxLength: { value: 9, message: 'Debe contener 9 caracteres' },
+          minLength: { value: 9, message: 'Debe contener 9 caracteres' },
+          pattern: { value: /^\d+$/, message: 'Debe contener solo números' }
+        })}
+        className={`w-full p-3 rounded-md ${
+          isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
+        }`}
+      />
+                  {errors.cedula_GD && <p className="text-red-500">{errors.cedula_GD.message}</p>}
+                </div>
           <div>
             <label className="block mb-2 text-lg">Nombre del encargado</label>
             <input
@@ -190,21 +271,6 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
             {errors.lastname2_GD && <p className="text-red-500">{errors.lastname2_GD.message}</p>}
           </div>
 
-          <div>
-            <label className="block mb-2 text-lg">Cédula</label>
-            <input
-  {...register('cedula_GD', {
-    required: 'La cédula es obligatoria',
-    maxLength: { value: 9, message: 'Debe contener 9 caracteres' },
-    minLength: { value: 9, message: 'Debe contener 9 caracteres' },
-    pattern: { value: /^\d+$/, message: 'Debe contener solo números' }
-  })}
-  className={`w-full p-3 rounded-md ${
-    isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'
-  }`}
-/>
-            {errors.cedula_GD && <p className="text-red-500">{errors.cedula_GD.message}</p>}
-          </div>
 
           <div>
             <label className="block mb-2 text-lg">Correo Electrónico</label>
@@ -239,7 +305,8 @@ function AddGuardianForm({ setIsGuardianAdded, setGuardianId }: AddGuardianFormP
           <button
             type="submit"
             className="col-span-2 px-7 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mx-auto block"
-          >
+            disabled={isVerifying || cedulaCheck?.exists}
+         >
             Guardar encargado
           </button>
         </form>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRoom } from '../../hooks/useRoom';
 import { useDependencyLevel } from '../../hooks/useDependencyLevel';
@@ -10,6 +10,9 @@ import Toast from '../common/Toast';
 import { FaArrowLeft } from 'react-icons/fa';
 import LoadingSpinner from '../microcomponents/LoadingSpinner';
 import { useCreateResident } from '../../hooks/useCreateResident ';
+import { useFetchResidentInfo } from '../../hooks/useFetchResidentInfo';
+import { useVerifyCedula } from '../../hooks/useVerifyCedula';
+
 
 function NewResidentForm() {
   const { data: rooms } = useRoom();
@@ -18,7 +21,6 @@ function NewResidentForm() {
   const { isDarkMode } = useThemeDark();
   const navigate = useNavigate();
   const { mutate: createResident, isLoading } = useCreateResident();
-
   const [residentData, setResidentData] = useState<ResidentPostType>({
     name_RD: '',
     lastname1_RD: '',
@@ -32,6 +34,30 @@ function NewResidentForm() {
     id_DependencyLevel: 0,
     location_RD: '',
   });
+
+  const [debouncedCedula, setDebouncedCedula] = useState(residentData.cedula_RD)
+useEffect(() => {
+  const id = setTimeout(() => setDebouncedCedula(residentData.cedula_RD), 500)
+  return () => clearTimeout(id)
+}, [residentData.cedula_RD])
+
+// justo después del debounce
+const {
+  data: cedulaCheck,
+  isFetching: isVerifyingCedula
+} = useVerifyCedula(debouncedCedula)
+
+
+  const { data: externalInfo } = useFetchResidentInfo(debouncedCedula, {
+  enabled:
+    !!debouncedCedula &&
+    debouncedCedula.length === 9 &&
+    cedulaCheck?.exists === false
+})
+
+  
+  const capitalize = (s: string) =>
+    s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   const [isGuardianAdded, setIsGuardianAdded] = useState(false);
   const [guardianId, setGuardianId] = useState<number | null>(null);
 
@@ -40,57 +66,58 @@ function NewResidentForm() {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Nombre completo
-    if (!residentData.name_RD.trim()) {
-      showToast('El nombre del residente es requerido', 'error');
-      return;
-    }
-    if (residentData.name_RD.length < 3) {
-      showToast('El nombre debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.name_RD.length > 25) {
-      showToast('El nombre no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.name_RD)) {
-      showToast('El nombre solo puede contener letras y espacios', 'error');
-      return;
-    }
-    // Primer apellido
-    if (!residentData.lastname1_RD.trim()) {
-      showToast('El primer apellido es requerido', 'error');
-      return;
-    }
-    if (residentData.lastname1_RD.length < 3) {
-      showToast('El primer apellido debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.lastname1_RD.length > 25) {
-      showToast('El primer apellido no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.lastname1_RD)) {
-      showToast('El primer apellido solo puede contener letras y espacios', 'error');
-      return;
-    }
-    // Segundo apellido
-    if (!residentData.lastname2_RD.trim()) {
-      showToast('El segundo apellido es requerido', 'error');
-      return;
-    }
-    if (residentData.lastname2_RD.length < 3) {
-      showToast('El segundo apellido debe tener al menos 3 caracteres', 'error');
-      return;
-    }
-    if (residentData.lastname2_RD.length > 25) {
-      showToast('El segundo apellido no puede exceder 25 caracteres', 'error');
-      return;
-    }
-    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(residentData.lastname2_RD)) {
-      showToast('El segundo apellido solo puede contener letras y espacios', 'error');
-      return;
-    }
+   if (!residentData.name_RD.trim()) {
+  showToast('El nombre del residente es requerido', 'error');
+  return;
+}
+if (residentData.name_RD.length < 3) {
+  showToast('El nombre debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.name_RD.length > 25) {
+  showToast('El nombre no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.name_RD)) {
+  showToast('El nombre solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
+
+// Validación del primer apellido
+if (!residentData.lastname1_RD.trim()) {
+  showToast('El primer apellido es requerido', 'error');
+  return;
+}
+if (residentData.lastname1_RD.length < 3) {
+  showToast('El primer apellido debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.lastname1_RD.length > 25) {
+  showToast('El primer apellido no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname1_RD)) {
+  showToast('El primer apellido solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
+
+// Validación del segundo apellido
+if (!residentData.lastname2_RD.trim()) {
+  showToast('El segundo apellido es requerido', 'error');
+  return;
+}
+if (residentData.lastname2_RD.length < 3) {
+  showToast('El segundo apellido debe tener al menos 3 caracteres', 'error');
+  return;
+}
+if (residentData.lastname2_RD.length > 25) {
+  showToast('El segundo apellido no puede exceder 25 caracteres', 'error');
+  return;
+}
+if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s']+$/.test(residentData.lastname2_RD)) {
+  showToast('El segundo apellido solo puede contener letras, espacios y apóstrofes', 'error');
+  return;
+}
     // Cédula (9 dígitos)
     if (!/^\d{9}$/.test(residentData.cedula_RD)) {
       showToast('La cédula debe ser un número de 9 dígitos', 'error');
@@ -170,6 +197,35 @@ function NewResidentForm() {
       }
     });
   };
+useEffect(() => {
+  if (cedulaCheck?.exists) {
+    showToast('La cédula ya existe en el sistema', 'error')
+  }
+}, [cedulaCheck, showToast])
+  useEffect(() => {
+  if (!debouncedCedula || debouncedCedula.length !== 9) {
+    setResidentData(rd => ({
+      ...rd,
+      name_RD: '',
+      lastname1_RD: '',
+      lastname2_RD: '',
+    }))
+  }
+}, [debouncedCedula])
+
+useEffect(() => {
+  const results = externalInfo?.results
+  if (!cedulaCheck?.exists && results && results.length > 0) {
+    const p = results[0]
+    setResidentData(rd => ({
+      ...rd,
+      name_RD: capitalize(p.firstname),
+      lastname1_RD: capitalize(p.lastname1),
+      lastname2_RD: capitalize(p.lastname2),
+    }))
+  }
+}, [cedulaCheck, externalInfo])
+
 
   return (
     <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${
@@ -183,13 +239,22 @@ function NewResidentForm() {
           <FaArrowLeft size={20} />
           <span className="text-lg font-semibold">Regresar</span>
         </button>
-        <h1 className="text-3xl font-bold mr-64">Añadir información</h1>
+        <h1 className="text-3xl font-bold mr-[425px]">Añadir información</h1>
       </div>
       {!isGuardianAdded ? (
         <AddGuardianForm setIsGuardianAdded={setIsGuardianAdded} setGuardianId={setGuardianId} />
       ) : (
         <form onSubmit={handleFormSubmit} noValidate className="grid grid-cols-2 gap-6">
           {/* Campos del residente */}
+          <div>
+            <label className="block mb-2 text-lg">Cédula Residente</label>
+            <input
+              type="text"
+              value={residentData.cedula_RD}
+              onChange={e => setResidentData({ ...residentData, cedula_RD: e.target.value })}
+              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
+            />
+          </div>
           <div>
             <label className="block mb-2 text-lg">Nombre residente</label>
             <input
@@ -214,15 +279,6 @@ function NewResidentForm() {
               type="text"
               value={residentData.lastname2_RD}
               onChange={e => setResidentData({ ...residentData, lastname2_RD: e.target.value })}
-              className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg">Cédula Residente</label>
-            <input
-              type="text"
-              value={residentData.cedula_RD}
-              onChange={e => setResidentData({ ...residentData, cedula_RD: e.target.value })}
               className={`w-full p-3 rounded-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200'}`}
             />
           </div>
@@ -293,7 +349,7 @@ function NewResidentForm() {
           <div className="flex justify-center space-x-4 col-span-2 mt-8">
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isVerifyingCedula || cedulaCheck?.exists}
               className={`px-7 py-4 rounded-lg shadow-lg transition duration-200 ${isLoading ? 'bg-gray-400' : isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
             >
               {isLoading ? <LoadingSpinner/> : 'Registrar Residente'}

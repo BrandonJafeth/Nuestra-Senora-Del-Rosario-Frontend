@@ -55,6 +55,14 @@ class UserService extends ApiService<UserData> {
       { Authorization: `Bearer ${token}` }
     );
   }
+
+  public employeeswithoutUser() {
+    const token = Cookies.get('authToken');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+    return this.getWithHeaders<UserData[]>('/users/employees-without-user', {
+      Authorization: `Bearer ${token}`,
+    });
+  }
 }
 
 const userService = new UserService();
