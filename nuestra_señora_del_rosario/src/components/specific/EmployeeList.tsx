@@ -254,8 +254,10 @@ const EmployeeList: React.FC = () => {
             if (isFiltering && searchTerm.trim()) {
               const filter = createFilter(searchTerm);
               filterEmployees(filter, pageNumber, pageSize);
-            } 
-            // La página se recargará automáticamente gracias al React Query
+            } else {
+              // Forzamos una actualización de la lista general
+              // (React Query se encargará de esto si se invalidaron las consultas)
+            }
             setEditModalOpen(false);
           }}
           dni={editingDni}

@@ -98,16 +98,15 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
         else if (typeof value === 'string' && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value))
           error = 'El apellido solo debe contener letras';
         break;
-        
-      case 'lastName2':
-        if (!value) error = 'El segundo apellido es requerido';
-        else if (typeof value === 'string' && value.length > 50) 
-          error = 'El segundo apellido no debe exceder los 50 caracteres';
-        else if (typeof value === 'string' && value.length < 3)
-          error = 'El segundo apellido debe tener al menos 3 caracteres';
-        else if (typeof value === 'string' && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value))
-          error = 'El apellido solo debe contener letras';
-        break;
+          case 'lastName2':
+            if (!value) error = 'El segundo apellido es requerido';
+            else if (typeof value === 'string' && value.length > 50) 
+              error = 'El segundo apellido no debe exceder los 50 caracteres';
+            else if (typeof value === 'string' && value.length < 3)
+              error = 'El segundo apellido debe tener al menos 3 caracteres';
+            else if (typeof value === 'string' && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value))
+              error = 'El apellido solo debe contener letras';
+            break;
         
       case 'phoneNumber':
         if (!value && isEditing) 
@@ -206,12 +205,15 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
     
     updateMutation.mutate(
       { id: dni, data: form },
-      {
-        onSuccess: () => {
+      {        onSuccess: () => {
+          // Primero mostramos el toast, luego cerramos el modal después de un breve retraso
           showToast('Empleado actualizado correctamente', 'success');
-          // Primero cerramos el modal y luego salimos del modo edición
-          onClose();
-          setIsEditing(false);
+          
+          // Esperamos un momento antes de cerrar para que el toast sea visible
+          setTimeout(() => {
+            setIsEditing(false);
+            onClose(); // Cerramos el modal después de que el toast sea visible
+          }, 1000);
         },
         onError: (error) => {
           showToast(`Error al actualizar: ${error instanceof Error ? error.message : 'Error desconocido'}`, 'error');
@@ -264,18 +266,22 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
     || employee?.typeOfSalaryName
     || '';
 
-  return (
-    <Modal
+  return (    <Modal
       isOpen={isOpen}
       onRequestClose={() => { if (!isEditing) onClose(); }}
       className="p-6 bg-white rounded shadow max-w-2xl mx-auto mt-5 relative"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       shouldCloseOnOverlayClick={!isEditing}
-      shouldCloseOnEsc={!isEditing}
+      shouldCloseOnEsc={!isEditing}      style={{
+        content: {
+          maxHeight: '90vh',
+          overflow: 'visible'
+        }
+      }}
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Editar Empleado</h2>
       
-      <div className="max-h-[70vh] overflow-y-auto pb-4 px-1">
+      <div className="pb-4 px-1">
         <form onSubmit={handlePrimaryClick} className="grid grid-cols-2 gap-x-4">
           {/* Columna 1 */}          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Nombre <span className="text-red-500">*</span></label>
@@ -289,8 +295,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
             <div className="h-5 overflow-hidden">
               {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Primer Apellido <span className="text-red-500">*</span></label>
             <input
               name="lastName1"
@@ -299,11 +304,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.lastName1 ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.lastName1 && <p className="text-red-500 text-xs">{errors.lastName1}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Segundo Apellido</label>
             <input
               name="lastName2"
@@ -312,11 +316,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.lastName2 ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.lastName2 && <p className="text-red-500 text-xs">{errors.lastName2}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Teléfono <span className="text-red-500">*</span></label>
             <input
               name="phoneNumber"
@@ -325,12 +328,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.phoneNumber ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.phoneNumber && <p className="text-red-500 text-xs">{errors.phoneNumber}</p>}
             </div>
-          </div>
-
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Dirección <span className="text-red-500">*</span></label>
             <input
               name="address"
@@ -339,11 +340,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.address ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Email <span className="text-red-500">*</span></label>
             <input
               name="email"
@@ -353,11 +353,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.email ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Teléfono Emergencia <span className="text-red-500">*</span></label>
             <input
               name="emergencyPhone"
@@ -366,11 +365,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               readOnly={!isEditing}
               className={`w-full p-2 border rounded ${!isEditing ? 'bg-gray-100' : ''} ${errors.emergencyPhone ? 'border-red-500' : ''}`}
             />
-            <div className="h-5">
+            <div className="h-5 overflow-hidden">
               {errors.emergencyPhone && <p className="text-red-500 text-xs">{errors.emergencyPhone}</p>}
             </div>
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Profesión <span className="text-red-500">*</span></label>
             {isEditing ? (
               <>
@@ -387,7 +385,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
                     </option>
                   ))}
                 </select>
-                <div className="h-5">
+                <div className="h-5 overflow-hidden">
                   {errors.idProfession && <p className="text-red-500 text-xs">{errors.idProfession}</p>}
                 </div>
               </>
@@ -398,8 +396,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
                 className="w-full p-2 border rounded bg-gray-100"
               />
             )}
-          </div>
-          <div className="mb-4 h-16">
+          </div>          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Tipo de Salario <span className="text-red-500">*</span></label>
             {isEditing ? (
               <>
@@ -416,7 +413,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
                     </option>
                   ))}
                 </select>
-                <div className="h-5">
+                <div className="h-5 overflow-hidden">
                   {errors.idTypeOfSalary && <p className="text-red-500 text-xs">{errors.idTypeOfSalary}</p>}
                 </div>
               </>
@@ -432,9 +429,8 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
       </div>
 
       {/* Botones - Centrados como en EditApplicationModal */}
-      <div className="mt-4 flex justify-center space-x-4">
-        <button
-          onClick={handlePrimaryClick as any}
+      <div className="mt-4 flex justify-center space-x-4">        <button
+          onClick={(e: React.MouseEvent) => handlePrimaryClick(e as React.FormEvent)}
           className={`px-4 py-2 ${
             isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
           } text-white rounded`}
@@ -453,7 +449,10 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
         </button>
       </div>
 
-      <Toast message={message} type={type} />
+      {/* Toast con z-index más alto para asegurarnos de que se muestre por encima del modal */}
+      <div className="z-[9999]">
+        <Toast message={message} type={type} />
+      </div>
     </Modal>
   );
 };
