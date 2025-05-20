@@ -8,73 +8,57 @@ class AdministrationRouteService extends ApiService<AdministrationRouteType> {
     super();
   }
 
-  // GET /api/AdministrationRoute
-  public getAllAdministrationRouteRequests() {
+  // Método privado para obtener los headers con el token de autorización
+  private getAuthHeaders() {
     const token = Cookies.get("authToken");
     if (!token) throw new Error("No se encontró un token de autenticación");
+    return { Authorization: `Bearer ${token}` };
+  }
 
-    return this.getWithHeaders<AdministrationRouteType[]>("/AdministrationRoute", {
-      Authorization: `Bearer ${token}`,
-    });
+  // GET /api/AdministrationRoute
+  public getAllAdministrationRouteRequests() {
+    return this.getWithHeaders<AdministrationRouteType[]>("/AdministrationRoute", this.getAuthHeaders());
   }
 
   // GET /api/AdministrationRoute/{id}
   public getAdministrationRouteRequestById(id: number) {
-    const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-
-    return this.getWithHeaders<AdministrationRouteType>(`/AdministrationRoute/${id}`, {
-      Authorization: `Bearer ${token}`,
-    });
+    return this.getWithHeaders<AdministrationRouteType>(`/AdministrationRoute/${id}`, this.getAuthHeaders());
   }
 
   // GET con paginación (adaptado para incluir headers)
   public getAllAplicationPages(page: number, pageSize: number) {
-    const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-
-    // Suponiendo que tu ApiService.getAllPages acepte un tercer parámetro para headers,
-    // de lo contrario, se puede implementar directamente con this.api.get()
-    return this.getAllPages(
-      "/AdministrationRoute",
-      page,
-      pageSize
+    return this.getAllPagesWithHeaders(
+      "/AdministrationRoute", 
+      page, 
+      pageSize, 
+      this.getAuthHeaders()
     );
   }
-
+  
   // POST /api/AdministrationRoute
   public createAdministrationRouteRequest(data: AdministrationRouteType) {
-    const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-
     return this.postWithHeaders<AdministrationRouteType>(
       "/AdministrationRoute",
       data,
-      { Authorization: `Bearer ${token}` }
+      this.getAuthHeaders()
     );
   }
 
   // PATCH /api/AdministrationRoute/{id}
   public updateAdministrationRouteRequest(id: number, data: Partial<AdministrationRouteType>) {
-    const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-
     return this.updateWithHeaders(
       `/AdministrationRoute/${id}`,
       data,
-      { Authorization: `Bearer ${token}` }
+      this.getAuthHeaders()
     );
   }
 
   // DELETE /api/AdministrationRoute/{id}
   public deleteAdministrationRouteRequest(id: number) {
-    const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-
     return this.deleteWithHeaders<null>(
       "/AdministrationRoute",
       id.toString(),
-      { Authorization: `Bearer ${token}` }
+      this.getAuthHeaders()
     );
   }
 }
