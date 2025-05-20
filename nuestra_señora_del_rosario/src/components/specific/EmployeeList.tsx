@@ -248,7 +248,18 @@ const EmployeeList: React.FC = () => {
 {editingDni !== null && (
         <EditEmployeeModal
           isOpen={isEditModalOpen}
-          onClose={() => setEditModalOpen(false)}
+          onClose={() => {
+            // Cuando se cierre el modal, actualiza la lista de empleados
+            // Si estamos en modo filtrado, volvemos a filtrar, si no, se mantiene la lista normal
+            if (isFiltering && searchTerm.trim()) {
+              const filter = createFilter(searchTerm);
+              filterEmployees(filter, pageNumber, pageSize);
+            } else {
+              // Forzamos una actualización de la lista general
+              // (React Query se encargará de esto si se invalidaron las consultas)
+            }
+            setEditModalOpen(false);
+          }}
           dni={editingDni}
         />
       )}
