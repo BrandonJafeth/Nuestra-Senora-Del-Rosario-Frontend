@@ -108,7 +108,7 @@ function Dashboard() {
               <Route 
                 path="cardex" 
                 element={
-                  <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                  <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria', 'Admin']}>
                     <ResidentTableMedical />
                   </RoleBasedRoute>
                 } 
@@ -192,7 +192,7 @@ function Dashboard() {
                 } />
 
               <Route path="residente-info/:id" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria', 'Admin']}>
                 <ResidentDetail />
                 </RoleBasedRoute>
                 } />
@@ -222,7 +222,7 @@ function Dashboard() {
                 } />
 
               <Route path="historial-medico/:residentId" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria']}>
+                <RoleBasedRoute allowedRoles={['SuperAdmin', 'Enfermeria', 'Admin']}>
                 <MedicalHistory />
                 </RoleBasedRoute>
                 } />
