@@ -7,6 +7,7 @@ import { useGuardianMutation } from '../../hooks/useGuardian';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 import { useFetchGuardianInfo } from '../../hooks/useFetchGuardianInfo';
+import { useVerifyCedula } from '../../hooks/useVerifyCedula';
 import LoadingSpinner from './LoadingSpinner';
 
 interface Props {
@@ -33,7 +34,7 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
   const { isDarkMode } = useThemeDark();
   const mutation = useGuardianMutation();
   const { showToast, message, type } = useToast();
-    const { isLoading: loading } = mutation;
+  const { isLoading: loading } = mutation;
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } =
     useForm<GuardianFormInputs>({
@@ -65,17 +66,31 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
 
   // 2) Disparar API al cambiar cédula
   const cedulaValue = watch('cedula_GD');
-  const { data: guardianInfo } = useFetchGuardianInfo(cedulaValue);
 
-  // 3) Si llega info, rellenar nombre y apellidos
+  // Hook que verifica si la cédula ya existe en el sistema
+  const { data: verifyData, isFetching: verifyingCedula } = useVerifyCedula(cedulaValue);
+
+  // Mostrar toast si la cédula ya existe (según verificación)
   useEffect(() => {
-    if (guardianInfo?.results?.length) {
-      const person = guardianInfo.results[0];
-      setValue('name_GD', capitalize(person.firstname));
-      setValue('lastname1_GD', capitalize(person.lastname1));
-      setValue('lastname2_GD', capitalize(person.lastname2));
+    if (verifyData && verifyData.exists) {
+      showToast('La cédula ya se encuentra registrada en el sistema', 'error');
     }
-  }, [guardianInfo, setValue]);
+  }, [verifyData, showToast]);
+
+  // Obtener datos externos para autocompletar (solo si no existe en el sistema)
+  const { data: guardianInfo } = useFetchGuardianInfo(cedulaValue, {
+    enabled: cedulaValue.trim().length === 9 && !(verifyData && verifyData.exists)
+  });
+
+// 3) Si llega info, rellenar nombre y apellidos solo si la cédula NO existe
+useEffect(() => {
+  if (!verifyData?.exists && guardianInfo?.results?.length) {
+    const person = guardianInfo.results[0];
+    setValue('name_GD', capitalize(person.firstname));
+    setValue('lastname1_GD', capitalize(person.lastname1));
+    setValue('lastname2_GD', capitalize(person.lastname2));
+  }
+}, [guardianInfo, verifyData, setValue]);
 
   // Nuevo useEffect: limpiar el formulario cuando se cierra el modal
   useEffect(() => {
@@ -117,16 +132,23 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
           {/* Cédula */}
           <div>
             <label className="block mb-2">Cédula</label>
-            <input
-              type="text"
-              {...register('cedula_GD', {
-                required: 'La cédula es obligatoria',
-                minLength: { value: 9, message: 'Debe tener 9 dígitos' },
-                maxLength: { value: 9, message: 'Debe tener 9 dígitos' },
-                pattern: { value: /^\d+$/, message: 'Solo números' }
-              })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                {...register('cedula_GD', {
+                  required: 'La cédula es obligatoria',
+                  minLength: { value: 9, message: 'Debe tener 9 dígitos' },
+                  maxLength: { value: 9, message: 'Debe tener 9 dígitos' },
+                  pattern: { value: /^\d+$/, message: 'Solo números' }
+                })}
+                className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              />
+              {verifyingCedula && (
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <LoadingSpinner />
+                </span>
+              )}
+            </div>
             {errors.cedula_GD && (
               <p className="text-red-500">{errors.cedula_GD.message}</p>
             )}
@@ -203,18 +225,18 @@ const GuardianFormModal: React.FC<Props> = ({ isOpen, onClose, initialData }) =>
           {/* Botones */}
           <div className="col-span-2 flex justify-end space-x-4">
             <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? <LoadingSpinner /> : 'Guardar'}
+            </button>
+            <button
               type="button"
               onClick={onClose}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
             >
               Cancelar
-            </button>
-           <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? <LoadingSpinner/> : 'Guardar'}
             </button>
           </div>
         </form>
