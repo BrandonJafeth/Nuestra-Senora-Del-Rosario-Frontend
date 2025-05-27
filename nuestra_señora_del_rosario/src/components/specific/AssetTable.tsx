@@ -434,6 +434,7 @@ const AssetTable: React.FC = () => {
               <option value="">Todos los estados</option>
               <option value="Buen Estado">Buen estado</option>
               <option value="Mal Estado">Mal estado</option>
+              <option value="Desuso">Desuso</option>
             </select>
           </div>
 
