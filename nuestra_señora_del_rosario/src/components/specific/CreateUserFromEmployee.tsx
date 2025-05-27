@@ -37,11 +37,9 @@ const CreateUserFromEmployeeForm: React.FC = () => {
           setToastMessage(data.message || 'Usuario asignado exitosamente');
           setToastType('success');
           setTimeout(() => navigate('/dashboard/usuarios'), 2000);
-        },
-        onError: (error: any) => {
-          setToastMessage(
-            error.response?.data?.message || 'Error al asignar usuario'
-          );
+        },        onError: (error: unknown) => {
+          const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Error al asignar usuario';
+          setToastMessage(errorMessage);
           setToastType('error');
         }
       }
