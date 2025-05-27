@@ -15,10 +15,9 @@ interface AssignRoleModalProps {
 const RoleAssignment: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, userId, userName }) => {
   const { isDarkMode } = useThemeDark();
   const [idRole, setIdRole] = useState<number | null>(null);
-  const { mutate, isLoading, isError, isSuccess, error, data } = useAssignRole();
+  const { mutate, isLoading, isSuccess, data } = useAssignRole();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<'success' | 'error' | null>(null);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -38,25 +37,62 @@ const RoleAssignment: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, userI
           setToastType('success');
           setTimeout(onClose, 2000);
         },
-        onError: (err: any) => {
-          setToastMessage(err.response?.data?.message || 'Error al asignar rol');
+        onError: (err: unknown) => {
+          console.error('Role assignment error:', err);
+          
+          let errorMessage = 'Error al asignar rol';
+          
+          if (err && typeof err === 'object') {
+            const axiosError = err as {
+              response?: {
+                data?: {
+                  message?: string;
+                  error?: string;
+                } | string;
+                status?: number;
+              };
+              message?: string;
+            };
+            
+            // Verificar si es un error de axios con response
+            if (axiosError.response?.data) {
+              // Si data es un objeto con message
+              if (typeof axiosError.response.data === 'object' && axiosError.response.data.message) {
+                errorMessage = axiosError.response.data.message;
+              }
+              // Si data es un objeto con error
+              else if (typeof axiosError.response.data === 'object' && axiosError.response.data.error) {
+                errorMessage = axiosError.response.data.error;
+              }
+              // Si data es un string
+              else if (typeof axiosError.response.data === 'string') {
+                errorMessage = axiosError.response.data;
+              }
+              // Manejo específico para error 409 (Conflict)
+              else if (axiosError.response.status === 409) {
+                errorMessage = 'El usuario ya tiene este rol asignado.';
+              }
+            }
+            // Si no hay response, verificar si hay mensaje en el error principal
+            else if (axiosError.message) {
+              errorMessage = axiosError.message;
+            }
+          }
+          
+          setToastMessage(errorMessage);
           setToastType('error');
         }
       }
     );
   };
-  
 
+  // Eliminamos el useEffect conflictivo y solo manejamos success aquí
   useEffect(() => {
     if (isSuccess && data) {
-      setToastMessage(data.message); // Mensaje del backend en caso de éxito
+      setToastMessage(data.message);
       setToastType('success');
     }
-    if (isError && error) {
-      setToastMessage(error.message || 'Error al asignar rol');
-      setToastType('error');
-    }
-  }, [isSuccess, isError, data, error]);
+  }, [isSuccess, data]);
 
   return (
     <Modal

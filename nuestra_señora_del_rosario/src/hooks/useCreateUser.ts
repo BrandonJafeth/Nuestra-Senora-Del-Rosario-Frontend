@@ -8,43 +8,22 @@ export const useCreateUser = () => {
 
   return useMutation<User, Error, User>(
     async (newUser) => {
-      const response = await userManagmentService.createUser(newUser);
-      return response;
+      try {
+        const response = await userManagmentService.createUser(newUser);
+        return response;
+      } catch (error) {
+        console.error('Service error:', error);
+        throw error;
+      }
     },
     {
-      // 1) Optimistic Update
-      onMutate: async (newUser) => {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries('PaginatedUsers');
-
-        // Snapshot previous data for rollback
-        const previous = queryClient.getQueriesData<any>('PaginatedUsers');
-
-        // For each cached page, prepend the new user
-        previous.forEach(([queryKey, data]: [any, any]) => {
-          if (!data) return;
-          queryClient.setQueryData(
-            queryKey,
-            (old: { users: User[]; totalPages: number } | undefined) => ({
-              users: [newUser, ...(old?.users || [])],
-              totalPages: old?.totalPages || 0,
-            })
-          );
-        });
-
-        return { previous };
-      },
-
-      // 2) Rollback on error
-      onError: ( context: any) => {
-        context.previous.forEach(([queryKey, data]: [any, any]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      },
-
-      // 3) Always refetch after error or success to sync with server
-      onSettled: () => {
+      onSuccess: () => {
+        // Refetch users data after successful creation
         queryClient.invalidateQueries('PaginatedUsers');
+      },
+      onError: (error: Error) => {
+        console.error('Mutation error:', error);
+        // Don't need to do anything here, the component handles the error
       },
     }
   );

@@ -21,27 +21,25 @@ const CreateUserForm: React.FC = () => {
   });
 
   const { roles, isLoadingRoles, isErrorRoles } = useRoles(Number(formData.dni));
-  const { mutate: createUser, isLoading, isError, error } = useCreateUser();
-
-  // Función de envío con validaciones tipo EmployeeForm
+  const { mutate: createUser, isLoading, isError, error } = useCreateUser();  // Función de envío simplificada - deja que el backend maneje la validación de duplicados
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
- // 2) Validar DNI
- if (!formData.dni.trim() || !/^\d+$/.test(formData.dni) || formData.dni.length < 9 || formData.dni.length > 12) {
-  showToast('La cédula debe contener solo números y tener entre 9 y 12 dígitos', 'error');
-  return;
-}
- // 3) Validar correo
- if (!formData.email.trim() || !formData.email.includes('@') || !formData.email.includes('.com')) {
-  showToast('Ingrese un correo electrónico válido', 'error');
-  return;
-}
-if (formData.email.length > 50) {
-  showToast('El correo electrónico no puede exceder los 50 caracteres', 'error');
-  return;
-}
-    // 1) Validar nombre
+    // Validaciones básicas de frontend
+    if (!formData.dni.trim() || !/^\d+$/.test(formData.dni) || formData.dni.length < 9 || formData.dni.length > 12) {
+      showToast('La cédula debe contener solo números y tener entre 9 y 12 dígitos', 'error');
+      return;
+    }
+
+    if (!formData.email.trim() || !formData.email.includes('@') || !formData.email.includes('.com')) {
+      showToast('Ingrese un correo electrónico válido', 'error');
+      return;
+    }
+    if (formData.email.length > 50) {
+      showToast('El correo electrónico no puede exceder los 50 caracteres', 'error');
+      return;
+    }
+
     if (!formData.fullName.trim()) {
       showToast('El nombre completo es requerido', 'error');
       return;
@@ -59,13 +57,12 @@ if (formData.email.length > 50) {
       return;
     }
 
-    // 4) Validar rol
     if (formData.id_Role === 0) {
       showToast('Debe seleccionar un rol', 'error');
       return;
     }
 
-    // Si todo pasó, creamos al usuario
+    // Crear usuario - el backend manejará validaciones de duplicados específicas
     createUser(
       {
         id_User: 0,
@@ -85,20 +82,68 @@ if (formData.email.length > 50) {
         onSuccess: () => {
           showToast('Usuario creado con éxito', 'success');
           setTimeout(() => navigate('/dashboard/usuarios'), 1000);
-        },
-        onError: (err: any) => {
-          showToast(err.response?.data?.message || 'Error al crear usuario', 'error');
+        },        onError: (err: unknown) => {
+          console.error('Error creating user:', err);
+          
+          // Manejo más robusto de errores de axios
+          let errorMessage = 'Error al crear usuario';
+          
+          if (err && typeof err === 'object') {
+            const axiosError = err as {
+              response?: {
+                data?: {
+                  message?: string;
+                  error?: string;
+                } | string;
+                status?: number;
+              };
+              message?: string;
+            };
+            
+            // Verificar si es un error de axios con response
+            if (axiosError.response?.data) {
+              // Si data es un objeto con message
+              if (typeof axiosError.response.data === 'object' && axiosError.response.data.message) {
+                errorMessage = axiosError.response.data.message;
+              }
+              // Si data es un objeto con error
+              else if (typeof axiosError.response.data === 'object' && axiosError.response.data.error) {
+                errorMessage = axiosError.response.data.error;
+              }
+              // Si data es un string
+              else if (typeof axiosError.response.data === 'string') {
+                errorMessage = axiosError.response.data;
+              }
+              // Si es un error 500, mostrar mensaje específico
+              else if (axiosError.response.status === 500) {
+                errorMessage = 'Error interno del servidor. Por favor, intente nuevamente.';
+              }
+            }
+            // Si no hay response, verificar si hay mensaje en el error principal
+            else if (axiosError.message) {
+              errorMessage = axiosError.message;
+            }
+          }
+          
+          showToast(errorMessage, 'error');
         },
       }
     );
-  };
-
-  // Capturar errores de la mutación
+  };  // Capturar errores de la mutación como backup
   useEffect(() => {
     if (isError && error) {
-      showToast(error.message || 'Error al crear usuario', 'error');
+      console.error('Mutation error in useEffect:', error);
+      
+      let errorMessage = 'Error al crear usuario';
+      
+      // Si el error tiene un mensaje, usarlo
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      showToast(errorMessage, 'error');
     }
-  }, [isError, error]);
+  }, [isError, error, showToast]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -116,8 +161,7 @@ if (formData.email.length > 50) {
       {/* Toast global */}
       {message && <Toast message={message} type={type || 'info'} />}
 
-      <form onSubmit={handleFormSubmit} noValidate className="grid grid-cols-2 gap-6">
-        {/* DNI */}
+      <form onSubmit={handleFormSubmit} noValidate className="grid grid-cols-2 gap-6">        {/* DNI */}
         <div>
           <label htmlFor="dni" className="block text-lg font-medium">DNI</label>
           <input
@@ -226,15 +270,13 @@ if (formData.email.length > 50) {
               ))}
             </select>
           )}
-        </div>
-
-        {/* Botones */}
+        </div>        {/* Botones */}
         <div className="col-span-2 flex justify-center gap-6 mt-6">
           <button
             type="submit"
             disabled={isLoading}
             className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition ${
-              isLoading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
+              isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
             }`}
           >
             {isLoading ? <LoadingSpinner /> : 'Agregar'}
