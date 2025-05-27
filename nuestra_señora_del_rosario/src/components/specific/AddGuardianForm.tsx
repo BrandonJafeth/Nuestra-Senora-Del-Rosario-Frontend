@@ -133,19 +133,61 @@ useEffect(() => {
     showToast(`Encargado seleccionado: ${fullName}`, 'success');
     setTimeout(() => setIsGuardianAdded(true), 3000);
   };
-
-  const onSubmit: SubmitHandler<GuardianFormInputs> = data => {
-    saveGuardian(data as any, {
-      onSuccess: res => {
-        const id = res.data?.id_Guardian;
+  const onSubmit: SubmitHandler<GuardianFormInputs> = data => {    saveGuardian(data as Guardian, {
+      onSuccess: (res: unknown) => {
+        const response = res as { data?: { id_Guardian?: number } };
+        const id = response.data?.id_Guardian;
         if (id) {
           setGuardianId(id);
           setIsGuardianAdded(true);
           showToast('Guardián añadido exitosamente', 'success');
           setTimeout(() => setIsGuardianAdded(true), 3000);
         }
+      },      onError: (error: unknown) => {
+        console.error('Error completo en AddGuardianForm:', error);
+        
+        let errorMessage = 'Error al guardar el guardián.';
+        
+        // Verificar si es un error de axios
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response?: { data?: unknown; status?: number } };
+          console.log('Axios error response:', axiosError.response);
+          
+          // Intentar extraer mensaje específico del backend
+          if (axiosError.response?.data) {
+            const responseData = axiosError.response.data as Record<string, unknown>;
+            if (typeof responseData === 'object' && responseData.message) {
+              errorMessage = String(responseData.message);
+            }
+            // Si data es un objeto con error
+            else if (typeof responseData === 'object' && responseData.error) {
+              errorMessage = String(responseData.error);
+            }
+            // Si data es un string
+            else if (typeof responseData === 'string') {
+              errorMessage = responseData;
+            }
+            // Si es un error 500, mostrar mensaje específico
+            else if (axiosError.response.status === 500) {
+              errorMessage = 'Error interno del servidor. Por favor, intente nuevamente.';
+            }
+            // Si es un error 400, datos no válidos
+            else if (axiosError.response.status === 400) {
+              errorMessage = 'Los datos del guardián no son válidos.';
+            }
+            // Si es un error 409, conflicto (guardián ya existe)
+            else if (axiosError.response.status === 409) {
+              errorMessage = 'El guardián ya existe en el sistema.';
+            }
+          }
+        }
+        // Si no hay response, verificar si hay mensaje en el error principal
+        else if (error && typeof error === 'object' && 'message' in error) {
+          errorMessage = String((error as Error).message);
+        }
+        
+        showToast(errorMessage, 'error');
       },
-      onError: () => showToast('Error al guardar el guardián.', 'error'),
     });
   };
 
