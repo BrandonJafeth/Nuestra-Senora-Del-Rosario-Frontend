@@ -227,9 +227,8 @@ const canConvert =
                 >
                   Cancelar
                 </button>
-              </div>
-            ) : (
-             <div className="flex justify-center space-x-2">
+              </div>            ) : (
+             <div className={`flex ${canConvert ? 'justify-between' : 'justify-center'} w-full`}>
   {/* Editar */}
   <button
     onClick={toggleEditMode}
