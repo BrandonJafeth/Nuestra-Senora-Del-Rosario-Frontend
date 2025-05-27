@@ -4,7 +4,7 @@ import { AssetType } from "../../types/AssetType";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import { useAssetCategory } from "../../hooks/useAssetCategory";
 import { useModel } from "../../hooks/useModel";
-import { useLaw } from "../../hooks/useLaw";
+import { useFundingEntity } from "../../hooks/useFundingEntity";
 // Importamos el Toast y el hook, pero ya no usaremos showToast en este componente
 import Toast from "../common/Toast";
 import { useToast } from "../../hooks/useToast";
@@ -22,18 +22,16 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
   onClose,
   initialAsset,
   onDraftSave,
-}) => {
-  const { isDarkMode } = useThemeDark();
+}) => {  const { isDarkMode } = useThemeDark();
   const { data: categories, isLoading: isLoadingCat } = useAssetCategory();
   const { data: models, isLoading: isLoadingModel } = useModel();
-  const { data: laws } = useLaw();
+  const { data: fundingEntities } = useFundingEntity();
 
   // Hook del Toast (aunque en este componente ya no lo usaremos)
   const { /* showToast, */ message, type } = useToast();
 
   const [formData, setFormData] = useState<Partial<AssetType>>(initialAsset);
   const [isEditing, setIsEditing] = useState(false);
-
   // Cuando se abre el modal se carga la data inicial y se resetea el modo edición
   useEffect(() => {
     if (isOpen) {
@@ -41,36 +39,35 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
       setFormData(initialAsset);
       setIsEditing(false);
   
-      // Si hay un lawName en el activo, buscamos el idLaw correspondiente
-      if (initialAsset.lawName && laws?.length) {
-        const matched = laws.find((l) => l.lawName === initialAsset.lawName);
+      // Si hay un name_FundingEntity en el activo, buscamos el id_FundingEntity correspondiente
+      if (initialAsset.name_FundingEntity && fundingEntities?.length) {
+        const matched = fundingEntities.find((entity) => entity.name_FundingEntity === initialAsset.name_FundingEntity);
         if (matched) {
           // Lo guardamos en el formData para el select
           setFormData((prev) => ({
             ...prev,
-            idLaw: matched.idLaw,
+            id_FundingEntity: matched.id_FundingEntity,
           }));
         }
       }
     }
-  }, [isOpen, initialAsset, laws]);
+  }, [isOpen, initialAsset, fundingEntities]);
   
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     if (!isEditing) return;
     const { name, value } = e.target;
   
-    // Caso especial: si es "idLaw", busca el lawName en la lista
-    if (name === "idLaw") {
+    // Caso especial: si es "id_FundingEntity", busca el name_FundingEntity en la lista
+    if (name === "id_FundingEntity") {
       const newId = parseInt(value, 10);
-      const matchedLaw = laws?.find((l) => l.idLaw === newId);
+      const matchedEntity = fundingEntities?.find((entity) => entity.id_FundingEntity === newId);
   
       setFormData((prev) => ({
         ...prev,
-        idLaw: isNaN(newId) ? undefined : newId,
-        lawName: matchedLaw?.lawName ?? "",
+        id_FundingEntity: isNaN(newId) ? undefined : newId,
+        name_FundingEntity: matchedEntity?.name_FundingEntity ?? "",
       }));
     }
     // Otros campos numéricos
@@ -185,23 +182,21 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
                   readOnly={!isEditing}
                   className={`${baseInputClass} ${!isEditing ? readOnlyClass : ""}`}
                 />
-              </label>
-
-              <label className="block">
+              </label>              <label className="block">
                 <span className="text-gray-700 dark:text-gray-300">
-                  Ley:
+                  Entidad Financiadora:
                 </span>
                 {isEditing ? (
                   <select
-                    name="idLaw"
-                    value={formData.idLaw || ""}
+                    name="id_FundingEntity"
+                    value={formData.id_FundingEntity || ""}
                     onChange={handleInputChange}
                     className={baseInputClass}
                   >
-                    <option value="">Seleccione una ley</option>
-                    {laws?.map((law) => (
-                      <option key={law.idLaw} value={law.idLaw}>
-                        {law.lawName}
+                    <option value="">Seleccione una entidad financiadora</option>
+                    {fundingEntities?.map((entity) => (
+                      <option key={entity.id_FundingEntity} value={entity.id_FundingEntity}>
+                        {entity.name_FundingEntity}
                       </option>
                     ))}
                   </select>
@@ -209,7 +204,7 @@ const AssetEditModal: React.FC<AssetEditModalProps> = ({
                   // Modo lectura
                   <input
                     type="text"
-                    value={formData.lawName || ""}
+                    value={formData.name_FundingEntity || ""}
                     readOnly
                     className={`${baseInputClass} ${readOnlyClass}`}
                   />
