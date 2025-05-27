@@ -50,7 +50,7 @@ import TableBrands from '../components/specific/TableBrands';
 import TableModels from '../components/specific/TableModels';
 import TableAssetCategories from '../components/specific/TableAssetCategories';
 import AssetTable from '../components/specific/AssetTable';
-import TableLaws from '../components/specific/TableLaws';
+import TableFundingEntities from '../components/specific/TableFundingEntities';
 import TableMedicationSpecific from '../components/specific/TableMedication';
 import TableAdministrationRoute from '../components/specific/TableAdministrationRoute';
 import RoleBasedRoute from '../components/layout/RoleBasedRoute';
@@ -354,11 +354,9 @@ function Dashboard() {
                 <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Fisioterapia']}>
                 <TableAssetCategories />
                 </RoleBasedRoute>
-                } />
-
-              <Route path="Configuracion/sistema/leyes" element={
+                } />              <Route path="Configuracion/sistema/entidades-financiadoras" element={
                 <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
-                <TableLaws />
+                <TableFundingEntities />
                 </RoleBasedRoute>
                 } />
 

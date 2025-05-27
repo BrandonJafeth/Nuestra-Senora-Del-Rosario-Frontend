@@ -83,17 +83,16 @@ const cardsData = [
     description: "Gestiona los modelos de las marcas.",
     route: "/dashboard/Configuracion/sistema/modelo",
     roles: ["SuperAdmin", "Admin"],
-  },
-  {
+  },  {
     title: "Categorias de los activos",
     description: "Gestiona las categorías de los activos.",
     route: "/dashboard/Configuracion/sistema/categoria-activo",
     roles: ["SuperAdmin", "Admin"],
   },
   {
-    title: "Leyes",
-    description: "Gestiona las leyes aplicables.",
-    route: "/dashboard/Configuracion/sistema/leyes",
+    title: "Entidades Financiadoras",
+    description: "Gestiona las entidades financiadoras aplicables.",
+    route: "/dashboard/Configuracion/sistema/entidades-financiadoras",
     roles: ["SuperAdmin","Admin"],
   },
   {

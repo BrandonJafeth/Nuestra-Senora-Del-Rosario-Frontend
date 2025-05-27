@@ -9,12 +9,11 @@ export interface AssetType {
     location: string;
     assetCondition: string;
     idAssetCategory: number;
-    idModel: number;
-    categoryName: string;
+    idModel: number;    categoryName: string;
     modelName: string;
     brandName: string;
-    lawName: string;
-    idLaw: number;
+    name_FundingEntity: string;
+    id_FundingEntity: number;
   }
   
   export interface PagedAssetsResponse {
@@ -31,9 +30,8 @@ export interface AssetType {
     plate: string;
     originalCost: number;
     purchaseDate: string; // Ejemplo: "2025-03-18T03:41:59.796Z"
-    location: string;
-    assetCondition: string;
+    location: string;    assetCondition: string;
     idAssetCategory: number;
     idModel: number;
-    idLaw: number;
+    id_FundingEntity: number;
   }

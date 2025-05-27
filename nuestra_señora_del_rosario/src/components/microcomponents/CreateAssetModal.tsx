@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useThemeDark } from "../../hooks/useThemeDark";
-import { useLaw } from "../../hooks/useLaw";
+import { useFundingEntity } from "../../hooks/useFundingEntity";
 import { useAssetCategory } from "../../hooks/useAssetCategory";
 import { useModel } from "../../hooks/useModel";
 import { AssetType } from "../../types/AssetType";
@@ -19,10 +19,9 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
   isOpen, 
   onClose,
   onSuccess 
-}) => {
-  const { isDarkMode } = useThemeDark();
+}) => {  const { isDarkMode } = useThemeDark();
   const { mutate: createAsset, isLoading: isCreating } = useCreateAsset();
-  const { data: lawOptions = [] } = useLaw();
+  const { data: fundingEntityOptions = [] } = useFundingEntity();
   const { data: categoryOptions = [] } = useAssetCategory();
   const { data: modelOptions = [] } = useModel();
   const { showToast, message, type } = useToast();
@@ -40,7 +39,6 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
         : "bg-white border-gray-300 text-black"
     } ${hasError ? 'border-red-500' : ''}`;
   };
-
   const [newAsset, setNewAsset] = useState<AssetType>({
     idAsset: 0,
     assetName: "",
@@ -52,11 +50,11 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
     assetCondition: "",
     idAssetCategory: 0,
     idModel: 0,
-    idLaw: 0,
+    id_FundingEntity: 0,
     categoryName: "",
     modelName: "",
     brandName: "",
-    lawName: ""
+    name_FundingEntity: ""
   });
     // Verificación de placa duplicada
   const { data: plateCheck, isLoading: checkingPlate } = useCheckAssetPlate(newAsset.plate || '');
@@ -98,11 +96,10 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
       case 'location':
         return !String(value).trim() ? 'La ubicación es obligatoria' : '';
       case 'assetCondition':
-        return !String(value).trim() ? 'La condición del activo es obligatoria' : '';
-      case 'idAssetCategory':
+        return !String(value).trim() ? 'La condición del activo es obligatoria' : '';      case 'idAssetCategory':
         return Number(value) === 0 ? 'Debe seleccionar una categoría' : '';
-      case 'idLaw':
-        return Number(value) === 0 ? 'Debe seleccionar una ley' : '';
+      case 'id_FundingEntity':
+        return Number(value) === 0 ? 'Debe seleccionar una entidad financiadora' : '';
       default:
         return '';
     }
@@ -145,11 +142,10 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
-    
-    // Validar cada campo
+      // Validar cada campo
     Object.entries(newAsset).forEach(([key, value]) => {
       // Solo validamos los campos que nos interesan
-      if (['assetName', 'serialNumber', 'plate', 'purchaseDate', 'location', 'assetCondition', 'idAssetCategory', 'idLaw'].includes(key)) {
+      if (['assetName', 'serialNumber', 'plate', 'purchaseDate', 'location', 'assetCondition', 'idAssetCategory', 'id_FundingEntity'].includes(key)) {
         const errorMessage = validateField(key, value as string | number);
         if (errorMessage) {
           newErrors[key] = errorMessage;
@@ -181,8 +177,7 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
     }
 
     createAsset(newAsset, {
-      onSuccess: () => {
-        setNewAsset({
+      onSuccess: () => {        setNewAsset({
           idAsset: 0,
           assetName: "",
           serialNumber: "",
@@ -193,11 +188,11 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
           assetCondition: "",
           idAssetCategory: 0,
           idModel: 0,
-          idLaw: 0,
+          id_FundingEntity: 0,
           categoryName: "",
           modelName: "",
           brandName: "",
-          lawName: "",
+          name_FundingEntity: "",
         });
         
         setFormSubmitted(false);
@@ -311,22 +306,21 @@ const CreateAssetModal: React.FC<CreateAssetModalProps> = ({
               <option value="Buen Estado">Buen estado</option>
             </select>
             {errors.assetCondition && <p className="text-red-500 text-xs mb-3">{errors.assetCondition}</p>}
-            
-            <label className="block mb-2 font-semibold">Ley</label>
+              <label className="block mb-2 font-semibold">Entidad Financiadora</label>
             <select
-              name="idLaw"
-              value={newAsset.idLaw}
+              name="id_FundingEntity"
+              value={newAsset.id_FundingEntity}
               onChange={handleChange}
-              className={`${getInputClass('idLaw')} mb-1`}
+              className={`${getInputClass('id_FundingEntity')} mb-1`}
             >
-              <option value={0}>Seleccione una Ley*</option>
-              {lawOptions.map((law) => (
-                <option key={law.idLaw} value={law.idLaw}>
-                  {law.lawName}
+              <option value={0}>Seleccione una Entidad Financiadora*</option>
+              {fundingEntityOptions.map((entity) => (
+                <option key={entity.id_FundingEntity} value={entity.id_FundingEntity}>
+                  {entity.name_FundingEntity}
                 </option>
               ))}
             </select>
-            {errors.idLaw && <p className="text-red-500 text-xs mb-3">{errors.idLaw}</p>}
+            {errors.id_FundingEntity && <p className="text-red-500 text-xs mb-3">{errors.id_FundingEntity}</p>}
             
             <label className="block mb-2 font-semibold">Categoría</label>
             <select
