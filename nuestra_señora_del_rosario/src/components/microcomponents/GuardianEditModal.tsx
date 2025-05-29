@@ -6,6 +6,7 @@ import { useThemeDark } from '../../hooks/useThemeDark';
 import { Guardian } from '../../types/GuardianType';
 import { useUpdateGuardianPut } from '../../hooks/useUpdateGuardianPut';
 import { useToast } from '../../hooks/useToast';
+import Toast from '../common/Toast';
 
 interface Props {
   isOpen: boolean;
@@ -19,7 +20,7 @@ Modal.setAppElement('#root');
 
 const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
   const { isDarkMode } = useThemeDark();
-  const { showToast } = useToast();
+  const { showToast, message, type } = useToast();
   const updateMutation = useUpdateGuardianPut();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -53,7 +54,6 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
     });
     setIsEditing(false);
   }, [guardian, reset, isOpen]);
-
   const onSubmit: SubmitHandler<FormInputs> = data => {
     const payload = { ...data, id_Guardian: guardian.id_Guardian };
     updateMutation.mutate(
@@ -61,8 +61,11 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
       {
         onSuccess: () => {
           showToast('Encargado actualizado exitosamente', 'success');
-          setIsEditing(false);
-          onClose();
+          // Pequeña demora antes de cerrar para asegurar que el toast sea visible
+          setTimeout(() => {
+            setIsEditing(false);
+            onClose();
+          }, 1000);
         },
         onError: () => showToast('Error al actualizar el encargado', 'error')
       }
@@ -145,7 +148,11 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
           className="px-4 py-2 bg-red-500 text-white rounded-lg"
         >
           Cerrar
-        </button>
+        </button>      </div>
+      
+      {/* Toast con z-index alto para asegurar que se muestre correctamente */}
+      <div className="z-[9999] fixed bottom-4 right-4">
+        <Toast message={message} type={type} />
       </div>
     </Modal>
   );

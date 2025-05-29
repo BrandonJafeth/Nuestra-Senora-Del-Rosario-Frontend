@@ -192,7 +192,7 @@ const EmployeeList: React.FC = () => {
       {/* Tabla reutilizable */}
       <ReusableTableRequests<any>
         data={displayData}
-        headers={['Nombre', 'Cédula', 'Correo', 'Profesión', 'Teléfono', 'Acción']}
+        headers={['Nombre', 'Cédula', 'Correo', 'Puesto', 'Teléfono', 'Acción']}
         isLoading={loading}
         skeletonRows={5}
         isDarkMode={isDarkMode}

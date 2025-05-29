@@ -268,21 +268,25 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
 
   return (    <Modal
       isOpen={isOpen}
-      onRequestClose={() => { if (!isEditing) onClose(); }}
-      className="p-6 bg-white rounded shadow max-w-2xl mx-auto mt-5 relative"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onRequestClose={() => { if (!isEditing) onClose(); }}      className=" p-6 bg-white rounded-lg shadow 
+    w-full max-w-2xl 
+    mx-auto my-5 
+    max-h-[80vh] overflow-hidden
+    relative flex flex-col"
+      overlayClassName="    fixed inset-0 bg-black bg-opacity-50 
+    p-4 overflow-y-auto flex items-center justify-center z-50"
       shouldCloseOnOverlayClick={!isEditing}
       shouldCloseOnEsc={!isEditing}      style={{
         content: {
-          maxHeight: '90vh',
-          overflow: 'visible'
+          maxHeight: '80vh',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         }
       }}
-    >
-      <h2 className="text-2xl font-bold mb-4 text-center">Editar Empleado</h2>
-      
-      <div className="pb-4 px-1">
-        <form onSubmit={handlePrimaryClick} className="grid grid-cols-2 gap-x-4">
+    >      <h2 className="text-2xl font-bold mb-4 text-center">Editar Empleado</h2>
+        <div className=" px-1 overflow-y-auto">
+        <form onSubmit={handlePrimaryClick} className="grid grid-cols-2 gap-x-4 gap-y-1">
           {/* Columna 1 */}          <div className="mb-4" style={{ height: '80px' }}>
             <label className="block font-medium mb-1">Nombre <span className="text-red-500">*</span></label>
             <input
@@ -425,11 +429,11 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ isOpen, onClose, 
               />
             )}
           </div>
-        </form>
-      </div>
-
+        </form>      </div>
+      
       {/* Botones - Centrados como en EditApplicationModal */}
-      <div className="mt-4 flex justify-center space-x-4">        <button
+      <div className="mt-6 mb-0 pt-3 pb-3 flex justify-center space-x-4 sticky bottom-0 bg-white">
+        <button
           onClick={(e: React.MouseEvent) => handlePrimaryClick(e as React.FormEvent)}
           className={`px-4 py-2 ${
             isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'

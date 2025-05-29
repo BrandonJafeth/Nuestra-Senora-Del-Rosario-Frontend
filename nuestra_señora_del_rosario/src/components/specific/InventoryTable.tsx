@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -9,8 +9,10 @@ import ProductEditModal from "./ModalEditProduct";
 import { Product } from "../../types/ProductType";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useProductsByCategory } from "../../hooks/useProductByCategory";
+import { useAllProductsByCategory } from "../../hooks/useAllProductsByCategory";
 import CategoryDropdown from "../microcomponents/CategoryDropdown";
 import { ConvertedData } from "../../types/ProductType";
+import SearchInput from "../common/SearchInput";
 
 const InventoryTable: React.FC = () => {
   const { isDarkMode } = useThemeDark();
@@ -20,18 +22,31 @@ const InventoryTable: React.FC = () => {
   const pageSize = 5;
 
   // Categoría seleccionada (0 = ninguna)
-  const [categoryId, setCategoryId] = useState<number>(0);
-
-  // Llamada a la query, pero solo si categoryId != 0
+  const [categoryId, setCategoryId] = useState<number>(0);  // Llamada a la query para obtener productos paginados (para visualización)
   const {
-    data,
+    data: paginatedData,
     isLoading: productsLoading,
     isError: productsError,
   } = useProductsByCategory(categoryId, pageNumber, pageSize);
 
-  const products = data?.item1 || [];
-  const totalPages = data?.item2 || 1;
+  // Llamada a la query para obtener TODOS los productos de la categoría (para búsqueda global)
+  const {
+    data: allCategoryProducts,
+    isLoading: allProductsLoading,
+    isError: allProductsError,
+  } = useAllProductsByCategory(categoryId);
+
+  // Estado para el término de búsqueda
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Estado compuesto para la carga
+  const isLoading = productsLoading || allProductsLoading;
+  const isError = productsError || allProductsError;
+  
+  // Estado para almacenar productos paginados y filtrados para mostrar
+  const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+  // Estado para el total de páginas según la búsqueda
+  const [totalPages, setTotalPages] = useState(1);
 
   // Manejo de modales...
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,11 +59,34 @@ const InventoryTable: React.FC = () => {
     [id: number]: { unitOfMeasure: string; totalQuantity: number };
   }>({});
 
-  const filteredProducts = searchTerm.trim()
-    ? products.filter((asset: Product) =>
-        asset.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : products;
+  // Filtrado y paginación de productos
+  useEffect(() => {
+    // Si hay un término de búsqueda, filtramos en todos los productos
+    if (searchTerm.trim()) {
+      const filtered = (allCategoryProducts || []).filter((product: Product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      // Calcular el total de páginas basado en los resultados filtrados
+      const calculatedTotalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      setTotalPages(calculatedTotalPages);
+      
+      // Ajustar página actual si excede el total de páginas
+      const adjustedPageNumber = Math.min(pageNumber, calculatedTotalPages);
+      if (adjustedPageNumber !== pageNumber) {
+        setPageNumber(adjustedPageNumber);
+      }
+      
+      // Paginar los resultados filtrados
+      const start = (adjustedPageNumber - 1) * pageSize;
+      const end = start + pageSize;
+      setDisplayProducts(filtered.slice(start, end));
+    } else {
+      // Si no hay término de búsqueda, usamos los datos paginados del servidor
+      setDisplayProducts(paginatedData?.item1 || []);
+      setTotalPages(paginatedData?.item2 || 1);
+    }
+  }, [searchTerm, allCategoryProducts, paginatedData, pageNumber, pageSize]);
   // Función para actualizar el producto con datos convertidos
   const handleConversionComplete = (updatedData: ConvertedData) => {
     setConvertedProducts((prevState) => ({
@@ -143,25 +181,21 @@ const InventoryTable: React.FC = () => {
       </div>
 
       {/* Fila 2: Input de Búsqueda */}
-      <div className="mb-4 flex justify-center">
-        <input
-          type="text"
-          placeholder="Buscar por nombre"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-            isDarkMode
-              ? "bg-gray-700 text-white focus:ring-blue-400"
-              : "bg-white text-gray-700 focus:ring-blue-600"
-          }`}
-        />
-      </div>
-
-      {categoryId === 0 ? (
+     <div className="mb-4 justify-center items-center flex">
+            <div className="w-full max-w-md">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Buscar por cédula, nombre o correo en todos los usuarios"
+                isDarkMode={isDarkMode}
+                className="w-full"
+              />
+            </div>
+          </div>      {categoryId === 0 ? (
         <p className="text-center mt-4 font-medium text-lg">
           Seleccione una categoría para ver los productos.
         </p>
-      ) : productsLoading ? (
+      ) : isLoading ? (
         // Skeleton
         <div className="overflow-x-auto px-4 sm:px-2">
           <table className="min-w-full bg-white dark:bg-[#0D313F] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
@@ -206,8 +240,7 @@ const InventoryTable: React.FC = () => {
               ))}
             </tbody>
           </table>
-        </div>
-      ) : productsError ? (
+        </div>      ) : isError ? (
         <p className={`px-4 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
           Error al cargar los productos.
         </p>
@@ -232,9 +265,8 @@ const InventoryTable: React.FC = () => {
                   <th className="p-4 border dark:border-gray-500">Categoría</th>
                   <th className="p-4 border dark:border-gray-500">Acciones</th>
                 </tr>
-              </thead>
-              <tbody className="text-center">
-                {filteredProducts.map((item: Product) => {
+              </thead>              <tbody className="text-center">
+                {displayProducts.map((item: Product) => {
                   // Si existe conversión para este producto, se muestran los datos convertidos
                   const converted = convertedProducts[item.productID];
                   return (

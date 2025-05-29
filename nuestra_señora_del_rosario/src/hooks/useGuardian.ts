@@ -28,7 +28,6 @@ export const useGuardianMutation = () => {
           return guardianService.createGuardian(data);
         }
       } catch (error) {
-        console.error('Error en useGuardianMutation:', error);
         throw error; // Re-throw para que llegue al onError del componente
       }
     },
