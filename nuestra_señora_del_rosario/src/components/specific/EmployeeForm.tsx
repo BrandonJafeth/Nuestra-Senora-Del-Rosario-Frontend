@@ -163,7 +163,7 @@ useEffect(() => {
       return;
     }
     if (id_Profession === 0) {
-      showToast('Seleccione una profesión', 'error');
+      showToast('Seleccione un puesto', 'error');
       return;
     }
 
@@ -318,7 +318,7 @@ setTypeOfSalaryId(0);
               className={`w-full p-3 rounded-md shadow-sm focus:outline-none focus:ring-2 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'}`}
               onChange={(e) => setProfession(parseInt(e.target.value))}
             >
-              <option value={0}>Seleccione una profesión</option>
+              <option value={0}>Seleccione un puesto</option>
               {/* Mapeo de profesiones para llenar el select */}
               {professionData?.map((type: any) => (
                 <option key={type.id_Profession} value={type.id_Profession}>

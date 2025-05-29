@@ -48,11 +48,11 @@ const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
       {/* Encabezado de la tabla */}
       <View style={styles.tableHeader}>
         <Text style={styles.tableCellHeader}>Producto</Text>
-        <Text style={styles.tableCellHeader}>Total en stock</Text>
+        <Text style={styles.tableCellHeader}>Total Inicio de mes</Text>
         <Text style={styles.tableCellHeader}>Total ingresos</Text>
         <Text style={styles.tableCellHeader}>Total egresos</Text>
         <Text style={styles.tableCellHeader}>U.medida</Text>
-        <Text style={styles.tableCellHeader}>Total convertido</Text>
+        <Text style={styles.tableCellHeader}>Total en Bodega</Text>
       </View>
 
       {/* Filas de datos */}

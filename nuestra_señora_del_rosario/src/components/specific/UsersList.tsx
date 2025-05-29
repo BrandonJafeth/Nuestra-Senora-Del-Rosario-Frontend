@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import { useNavigate } from 'react-router-dom';
 import ReusableTableRequests from '../microcomponents/ReusableTableRequests';
@@ -6,6 +6,8 @@ import RoleAssignment from './RoleAssignment';
 import { User } from '../../types/UserType';
 import UserStatusModal from '../microcomponents/UserStatusModal';
 import { usePaginatedUsers } from '../../hooks/useUsers';
+import { useAllUsers } from '../../hooks/useAllUsers';
+import SearchInput from '../common/SearchInput';
 
 const UserList: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -13,29 +15,72 @@ const UserList: React.FC = () => {
   
   // Estado para la búsqueda
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Estado para almacenar usuarios filtrados para mostrar
+  const [displayUsers, setDisplayUsers] = useState<User[]>([]);
+  // Estado para el total de páginas según la búsqueda
+  const [totalPages, setTotalPages] = useState(1);
 
-  const { data, isLoading, isError, error } = usePaginatedUsers(pageNumber, pageSize);
+  // Obtener usuarios paginados (para visualización normal)
+  const { 
+    data: paginatedData, 
+    isLoading: paginatedLoading, 
+    isError: paginatedError, 
+    error 
+  } = usePaginatedUsers(pageNumber, pageSize);
+  
+  // Obtener TODOS los usuarios (para búsqueda global)
+  const { 
+    data: allUsers, 
+    isLoading: allUsersLoading, 
+    isError: allUsersError 
+  } = useAllUsers();
+  
   const { isDarkMode } = useThemeDark();
   const navigate = useNavigate();
+
+  // Estado compuesto para la carga
+  const isLoading = paginatedLoading || allUsersLoading;
+  const isError = paginatedError || allUsersError;
 
   const [selectedUser, setSelectedUser] = useState<{ id_User: number; fullName: string } | null>(null);
   const [userStatusModal, setUserStatusModal] = useState<{ id_User: number; is_Active: boolean } | null>(null);
 
+  // Filtrado y paginación de usuarios
+  useEffect(() => {
+    // Si hay un término de búsqueda, filtramos en todos los usuarios
+    if (searchTerm.trim()) {
+      const filtered = (allUsers || []).filter((user) =>
+        `${user.dni} ${user.fullName} ${user.email}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+      
+      // Calcular el total de páginas basado en los resultados filtrados
+      const calculatedTotalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      setTotalPages(calculatedTotalPages);
+      
+      // Ajustar página actual si excede el total de páginas
+      const adjustedPageNumber = Math.min(pageNumber, calculatedTotalPages);
+      if (adjustedPageNumber !== pageNumber) {
+        setPageNumber(adjustedPageNumber);
+      }
+      
+      // Paginar los resultados filtrados
+      const start = (adjustedPageNumber - 1) * pageSize;
+      const end = start + pageSize;
+      setDisplayUsers(filtered.slice(start, end));
+    } else {
+      // Si no hay término de búsqueda, usamos los datos paginados del servidor
+      setDisplayUsers(paginatedData?.users || []);
+      setTotalPages(paginatedData?.totalPages || 1);
+    }
+  }, [searchTerm, allUsers, paginatedData, pageNumber, pageSize]);
+  
   if (isError) return <p>Error al cargar los usuarios: {error?.message}</p>;
-
-  // 1. Filtramos los usuarios de la página actual
-  const filteredUsers = React.useMemo(() => {
-    if (!data?.users) return [];
-    return data.users.filter((user) =>
-      `${user.dni} ${user.fullName} ${user.email}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
-  }, [data, searchTerm]);
-
   // 2. Funciones de paginación
   const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
+    if (pageNumber < totalPages) {
       setPageNumber((prev) => prev + 1);
     }
   };
@@ -138,32 +183,26 @@ const UserList: React.FC = () => {
             </select>
           </div>
         </div>
-      </div>
-
-      {/* 5. Input para filtrar */}
+      </div>      {/* 5. Input para filtrar */}
       <div className="mb-4 justify-center items-center flex">
-        <input
-          type="text"
-          placeholder="Buscar por cédula, nombre o correo"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={`w-full max-w-md p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-            isDarkMode
-              ? 'bg-gray-700 text-white focus:ring-blue-400'
-              : 'bg-white text-gray-700 focus:ring-blue-600'
-          }`}
-        />
-      </div>
-
-      {/* 6. Tabla reutilizable con usuarios filtrados */}
+        <div className="w-full max-w-md">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar por cédula, nombre o correo en todos los usuarios"
+            isDarkMode={isDarkMode}
+            className="w-full"
+          />
+        </div>
+      </div>{/* 6. Tabla reutilizable con usuarios filtrados */}
       <ReusableTableRequests<User>
-        data={filteredUsers} // Aquí pasamos los usuarios filtrados
+        data={displayUsers} // Ahora pasamos los usuarios filtrados globalmente
         headers={['Cédula', 'Nombre de usuario', 'Correo', 'Activo', 'Roles', 'Acciones']}
         isLoading={isLoading}
         skeletonRows={5}
         isDarkMode={isDarkMode}
         pageNumber={pageNumber}
-        totalPages={data?.totalPages || 1}
+        totalPages={totalPages}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
         renderRow={(user) => (
