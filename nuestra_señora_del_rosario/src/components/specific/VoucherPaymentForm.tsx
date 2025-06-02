@@ -32,7 +32,7 @@ const PaymentReceiptForm: React.FC = () => {
     doubleExtras: 0,
     nightHours: 0,
     adjustments: 0,
-    incapacity: 0,
+    incapacityDays: 0,
     absence: 0,
     vacationDays: 0,
     workedDays: 0,
@@ -97,7 +97,7 @@ const PaymentReceiptForm: React.FC = () => {
     'doubleExtras',
     'nightHours',
     'adjustments',
-    'incapacity',
+    'incapacityDays',
     'absence',
     'vacationDays',
     'workedDays',
@@ -182,7 +182,7 @@ const PaymentReceiptForm: React.FC = () => {
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}
       >
-        Generarcomprobante de pago -{' '}
+        Generar comprobante de pago -{' '}
         <span>
           {formData.employeeName} {formData.employeeLastName}
         </span>
@@ -335,8 +335,8 @@ const PaymentReceiptForm: React.FC = () => {
             </label>
             <input
               type="number"
-              name="incapacity"
-              value={formData.incapacity}
+              name="incapacityDays"
+              value={formData.incapacityDays}
               onChange={handleChange}
               className={`w-full p-3 rounded-md ${
                 isDarkMode ? 'bg-gray-700 text-white' : 'bg-[#f2f4f7] text-gray-900'
@@ -400,15 +400,25 @@ const PaymentReceiptForm: React.FC = () => {
 
         {/* Deducciones */}
         <div className="col-span-2 space-y-6 mt-8">
+          <div className='flex items-start flex-col justify-between'>
           <h3
             className={`text-lg font-poppins ${
               isDarkMode ? 'text-white' : 'text-gray-800'
             }`}
-          >
+            >
             Deducciones
           </h3>
+            <span
+    className={`text-lg italic ${
+      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+    }`}
+  >
+  La deducción de la CCSS (10.67 %) se agrega automaticamente.
+  </span>
+            </div>
           {formData.deductionsList.map((deduction, index) => (
             <div key={index} className="grid grid-cols-3 gap-4">
+              
               <input
                 type="text"
                 name="type"
