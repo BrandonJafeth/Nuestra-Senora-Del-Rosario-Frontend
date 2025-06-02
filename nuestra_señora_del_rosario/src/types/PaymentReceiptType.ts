@@ -18,7 +18,7 @@ export interface Deduction {
     doubleExtras: number;
     nightHours: number;
     adjustments: number;
-    incapacity: number;
+    incapacityDays: number;
     absence: number;
     vacationDays: number;
     deductionsList: Deduction[];
