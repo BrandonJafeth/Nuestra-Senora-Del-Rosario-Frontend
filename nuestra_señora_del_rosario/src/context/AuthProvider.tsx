@@ -21,6 +21,24 @@ const decodeJWT = (token: string | null) => {
   }
 };
 
+// Función para verificar si el token ha expirado
+const isTokenExpired = (token: string | null): boolean => {
+  if (!token) return true;
+  try {
+    const payload = decodeJWT(token);
+    if (!payload || !payload.exp) return true;
+    
+    // La fecha de expiración está en segundos, convertimos a milisegundos
+    const expirationTime = payload.exp * 1000;
+    const currentTime = Date.now();
+    
+    return currentTime > expirationTime;
+  } catch (error) {
+    console.error("Error al verificar la expiración del token:", error);
+    return true;
+  }
+};
+
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -32,13 +50,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [selectedRole, setSelectedRole] = useState<string | null>(Cookies.get("selectedRole") || null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
     if (token) {
-      const decodedPayload = decodeJWT(token);
-      setPayload(decodedPayload);
-      setRoles(decodedPayload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || []);
-      setIsAuthenticated(true);
+      // Verificar si el token ha expirado
+      if (isTokenExpired(token)) {
+        // Si el token ha expirado, hacer logout automáticamente
+        console.warn("Token expirado, cerrando sesión automáticamente");
+        logout();
+      } else {
+        const decodedPayload = decodeJWT(token);
+        setPayload(decodedPayload);
+        setRoles(decodedPayload?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || []);
+        setIsAuthenticated(true);
+      }
     } else {
       setIsAuthenticated(false);
       setRoles([]);
