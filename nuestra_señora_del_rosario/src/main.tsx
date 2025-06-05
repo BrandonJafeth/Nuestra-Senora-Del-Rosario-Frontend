@@ -21,17 +21,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <SnackbarProvider maxSnack={3}>
         <ToastProvider>
                 <ThemeProvider>
+                    <Router>
           <AuthProvider>
             <IconProvider>
               <ToggleProvider>
               <HelmetProvider> 
-                    <Router>
                       <App />
-                    </Router>
                   </HelmetProvider>
               </ToggleProvider>
             </IconProvider>
           </AuthProvider>
+                    </Router>
                 </ThemeProvider>
         </ToastProvider>
       </SnackbarProvider>
