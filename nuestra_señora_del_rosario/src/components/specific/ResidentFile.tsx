@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt, FaArrowLeft } from 'react-icons/fa';
+import {
+  FaFilePdf,
+  FaFileWord,
+  FaFileImage,
+  FaFileAlt,
+  FaArrowLeft,
+} from 'react-icons/fa';
 import { useResidentDocuments } from '../../hooks/useResidentFile';
 import { useThemeDark } from '../../hooks/useThemeDark';
 import RenameDocumentModal from '../microcomponents/RenameDocumentModal';
@@ -9,26 +15,43 @@ import ConfirmationModal from '../microcomponents/ConfirmationModal';
 import { useToast } from '../../hooks/useToast';
 import Toast from '../common/Toast';
 
-const getFileIcon = (fileName: string) => {
-  if (fileName.endsWith('.pdf')) return <FaFilePdf className="text-red-500 text-xl mr-2" />;
-  if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) return <FaFileWord className="text-blue-500 text-xl mr-2" />;
-  if (fileName.match(/\.(jpg|jpeg|png|gif)$/)) return <FaFileImage className="text-green-500 text-xl mr-2" />;
-  return <FaFileAlt className="text-gray-500 text-xl mr-2" />;
+/* ───────────────────────── helpers ────────────────────────── */
+const getFileIcon = (fileName: string, dark: boolean) => {
+  const base = 'text-xl mr-2';
+  const pdf  = dark ? 'text-red-400'   : 'text-red-500';
+  const doc  = dark ? 'text-blue-400'  : 'text-blue-500';
+  const img  = dark ? 'text-green-400' : 'text-green-500';
+  const def  = dark ? 'text-gray-400'  : 'text-gray-500';
+
+  if (fileName.endsWith('.pdf'))                       return <FaFilePdf  className={`${pdf} ${base}`} />;
+  if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) return <FaFileWord className={`${doc} ${base}`} />;
+  if (fileName.match(/\.(jpg|jpeg|png|gif)$/))         return <FaFileImage className={`${img} ${base}`} />;
+  return <FaFileAlt className={`${def} ${base}`} />;
 };
 
 const ResidentDocumentsPage: React.FC = () => {
+  /* ───── hooks ───── */
   const location = useLocation();
-  const residentsName = location.state?.residentName || "Residente Desconocido";
+  const residentsName =
+    location.state?.residentName || 'Residente Desconocido';
   const { residentName } = useParams<{ residentName: string }>();
   const decodedResidentName = decodeURIComponent(residentName || '');
-  const { data: documents, isLoading, isError } = useResidentDocuments(decodedResidentName);
+  const { data: documents, isLoading, isError } =
+    useResidentDocuments(decodedResidentName);
   const { isDarkMode } = useThemeDark();
-  const navigateBack = () => window.history.back();
-  const {message, showToast, type} = useToast();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<{id: string, name: string} | null>(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { message, showToast, type } = useToast();
   const { mutate: deleteFile } = useDeleteFile(decodedResidentName);
+
+  /* ───── local state ───── */
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  /* ───── handlers ───── */
+  const navigateBack = () => window.history.back();
 
   const openModal = (doc: { id: string; name: string }) => {
     setSelectedDocument(doc);
@@ -40,82 +63,124 @@ const ResidentDocumentsPage: React.FC = () => {
     setDeleteModalOpen(true);
   };
 
-  const closeModal = () => {
-    setSelectedDocument(null);
-    setIsModalOpen(false);
-  };
-
-  const closeDeleteModal = () => {
-    setSelectedDocument(null);
-    setDeleteModalOpen(false);
-  };
+  const closeModal       = () => { setSelectedDocument(null); setIsModalOpen(false); };
+  const closeDeleteModal = () => { setSelectedDocument(null); setDeleteModalOpen(false); };
 
   const handleDelete = () => {
     if (selectedDocument) {
       deleteFile(selectedDocument.id);
-      showToast("Se ha eliminado el archivo exitosamente", "success")
+      showToast('Se ha eliminado el archivo exitosamente', 'success');
       setDeleteModalOpen(false);
-    } 
-      
+    }
   };
 
-  if (isLoading) return <div>Cargando documentos...</div>;
-  if (isError) return <div>Error al cargar documentos.</div>;
+  /* ───── estados de carga ───── */
+  if (isLoading) return <div className="p-6">Cargando documentos…</div>;
+  if (isError)   return <div className="p-6 text-red-600">Error al cargar documentos.</div>;
 
+  /* ───── estilos condicionales ───── */
+  const containerCls = `
+    w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl
+    ${isDarkMode ? 'bg-[#0D313F] text-gray-100' : 'bg-white text-gray-800'}
+  `;
+
+  const thCls = `
+    px-6 py-3 font-semibold
+    ${isDarkMode ? 'bg-[#134557] text-gray-100' : 'bg-gray-200 text-gray-700'}
+  `;
+
+  const rowHover = isDarkMode
+    ? 'hover:bg-[#173d4c]'
+    : 'hover:bg-gray-50';
+
+  const linkCls = `
+    ${isDarkMode ? 'text-blue-300 hover:text-blue-200' : 'text-blue-500 hover:text-blue-700'}
+    underline
+  `;
+
+  const btnBase = 'px-4 py-2 rounded-lg shadow-md transition duration-200';
+  const btnEdit = isDarkMode
+    ? 'bg-orange-500 hover:bg-orange-400 text-white'
+    : 'bg-orange-500 hover:bg-orange-600 text-white';
+  const btnDel  = isDarkMode
+    ? 'bg-red-600 hover:bg-red-500 text-white'
+    : 'bg-red-500 hover:bg-red-600 text-white';
+
+  /* ───── JSX ───── */
   return (
-    <div className={`w-full max-w-[1169px] mx-auto p-6 rounded-[20px] shadow-2xl ${isDarkMode ? 'bg-[#0D313F] text-white' : 'bg-white text-gray-800'}`}>
-    <div className="flex items-center relative mb-6">
-      <div className="absolute left-0">
-        <button
-          onClick={navigateBack}
-          className="flex items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
-        >
-          <FaArrowLeft size={20} />
-          <span className="text-lg font-semibold">Regresar</span>
-        </button>
+    <div className={containerCls}>
+      {/* título y botón regresar */}
+      <div className="flex items-center relative mb-6">
+        <div className="absolute left-0">
+          <button
+            onClick={navigateBack}
+            className="flex items-center space-x-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+          >
+            <FaArrowLeft size={20} />
+            <span className="text-lg font-semibold">Regresar</span>
+          </button>
+        </div>
+        <h2 className="w-full text-center text-3xl font-bold">{`Documentos de ${residentsName}`}</h2>
       </div>
-      <h2 className={`w-full text-center text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-        Documentos de {residentsName}
-      </h2>
-    </div>
+
+      {/* tabla */}
       <div className="overflow-x-auto rounded-lg">
         <table className="w-full table-auto">
-          <thead className="bg-gray-200 text-left">
+          <thead>
             <tr>
-              <th className="px-6 py-3">Nombre del Documento</th>
-              <th className="px-6 py-3">Tamaño</th>
-              <th className="px-6 py-3">Ver</th>
-              <th className="px-6 py-3">Descargar</th>
-              <th className="px-6 py-3">Acciones</th>
+              <th className={thCls}>Nombre del Documento</th>
+              <th className={thCls}>Ver</th>
+              <th className={thCls}>Descargar</th>
+              <th className={thCls}>Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white">
-            {documents && documents.map((doc) => (
-              <tr key={doc.id} className="border-b hover:bg-gray-50 transition duration-150">
-                <td className="px-6 py-3 flex items-center">
-                  {getFileIcon(doc.name)}
+
+          <tbody className={isDarkMode ? 'bg-[#0d2a37]' : 'bg-white'}>
+            {documents?.map((doc) => (
+              <tr key={doc.id} className={`border-b ${rowHover}`}>
+                {/* nombre + icono */}
+                <td className="px-6 py-3 flex items-center text-center">
+                  {getFileIcon(doc.name, isDarkMode)}
                   {doc.name}
                 </td>
-                <td className="px-6 py-3">{(doc.size / (1024 * 1024)).toFixed(2)} MB</td>
-                <td className="px-6 py-3">
-                  <a href={doc.webViewLink} target="_blank" className="text-blue-500 hover:underline">Ver</a>
+
+                {/* ver */}
+                <td className="text-center px-6 py-3">
+                  <a
+                    href={doc.webViewLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={linkCls}
+                  >
+                    Ver
+                  </a>
                 </td>
-                <td className="px-6 py-3">
-                  <a href={doc.webContentLink} download className="text-blue-500 hover:underline">Descargar</a>
+
+                {/* descargar */}
+                <td className="px-6 py-3 text-center">
+                  <a
+                    href={doc.webContentLink}
+                    download
+                    className={linkCls}
+                  >
+                    Descargar
+                  </a>
                 </td>
-                <td className="px-6 py-3 space-x-2">
+
+                {/* acciones */}
+                <td className="px-6 py-3 space-x-2 items-center flex justify-center">
                   <button
                     onClick={() => openModal(doc)}
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 transition duration-200"
+                    className={`${btnBase} ${btnEdit}`}
                   >
                     Editar
                   </button>
                   <button
-                  onClick={() => openDeleteModal(doc)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200"
-                >
-                  Eliminar
-                </button>
+                    onClick={() => openDeleteModal(doc)}
+                    className={`${btnBase} ${btnDel}`}
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
@@ -123,6 +188,7 @@ const ResidentDocumentsPage: React.FC = () => {
         </table>
       </div>
 
+      {/* modales */}
       {selectedDocument && (
         <RenameDocumentModal
           isOpen={isModalOpen}
@@ -131,7 +197,7 @@ const ResidentDocumentsPage: React.FC = () => {
         />
       )}
 
-{selectedDocument && (
+      {selectedDocument && (
         <ConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={closeDeleteModal}
@@ -142,7 +208,9 @@ const ResidentDocumentsPage: React.FC = () => {
           isLoading={false}
         />
       )}
-      <Toast message={message} type={type}/>
+
+      {/* toast */}
+      <Toast message={message} type={type} />
     </div>
   );
 };

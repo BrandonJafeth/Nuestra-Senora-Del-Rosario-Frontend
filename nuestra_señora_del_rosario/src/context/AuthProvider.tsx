@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // 3) Redirigir a /session-expired si no estamos ya allí
     if (window.location.pathname !== "/session-expired") {
-      navigate("/session-expired", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 

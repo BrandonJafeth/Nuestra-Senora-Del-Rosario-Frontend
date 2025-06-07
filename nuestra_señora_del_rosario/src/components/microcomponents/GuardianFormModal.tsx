@@ -123,7 +123,7 @@ useEffect(() => {
         onRequestClose={onClose}
         className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
                     p-6 rounded-lg max-w-2xl mx-auto mt-20`}
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       >
         <h2 className="text-2xl font-bold mb-4">
           {initialData ? 'Editar Encargado' : 'Nuevo Encargado'}
