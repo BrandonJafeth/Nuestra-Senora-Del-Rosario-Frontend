@@ -111,6 +111,8 @@ const ResidentDetail: React.FC = () => {
         <p><strong>Ubicación:</strong> {resident?.location_RD}</p>
         <p><strong>Status:</strong> {resident?.status}</p>
         <p><strong>Fecha de entrada:</strong> {new Date(resident?.entryDate ?? "").toLocaleDateString()}</p>
+        <p><strong>Fecha de nacimiento:</strong> {new Date(resident?.fechaNacimiento ?? "").toLocaleDateString()}</p>
+        <p><strong>Teléfono del encargado:</strong> {resident?.guardianPhone}</p>
       </div>
 
       {/* Sección de Medicamentos */}

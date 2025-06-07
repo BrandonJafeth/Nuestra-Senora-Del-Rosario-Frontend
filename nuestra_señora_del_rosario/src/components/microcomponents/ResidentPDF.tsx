@@ -73,6 +73,14 @@ const ResidentPDF = ({ resident }: { resident: Resident }) => (
           <Text style={styles.text}>{new Date(resident?.entryDate ?? "").toLocaleDateString()}</Text>
         </View>
         <View style={styles.fieldContainer}>
+          <Text style={styles.field}>Fecha de Nacimiento:</Text>
+          <Text style={styles.text}>{new Date(resident?.fechaNacimiento ?? "").toLocaleDateString()}</Text>
+        </View>
+        <View style={styles.fieldContainer}>
+          <Text style={styles.field}>Telefono del Encargado:</Text>
+          <Text style={styles.text}>{resident?.guardianPhone}</Text>
+        </View>
+        <View style={styles.fieldContainer}>
           <Text style={styles.field}>Estatus en el Hogar:</Text>
           <Text style={styles.text}>{resident?.status}</Text>
         </View>
