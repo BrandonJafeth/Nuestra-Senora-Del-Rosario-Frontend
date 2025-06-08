@@ -10,7 +10,6 @@ interface CategoryDropdownProps {
 
 const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ selectedCategory, onCategorySelect }) => {
   const { data: categories, isLoading, isError } = useCategories();
-  console.log(categories);
   const { selectedRole } = useAuth();
 
   // Roles y categorías permitidas (excluimos Admin)

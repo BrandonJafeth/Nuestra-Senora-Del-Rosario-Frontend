@@ -146,8 +146,6 @@ const AssetTable: React.FC = () => {
 
   // Efecto para manejar la búsqueda con debounce
   useEffect(() => {
-    // Este console.log ayuda a verificar cuándo se activa este efecto
-    console.log('Búsqueda debounce en efecto:', searchTerm);
 
     // Solo activamos el filtrado cuando el usuario deja de escribir
     const delayDebounceFn = setTimeout(() => {
@@ -162,8 +160,6 @@ const AssetTable: React.FC = () => {
         const filter: AssetFilterDTO = {
           assetName: searchTerm.trim()
         };
-        
-        console.log('Enviando filtro:', filter);
         // Ejecutamos la búsqueda con el filtro
         filterAssets(filter, pageNumber, pageSize);
       } else {
@@ -190,12 +186,6 @@ const AssetTable: React.FC = () => {
 
   // Datos a mostrar
   const assetsToDisplay = useMemo(() => {
-    console.log("Calculando assetsToDisplay", {
-      isFiltering,
-      filteredAssets,
-      filteredAssetsLength: filteredAssets?.length,
-      data
-    });
     
     if (isFiltering) {
       return filteredAssets || [];

@@ -192,7 +192,7 @@ const InventoryTable: React.FC = () => {
               />
             </div>
           </div>      {categoryId === 0 ? (
-        <p className="text-center mt-4 font-medium text-lg">
+        <p className="text-center mt-4 font-medium text-lg dark:text-white text-gray-800">
           Seleccione una categoría para ver los productos.
         </p>
       ) : isLoading ? (

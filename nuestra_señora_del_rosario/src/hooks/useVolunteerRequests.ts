@@ -13,7 +13,6 @@ export const useVolunteerRequests = (pageNumber: number, pageSize: number) => {
     ['volunteerRequests', pageNumber, pageSize],
     async () => {
       const response = await volunteeringService.getAllVolunteerPages(pageNumber, pageSize);
-      console.log(response.data);
       return response.data;
       
     },
