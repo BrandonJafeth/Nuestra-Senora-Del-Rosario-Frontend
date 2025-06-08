@@ -33,9 +33,9 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
     try {
       // Si productId o measure no se proporcionan, se envían arreglos vacíos
       const productIds = selection.productId ? [selection.productId] : [];
-      const targetUnits = selection.measure ? [selection.measure] : [];
+      const targetUnits = selection.measure ? selection.measure : '';
       
-      const response = await inventoryService.getReportByCategory(
+      const response = await inventoryService.getMonthlyReportWithBalance(
         month,
         year,
         selection.categoryId,
@@ -43,11 +43,10 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
         productIds
       );
 
-      const reportData: InventoryReport[] = response.data;
+      const reportData = response.data as InventoryReport[];
       const blob = await pdf(<InventoryReportPDF report={reportData} />).toBlob();
       saveAs(blob, `Reporte_Mensual_Inventario_${month}_${year}.pdf`);
     } catch (error) {
-      console.error('Error generando reporte:', error);
     }
     setLoading(false);
   };

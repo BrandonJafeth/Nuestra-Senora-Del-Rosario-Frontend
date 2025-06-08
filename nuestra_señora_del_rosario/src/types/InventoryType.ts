@@ -6,4 +6,5 @@ export interface InventoryReport {
   totalEgresos: number;
   unitOfMeasure: string;
   convertedTotalInStock: number;
+  stockActual: number;
 }

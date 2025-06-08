@@ -1,6 +1,7 @@
 // services/InventoryService.ts
 import { InventoryReport } from '../types/InventoryType';
 import ApiService from './GenericService/ApiService';
+import Cookies from 'js-cookie';
 
 class InventoryService extends ApiService<InventoryReport> {
   constructor() {
@@ -29,6 +30,28 @@ class InventoryService extends ApiService<InventoryReport> {
     );
   }
   
+public getMonthlyReportWithBalance(
+  month: number,
+  year: number,
+  categoryId: number,
+  targetUnits: string,
+  productIds: number[] = []
+) {
+  // Obtener el token de autenticación
+  const token = Cookies.get('authToken');
+  if (!token) throw new Error('No se encontró un token de autenticación');
+
+  // Convertir el array de productIds a string si hay elementos, o usar '0'
+  const productIdsParam = productIds.length > 0 ? productIds.join(',') : '0';
+
+  // Construir la URL con todos los parámetros, incluyendo la categoría
+  return this.getWithHeaders(
+    `/Inventory/report/month/withbalance?month=${month}&year=${year}&categoryId=${categoryId}&targetUnit=${targetUnits || ''}&productIds=${productIdsParam}`,
+    {
+      Authorization: `Bearer ${token}`
+    }
+  );
+}
 }
 
 const inventoryService = new InventoryService();
