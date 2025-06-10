@@ -59,7 +59,7 @@ const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
       {report.map((item) => (
         <View style={styles.tableRow} key={item.productID}>
           <Text style={styles.tableCell}>{item.productName}</Text>
-          <Text style={styles.tableCell}>{item.totalInStock}</Text>
+          <Text style={styles.tableCell}>{item.initialBalance}</Text>
           <Text style={styles.tableCell}>{item.totalIngresos}</Text>
           <Text style={styles.tableCell}>{item.totalEgresos}</Text>
           <Text style={styles.tableCell}>{item.unitOfMeasure}</Text>
