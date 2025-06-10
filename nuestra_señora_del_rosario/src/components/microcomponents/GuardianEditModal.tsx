@@ -73,12 +73,16 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
   };
 
   return (
-    <Modal
+<Modal
       isOpen={isOpen}
       onRequestClose={() => { setIsEditing(false); onClose(); }}
       className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
-                  p-6 rounded-lg max-w-2xl mx-auto mt-20`}
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                  p-6 rounded-lg max-w-2xl mx-auto mt-20 z-50`}
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]"
+      style={{
+        overlay: { zIndex: 1000 },
+        content: { zIndex: 1001 }
+      }}
     >
       <h2 className="text-2xl font-bold mb-4">Detalle Encargado</h2>
 
@@ -114,7 +118,9 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
                 className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               />
             ) : (
-              <p className="p-2">{(guardian as any)[name]}</p>
+              <p className="p-3 w-full rounded-md border border-gray-300 bg-gray-50">
+                {(guardian as any)[name]}
+              </p>
             )}
             {isEditing && errors[name] && (
               <span className="text-red-500 text-sm">{errors[name]?.message}</span>
@@ -123,32 +129,31 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
         ))}
       </form>
 
-      <div className="mt-6 flex justify-end space-x-4">
+      <div className="mt-8 flex justify-center space-x-4">
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Editar
           </button>
         ) : (
-          <>
-            <button
-              type="submit"
-              onClick={() => handleSubmit(onSubmit)()}
-              disabled={!isDirty || !isValid || updateMutation.isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
-            >
-              {updateMutation.isLoading ? 'Guardando...' : 'Guardar'}
-            </button>
-          </>
+          <button
+            type="submit"
+            onClick={() => handleSubmit(onSubmit)()}
+            disabled={!isDirty || !isValid || updateMutation.isLoading}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 hover:bg-blue-700 transition-colors"
+          >
+            {updateMutation.isLoading ? 'Guardando...' : 'Guardar'}
+          </button>
         )}
         <button
           onClick={() => { setIsEditing(false); onClose(); }}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg"
+          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
         >
           Cerrar
-        </button>      </div>
+        </button>
+      </div>
       
       {/* Toast con z-index alto para asegurar que se muestre correctamente */}
       <div className="z-[9999] fixed bottom-4 right-4">
