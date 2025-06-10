@@ -5,16 +5,22 @@ import LoadingSpinner from "../microcomponents/LoadingSpinner";
 import { FaEdit, FaFilePdf, FaArrowLeft, FaNotesMedical } from "react-icons/fa";
 import ResidentPDF from "../microcomponents/ResidentPDF";
 import { pdf } from "@react-pdf/renderer";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
 import Toast from "../common/Toast";
+import { useAuth } from "../../hooks/useAuth";
 
 const ResidentDetail: React.FC = () => {
   const { id } = useParams();
   const residentId = Number(id);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { selectedRole } = useAuth();
 
+  const canEditOrAdd = useMemo(() => {
+    return selectedRole === 'Enfermeria' || selectedRole === 'SuperAdmin';
+  }, [selectedRole]);
+  
   const { isDarkMode } = useThemeDark();
   const { data: resident, isLoading, error } = useResidentInfoById(residentId);
   
@@ -127,14 +133,16 @@ const ResidentDetail: React.FC = () => {
                   <br />
                   <small className="text-gray-600 dark:text-gray-300">Notas: {med.notes}</small>
                 </div>
-                <button
-                  className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"
-                  onClick={() => {
-                    navigate(`/dashboard/residente-info/${residentId}/editar-medicamento/${med.id_ResidentMedication}`);
-                  }}
-                >
-                  <FaEdit size={20} />
-                </button>
+                {canEditOrAdd && (
+            <button
+              className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"
+              onClick={() => {
+                navigate(`/dashboard/residente-info/${residentId}/editar-medicamento/${med.id_ResidentMedication}`);
+              }}
+            >
+              <FaEdit size={20} />
+            </button>
+          )}
               </li>
             ))}
           </ul>
@@ -144,12 +152,16 @@ const ResidentDetail: React.FC = () => {
 
         {/* Botón fijo al fondo */}
         <div className="flex justify-center mt-4">
-          <button
-            className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
-            onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-medicamento`)}
-          >
-            Agregar medicamentos
-          </button>
+         {canEditOrAdd && (
+    <div className="flex justify-center mt-4">
+      <button
+        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
+        onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-medicamento`)}
+      >
+        Agregar medicamentos
+      </button>
+    </div>
+  )}
         </div>
       </div>
 
@@ -164,12 +176,14 @@ const ResidentDetail: React.FC = () => {
                   <br />
                   <small className="text-gray-600 dark:text-gray-300">Notas : {path.notes}</small>
                 </div>
-                <button
-                  className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"
-                  onClick={() => navigate(`/dashboard/residente/${residentId}/editar-patologia/${path.id_ResidentPathology}`)}
-                >
-                  <FaEdit size={20} />
-                </button>
+              {canEditOrAdd && (
+            <button
+              className="ml-4 bg-orange-500 text-white px-2 py-1 text-sm rounded-md hover:bg-orange-600 transition"
+              onClick={() => navigate(`/dashboard/residente/${residentId}/editar-patologia/${path.id_ResidentPathology}`)}
+            >
+              <FaEdit size={20} />
+            </button>
+          )}
               </li>
             ))}
           </ul>
@@ -179,12 +193,16 @@ const ResidentDetail: React.FC = () => {
 
         {/* Botón fijo al fondo */}
         <div className="flex justify-center mt-4">
-          <button
-            className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
-            onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-patologia`)}
-          >
-            Agregar patologías
-          </button>
+         {canEditOrAdd && (
+    <div className="flex justify-center mt-4">
+      <button
+        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
+        onClick={() => navigate(`/dashboard/residente/${residentId}/agregar-patologia`)}
+      >
+        Agregar patologías
+      </button>
+    </div>
+  )}
         </div>
       </div>
 

@@ -6,11 +6,17 @@ import { FaNotesMedical, FaPlus, FaEdit, FaArrowLeft } from "react-icons/fa";
 import { useThemeDark } from "../../hooks/useThemeDark";
 import Toast from "../common/Toast";
 import { MedicalHistory as MedicalHistoryType } from "../../types/MedicalHistoryType";
+import { useAuth } from "../../hooks/useAuth";
 
 const MedicalHistory: React.FC = () => {
   const { residentId } = useParams();
   const resident_Id = Number(residentId);
   const navigate = useNavigate();
+  const { selectedRole} = useAuth();
+
+    const canEditOrAdd = useMemo(() => {
+    return selectedRole === 'Enfermeria' || selectedRole === 'SuperAdmin';
+  }, [selectedRole]);
 
   const { data: medicalHistory, isLoading, error } = useMedicalHistoryById(resident_Id);
   const { isDarkMode } = useThemeDark();
@@ -96,12 +102,14 @@ const MedicalHistory: React.FC = () => {
               <p><strong>Observaciones:</strong> {record.observations}</p>
               {/* @ts-expect-error - Si existe la propiedad notes, mostrarla (aunque no esté en la interfaz) */}
               {record.notes && <p className="italic mt-2"><strong>Notas:</strong> {record.notes}</p>}
-              <button
-                className="absolute top-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition"
-                onClick={() => navigate(`/dashboard/residente/${resident_Id}/editar-historial/${record.id_MedicalHistory}`)}
-              >
-                <FaEdit size={16} />
-              </button>
+              {canEditOrAdd && (
+                <button
+                  className="absolute top-2 right-2 bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition"
+                  onClick={() => navigate(`/dashboard/residente/${resident_Id}/editar-historial/${record.id_MedicalHistory}`)}
+                >
+                  <FaEdit size={16} />
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -121,15 +129,17 @@ const MedicalHistory: React.FC = () => {
         </div>
       )}
 
-      <div className="mt-4 flex justify-center">
-        <button
-          className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          onClick={() => navigate(`/dashboard/residente/${resident_Id}/agregar-historial`)}
-        >
-          <FaPlus className="mr-2" size={16} />
-          Agregar nuevo historial
-        </button>
-      </div>
+      {canEditOrAdd && (
+        <div className="mt-4 flex justify-center">
+          <button
+            className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            onClick={() => navigate(`/dashboard/residente/${resident_Id}/agregar-historial`)}
+          >
+            <FaPlus className="mr-2" size={16} />
+            Agregar nuevo historial
+          </button>
+        </div>
+      )}
     </div>
   );
 };

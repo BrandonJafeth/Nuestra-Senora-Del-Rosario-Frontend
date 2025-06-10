@@ -17,7 +17,7 @@ export const useDeleteApplicationRequest = () => {
       await applicationService.deleteApplicationRequest(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] }); // ✅ Forma correcta
+      queryClient.invalidateQueries({ queryKey: ["applicationRequests"] }); // ✅ Forma correcta
     },
     onError: (error: AxiosError<ApiError>) => {
       console.error("❌ Error al eliminar la solicitud:", error.response?.data?.message || error.message);
