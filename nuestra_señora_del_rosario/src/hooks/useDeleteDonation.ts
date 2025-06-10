@@ -17,7 +17,7 @@ export const useDeleteDonationRequest = () => {
       await donationService.deleteDonationRequest(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["donations"] }); // ✅ Forma correcta
+      queryClient.invalidateQueries({ queryKey: ["donationRequests"] }); // ✅ Forma correcta
     },
     onError: (error: AxiosError<ApiError>) => {
       console.error("❌ Error al eliminar la solicitud:", error.response?.data?.message || error.message);

@@ -17,7 +17,7 @@ export const useDeleteVoluntarieRequest = () => {
       await volunteeringService.deleteVolunteerRequest(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["voluntaries"] }); // ✅ Forma correcta
+      queryClient.invalidateQueries({ queryKey: ["volunteerRequests"] }); // ✅ Forma correcta
     },
     onError: (error: AxiosError<ApiError>) => {
       console.error("❌ Error al eliminar la solicitud:", error.response?.data?.message || error.message);
