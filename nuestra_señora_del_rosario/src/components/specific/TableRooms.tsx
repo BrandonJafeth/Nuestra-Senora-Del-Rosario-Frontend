@@ -19,7 +19,7 @@ const TableRooms: React.FC = () => {
 
   // 📌 Estado del modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editRoom, setEditRoom] = useState<{ id_Room: number; roomNumber: string; capacity: number } | null>(null);
+  const [editRoom, setEditRoom] = useState<{ id_Room: number; roomNumber: string; capacity: number; } | null>(null);
 
   // 📌 Estado del modal de confirmación antes de editar
   const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
@@ -98,6 +98,7 @@ const TableRooms: React.FC = () => {
         columns={[
           { key: "roomNumber", label: "Número" },
           { key: "capacity", label: "Capacidad" },
+          { key: "availableSpots", label: "Espacios ocupados" },
         ]}
         data={rooms || []}
         isLoading={isLoading}

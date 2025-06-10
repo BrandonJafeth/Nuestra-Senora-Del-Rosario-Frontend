@@ -17,6 +17,7 @@ export const useRoom = () => {
         id_Room: item.id_Room ?? 0,
         roomNumber: item.roomNumber || 'Sin número',
         capacity: item.capacity ?? 0,
+        availableSpots: item.availableSpots ?? 0,
       }));
     },
     {

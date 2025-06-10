@@ -13,12 +13,6 @@ const cardsData = [
     roles: ["SuperAdmin","Enfermeria"],
   },
   {
-    title: "Tipos de salario",
-    description: "Gestiona los diferentes tipos de salario.",
-    route: "/dashboard/Configuracion/sistema/tipo-salario",
-    roles: ["SuperAdmin","Admin"],
-  },
-  {
     title: "Unidades de medida",
     description: "Gestiona las unidades de medida.",
     route: "/dashboard/Configuracion/sistema/unidad-medida",
@@ -65,12 +59,6 @@ const cardsData = [
     description: "Gestiona los niveles de dependencia para los residentes.",
     route: "/dashboard/Configuracion/sistema/nivel-dependencia",
     roles: ["SuperAdmin","Enfermeria", "Admin"],
-  },
-  {
-    title: "Categorías",
-    description: "Gestiona las categorías para el inventario.",
-    route: "/dashboard/Configuracion/sistema/categoria",
-    roles: ["SuperAdmin", "Admin"],
   },
   {
     title: "Marcas de activos",

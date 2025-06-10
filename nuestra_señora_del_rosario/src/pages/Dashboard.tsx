@@ -32,7 +32,6 @@ import UpdateMedicalHistory from '../components/specific/UpdateMedicalHistory';
 import AddMedicalHistoryForm from '../components/specific/AddMedicalHistory';
 import HomeConfig from '../components/specific/HomeConfig';
 import SystemConfiguration from '../components/specific/SystemConfiguration';
-import TableTypeOfSalary from '../components/specific/TableTypeSalary';
 import TableUnitOfMeasure from '../components/specific/TableUnitOfMeasure';
 import TableRooms from '../components/specific/TableRooms';
 import TableProfessions from '../components/specific/TableProfessions';
@@ -42,7 +41,6 @@ import TablePathologies from '../components/specific/TablePathologies';
 import TableNotes from '../components/specific/TableNotes';
 import TableSpecialities from '../components/specific/TableSpecialities';
 import TableHealtcareCenter from '../components/specific/TableHealtcareCenter';
-import TableCategories from '../components/specific/TableCategories';
 import SystemPageSettings from '../components/specific/SystemPageSettings';
 import Gallery from '../components/specific/GalleryCard';
 import ResidentDocumentsPage from '../components/specific/ResidentFile';
@@ -272,12 +270,6 @@ function Dashboard() {
                 }
               />
 
-              <Route path="Configuracion/sistema/tipo-salario" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin']}>
-                <TableTypeOfSalary />
-                </RoleBasedRoute>
-                } />
-
               <Route path="Configuracion/sistema/unidad-medida" element={
                 <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Enfermeria', 'Inventario']}>
                 <TableUnitOfMeasure />
@@ -329,12 +321,6 @@ function Dashboard() {
               <Route path="Configuracion/sistema/centro-atencion" element={
                 <RoleBasedRoute allowedRoles={['SuperAdmin','Enfermeria']}>
                 <TableHealtcareCenter />
-                </RoleBasedRoute>
-                } />
-
-              <Route path="Configuracion/sistema/categoria" element={
-                <RoleBasedRoute allowedRoles={['SuperAdmin','Admin', 'Inventario']}>
-                <TableCategories />
                 </RoleBasedRoute>
                 } />
 
