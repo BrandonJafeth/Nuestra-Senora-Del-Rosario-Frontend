@@ -27,7 +27,7 @@ function ResetPassword() {
         />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://i.ibb.co/D5xXgD5/Icon-whitout-fondo.png" />
-        <meta property="og:url" content="https://www.nuestrasenora.me/reset-password" />
+        <meta property="og:url" content="https://hogarnuestrasenoradelrosariosantacruz.org/reset-password" />
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:title" content="Restablecer Contraseña | Nuestra Señora del Rosario" />
         <meta

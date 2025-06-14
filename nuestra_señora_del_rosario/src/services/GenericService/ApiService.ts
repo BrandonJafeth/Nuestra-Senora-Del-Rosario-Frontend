@@ -14,14 +14,13 @@ interface IWriteService<T> {
 }
 
 class ApiService<T> implements IReadService<T>, IWriteService<T> {
-    private api: AxiosInstance;
-
-    constructor() {
-        this.api = axios.create({ baseURL: 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api' });
+    private api: AxiosInstance;    constructor() {
+        this.api = axios.create({ baseURL: 'https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api' });
     }
     //https://localhost:7066/api
     //https://nuestra-senora-del-rosario-backend.onrender.com/api
     //https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api
+    //https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api
 
     // Methods from IReadService
     public async getAll(endpoint: string): Promise<AxiosResponse<T[]>> {

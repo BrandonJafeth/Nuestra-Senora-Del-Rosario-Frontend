@@ -71,9 +71,8 @@ class ResidentsService extends ApiService<Resident> {
   // Actualizar residente (patch de campos específicos)
   public updateResidentStatus(id: number, data: ResidentPatchDto): Promise<AxiosResponse<void>> {
     const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-    return axios.patch<void>(
-      `https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Residents/${id}`,
+    if (!token) throw new Error("No se encontró un token de autenticación");    return axios.patch<void>(
+      `https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Residents/${id}`,
       data,
       {
         headers: {
@@ -86,9 +85,8 @@ class ResidentsService extends ApiService<Resident> {
 
   public createResidentFromApplicant(data: ResidentPostFromApplicantForm): Promise<AxiosResponse<Resident>> {
     const token = Cookies.get("authToken");
-    if (!token) throw new Error("No se encontró un token de autenticación");
-    return axios.post<Resident>(
-      'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Residents/fromApplicant',
+    if (!token) throw new Error("No se encontró un token de autenticación");    return axios.post<Resident>(
+      'https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Residents/fromApplicant',
       data,
       {
         headers: {

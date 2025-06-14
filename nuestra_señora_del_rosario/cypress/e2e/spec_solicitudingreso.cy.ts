@@ -7,10 +7,9 @@ describe('Flujo completo de Solicitud de Ingreso', () => {
   const apellido = `Cypress${timestamp}`;
   const cedula = `${timestamp}`.substring(0, 9);
   const telefono = `8${timestamp}`.substring(0, 8);
-
   // Test de validación de campos
   it('Debería validar los campos del formulario correctamente', () => {
-    cy.visit('https://www.senoradelrosario.tech/solicitud-formulario');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org/solicitud-formulario');
     
     // Intentar enviar el formulario vacío para verificar validaciones
     cy.get('button').contains('Enviar Solicitud').click();
@@ -48,10 +47,9 @@ describe('Flujo completo de Solicitud de Ingreso', () => {
     cy.contains('Correo inválido').should('be.visible');
     cy.get('input[name="guardianEmail"]').clear().type(`test${timestamp}@example.com`);
   });
-
   it('Debería completar el formulario y enviar la solicitud exitosamente', () => {
     // Paso 1: Crear la solicitud en el sitio público
-    cy.visit('https://www.senoradelrosario.tech/solicitud-formulario');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org/solicitud-formulario');
     
     // Completar el formulario de solicitud
     cy.get('input[name="name_AP"]').type(nombre);
@@ -81,7 +79,7 @@ describe('Flujo completo de Solicitud de Ingreso', () => {
   // Separamos la prueba en dos partes para evitar el problema de cy.origin()
   it('Debería poder verificar la solicitud en el panel administrativo', () => {
     // Acceder directamente al panel administrativo
-    cy.visit('https://www.nuestrasenora.me/');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org/');
     
     // Iniciar sesión con el selector correcto
     cy.get('input[placeholder="Cédula"]').type('1234');
@@ -92,7 +90,7 @@ describe('Flujo completo de Solicitud de Ingreso', () => {
     cy.contains('Inicio de sesión exitoso', { timeout: 5000 }).should('be.visible');
     
     // Navegar a la página de solicitudes de ingreso
-    cy.visit('https://www.nuestrasenora.me/dashboard/solicitudes/ingreso');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org/dashboard/solicitudes/ingreso');
     
     // Esperar a que la página cargue completamente
     cy.contains('Solicitudes de ingreso', { timeout: 10000 }).should('be.visible');

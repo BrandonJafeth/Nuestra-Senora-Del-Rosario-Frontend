@@ -4,8 +4,8 @@ import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportT
 import { NotificationGetDto } from '../types/NotificationType';
 
 class NotificationService {
-  private apiUrl = 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Notification'; // URL del backend
-  private hubUrl = 'https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/notificationHub'; // Hub de SignalR
+  private apiUrl = 'https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Notification'; // URL del backend
+  private hubUrl = 'https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/notificationHub'; // Hub de SignalR
   private connection: HubConnection | null = null; // Conexión de SignalR
   private reconnectAttempts: number = 0; // Contador de reintentos
 

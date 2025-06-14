@@ -7,7 +7,7 @@ const useUnreadNotifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get('https://localhost:7066/api/Notification');
+        const response = await axios.get('https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Notification');
         setNotifications(response.data);
       } catch (error) {
         console.error('Error al obtener las notificaciones:', error);

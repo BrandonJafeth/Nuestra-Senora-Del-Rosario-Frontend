@@ -62,7 +62,7 @@ const PaymentReceiptForm: React.FC = () => {
       setDownloadLoading(true);
       // Solicitud con Axios para obtener el PDF en formato blob
       const response = await axios.get(
-        `https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`,
+        `https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/PaymentReceipt/DownloadPaymentReceiptPdf/${generatedReceiptId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

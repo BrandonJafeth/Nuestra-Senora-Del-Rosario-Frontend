@@ -3,7 +3,7 @@
 describe('Pruebas de Inventario', () => {
   beforeEach(() => {
     // Realizar login antes de cada prueba
-    cy.visit('https://www.nuestrasenora.me');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org');
     cy.get('input[placeholder="Cédula"]').type('1234');
     cy.get('input[placeholder="Contraseña"]').type('SA123');
     cy.get('button').contains('Iniciar sesión').click();
@@ -15,7 +15,7 @@ describe('Pruebas de Inventario', () => {
 
   it('Flujo completo: agregar producto de Oficina, egreso, ingreso y conversión de Leche a cajas', () => {
     // 1. Ir a la página de lista de productos
-    cy.visit('https://www.nuestrasenora.me/dashboard/inventario/lista-productos');
+    cy.visit('https://hogarnuestrasenoradelrosariosantacruz.org/dashboard/inventario/lista-productos');
     cy.url().should('include', '/dashboard/inventario/lista-productos');
 
     // 2. Seleccionar categoría Oficina (es necesario elegir una categoría para ver productos)

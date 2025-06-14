@@ -33,7 +33,7 @@ export const useCheckAssetPlate = (plate: string, debounceMs = 800) => {
       
       try {
         // Usamos el endpoint específico para verificar la placa
-        // El endpoint está en: https://localhost:7066/api/Asset/verify-plate?plate=150
+        // El endpoint está en: https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Asset/verify-plate?plate=150
         const response = await assetService.checkPlateExists(debouncedPlate);
         if (typeof response.data === 'boolean') {
           return { exists: response.data };

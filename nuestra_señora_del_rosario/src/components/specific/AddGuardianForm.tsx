@@ -104,7 +104,7 @@ useEffect(() => {
       try {
         const token = Cookies.get('authToken');
         if (!token) throw new Error('No auth token');
-        const res = await fetch('https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Guardian', {
+        const res = await fetch('https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Guardian', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data: Guardian[] = await res.json();

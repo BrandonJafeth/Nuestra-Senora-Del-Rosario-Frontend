@@ -3,7 +3,7 @@ import { InventoryMovement } from "../types/InventoryMovement";
 import { useMutation, useQueryClient } from "react-query";
 import Cookies from "js-cookie";
 
-const API_URL = "https://wg04c4oosck8440w4cg8g08o.nuestrasenora.me/api/Inventory"; 
+const API_URL = "https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Inventory"; 
 
 export const useCreateInventoryMovement = () => {
   const queryClient = useQueryClient();
