@@ -10,9 +10,11 @@ import { FundingEntityType } from "../../types/FundingEntityType";
 
 const TableFundingEntities: React.FC = () => {
   const { deleteEntity, createEntity, updateEntity, toast } = useManagementFundingEntity();
-  const { data: fundingEntities, isLoading } = useFundingEntity();
-  const [pageNumber] = useState(1);
-  const totalPages = 3; // Puedes ajustar el total de páginas según tu lógica
+  const { data: fundingEntities = [], isLoading } = useFundingEntity();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+    const totalPages = Math.ceil(fundingEntities.length / pageSize);
 
   // Estado para el modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -87,8 +89,22 @@ const TableFundingEntities: React.FC = () => {
   };
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Entidades Financiadoras</h2>
-
+<div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión entidades financiadoras</h2>
+        <div className="w-28" />
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPageNumber(1);
+          }}
+          className="p-2 border rounded-lg bg-gray-100"
+        >
+          {[5, 10, 15, 20].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
+        </select>
+      </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
@@ -102,10 +118,11 @@ const TableFundingEntities: React.FC = () => {
         onAdd={openAddModal}
         onEdit={openEditModal}
         onDelete={openConfirmDeleteModal}
-        pageNumber={pageNumber}
+pageNumber={pageNumber}
         totalPages={totalPages}
-        onNextPage={() => {}}
-        onPreviousPage={() => {}}
+        onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+        onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+        itemsPerPage={pageSize}
       />
 
       {/* Modal para Agregar Entidad Financiadora */}

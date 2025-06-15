@@ -5,7 +5,7 @@ import healthcareCenterService from "../services/HealthcareCenterService";
 
 export const useHealthcareCenters = () => {
   return useQuery<HealthcareCenter[], Error>(
-    "HealthcareCenter",
+    "/HealthcareCenter",
     async () => {
       const response = await healthcareCenterService.getAllHealthcareCenters();
       if (!response.data || !Array.isArray(response.data)) {

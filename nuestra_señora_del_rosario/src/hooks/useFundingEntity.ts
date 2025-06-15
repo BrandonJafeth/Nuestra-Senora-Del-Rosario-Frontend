@@ -4,7 +4,7 @@ import { FundingEntityType } from "../types/FundingEntityType";
 
 export const useFundingEntity = () => {
   return useQuery<FundingEntityType[], Error>(
-    "FundingEntity",
+    "/FundingEntity",
     async () => {
       const response = await fundingEntityService.getAllFundingEntities();
       return response.data;

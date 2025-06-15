@@ -10,9 +10,12 @@ import FormField from "../common/FormField";
 
 const TableCategories: React.FC = () => {
   const { deleteEntity, createEntity, updateEntity, toast } = useManagmentCategories();
-  const { data: categories, isLoading } = useCategories();
-  const [pageNumber] = useState(1);
-  const totalPages = 3;
+  const { data: categories = [], isLoading } = useCategories();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+    const totalPages = Math.ceil(categories.length / pageSize);
+
   // 📌 Estado del modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newCategory, setNewCategory] = useState({ categoryName: "" });
@@ -148,8 +151,22 @@ const TableCategories: React.FC = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">Gestión de Categorías</h2>
-
+ <div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Unidades de medida</h2>
+        <div className="w-28" />
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPageNumber(1);
+          }}
+          className="p-2 border rounded-lg bg-gray-100"
+        >
+          {[5, 10, 15, 20].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
+        </select>
+      </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <AdminTable
@@ -162,9 +179,12 @@ const TableCategories: React.FC = () => {
         onDelete={openConfirmDeleteModal}
         pageNumber={pageNumber}
         totalPages={totalPages}
-        onNextPage={() => {}}
-        onPreviousPage={() => {}}
-      />      {/* 📌 Modal para Agregar */}
+        onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+        onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+        itemsPerPage={pageSize}
+      />     
+      
+       {/* 📌 Modal para Agregar */}
       <AdminModalAdd 
         isOpen={isAddModalOpen} 
         title="Agregar nueva categoría" 

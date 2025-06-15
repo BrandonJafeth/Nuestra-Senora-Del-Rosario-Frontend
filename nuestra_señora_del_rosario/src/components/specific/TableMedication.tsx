@@ -17,10 +17,11 @@ const TableMedicationSpecific: React.FC = () => {
 
   // Hooks para vías de administración y unidades de medida
   const { data: routes, isLoading: isLoadingRoutes } = useAdministrationRoute();
-  const { data: units, isLoading: isLoadingUnits } = useUnitOfMeasure();
-
+  const { data: units = [], isLoading: isLoadingUnits } = useUnitOfMeasure();
   const [pageNumber, setPageNumber] = useState(1);
-  const totalPages = 3; // Ajusta según tu lógica de paginación
+  const [pageSize, setPageSize] = useState(5);
+  const totalPages = Math.ceil(units.length / pageSize);
+
 
   // -----------------------------------------------------
   //  ESTADO PARA AGREGAR
@@ -185,9 +186,22 @@ const TableMedicationSpecific: React.FC = () => {
   // -----------------------------------------------------
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Gestión de medicamentos específicos
-      </h2>
+<div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión de medicamentos</h2>
+        <div className="w-28" />
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPageNumber(1);
+          }}
+          className="p-2 border rounded-lg bg-gray-100"
+        >
+          {[5, 10, 15, 20].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Si hay mensaje de éxito/error */}
       {toast && <Toast message={toast.message} type={toast.type} />}
@@ -207,12 +221,9 @@ const TableMedicationSpecific: React.FC = () => {
         onDelete={(item) => openConfirmDeleteModal(item)}
         pageNumber={pageNumber}
         totalPages={totalPages}
-        onNextPage={() =>
-          setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))
-        }
-        onPreviousPage={() =>
-          setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))
-        }
+        onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+        onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+        itemsPerPage={pageSize}
       />
 
       {/* Modal para Agregar */}

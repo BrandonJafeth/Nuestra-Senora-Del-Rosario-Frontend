@@ -9,45 +9,36 @@ import { useUnitOfMeasure } from "../../hooks/useUnitOfMeasure";
 
 const TableUnitOfMeasure: React.FC = () => {
   const { deleteEntity, createEntity, updateEntity, toast } = useManagmentUnitOfMeasure();
-  const { data: unitOfMeasure, isLoading } = useUnitOfMeasure();
+  const { data: unitOfMeasure = [], isLoading } = useUnitOfMeasure();
   const [pageNumber, setPageNumber] = useState(1);
-  const totalPages = 3;
+  const [pageSize, setPageSize] = useState(5);
 
-  // 📌 Estado del modal de agregar
+  const totalPages = Math.ceil(unitOfMeasure.length / pageSize);
+  // Modal Agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newUnitOfMeasure, setNewUnitOfMeasure] = useState("");
 
-  // 📌 Estado del modal de edición
+  // Modal Editar
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editUnitOfMeasure, setEditUnitOfMeasure] = useState<{ unitOfMeasureID: number; unitName: string }>({
-    unitOfMeasureID: 0,
-    unitName: "",
-  });
+  const [editUnitOfMeasure, setEditUnitOfMeasure] = useState({ unitOfMeasureID: 0, unitName: "" });
 
-  // 📌 Estado del modal de confirmación para edición
+  // Modal Confirmación edición
   const [isConfirmEditModalOpen, setIsConfirmEditModalOpen] = useState(false);
-  const [pendingEditValue, setPendingEditValue] = useState<string>("");
+  const [pendingEditValue, setPendingEditValue] = useState("");
 
-  // 📌 Estado del modal de confirmación para eliminación
+  // Modal Confirmación eliminación
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [unitToDelete, setUnitToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // 📌 Modal para agregar
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => {
     setNewUnitOfMeasure("");
     setIsAddModalOpen(false);
   };
 
-  // 📌 Modal para editar (corregido)
   const openEditModal = (item: any) => {
-    if (!item || typeof item !== "object" || !item.unitOfMeasureID) {
-      console.error("🚨 Error: Datos inválidos para edición", item);
-      return;
-    }
-
-    console.log("🛠️ Editando:", item);
+    if (!item || !item.unitOfMeasureID) return;
     setEditUnitOfMeasure({ unitOfMeasureID: item.unitOfMeasureID, unitName: item.nombreUnidad });
     setIsEditModalOpen(true);
   };
@@ -57,28 +48,21 @@ const TableUnitOfMeasure: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  // 📌 Abre el modal de confirmación antes de editar
   const handlePreConfirmEdit = (updatedValue: string) => {
     setPendingEditValue(updatedValue);
     setIsConfirmEditModalOpen(true);
   };
 
-  // 📌 Ejecuta la edición después de la confirmación
   const handleConfirmEdit = () => {
-    setIsConfirmEditModalOpen(false);
     updateEntity.mutate(
       { id: editUnitOfMeasure.unitOfMeasureID, nombreUnidad: pendingEditValue },
-      {
-        onSuccess: () => {
-          closeEditModal();
-        },
-      }
+      { onSuccess: closeEditModal }
     );
+    setIsConfirmEditModalOpen(false);
   };
 
-  // 📌 Modal para eliminar
   const openConfirmDeleteModal = (item: any) => {
-    if (!item || typeof item !== "object" || !item.unitOfMeasureID) return;
+    if (!item?.unitOfMeasureID) return;
     setUnitToDelete(item.unitOfMeasureID);
     setIsConfirmDeleteModalOpen(true);
   };
@@ -89,18 +73,15 @@ const TableUnitOfMeasure: React.FC = () => {
   };
 
   const handleDeleteConfirmed = () => {
-    if (unitToDelete !== null) {
-      setIsDeleting(true);
-      deleteEntity.mutate(unitToDelete, {
-        onSuccess: () => {
-          setIsDeleting(false);
-          closeConfirmDeleteModal();
-        },
-        onError: () => {
-          setIsDeleting(false);
-        },
-      });
-    }
+    if (unitToDelete === null) return;
+    setIsDeleting(true);
+    deleteEntity.mutate(unitToDelete, {
+      onSuccess: () => {
+        closeConfirmDeleteModal();
+        setIsDeleting(false);
+      },
+      onError: () => setIsDeleting(false),
+    });
   };
 
   const handleAddUnitOfMeasure = () => {
@@ -113,7 +94,19 @@ const TableUnitOfMeasure: React.FC = () => {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Unidades de medida</h2>
-        <div className="w-28"></div>
+        <div className="w-28" />
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPageNumber(1);
+          }}
+          className="p-2 border rounded-lg bg-gray-100"
+        >
+          {[5, 10, 15, 20].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
+        </select>
       </div>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
@@ -121,18 +114,19 @@ const TableUnitOfMeasure: React.FC = () => {
       <AdminTable
         title="Lista de unidades de medida"
         columns={[{ key: "nombreUnidad", label: "Nombre" }]}
-        data={unitOfMeasure || []}
+        data={unitOfMeasure}
         isLoading={isLoading}
         onAdd={openAddModal}
-        onEdit={openEditModal} // ✅ Ahora llama correctamente a openEditModal
-        onDelete={(item) => openConfirmDeleteModal(item)}
+        onEdit={openEditModal}
+        onDelete={openConfirmDeleteModal}
         pageNumber={pageNumber}
         totalPages={totalPages}
-        onNextPage={() => setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))}
-        onPreviousPage={() => setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))}
+        onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+        onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+        itemsPerPage={pageSize}
       />
 
-      {/* 📌 Modal para Agregar */}
+      {/* Modales */}
       <AdminModalAdd isOpen={isAddModalOpen} title="Agregar unidad de medida" onClose={closeAddModal}>
         <input
           type="text"
@@ -151,7 +145,6 @@ const TableUnitOfMeasure: React.FC = () => {
         </div>
       </AdminModalAdd>
 
-      {/* 📌 Modal para Editar */}
       <AdminModalEdit
         isOpen={isEditModalOpen}
         title="Editar Unidad de Medida"
@@ -160,7 +153,6 @@ const TableUnitOfMeasure: React.FC = () => {
         initialValue={editUnitOfMeasure.unitName}
       />
 
-      {/* 📌 Modal de Confirmación antes de editar */}
       <ConfirmationModal
         isOpen={isConfirmEditModalOpen}
         onClose={() => setIsConfirmEditModalOpen(false)}
@@ -171,7 +163,6 @@ const TableUnitOfMeasure: React.FC = () => {
         isLoading={false}
       />
 
-      {/* 📌 Modal de Confirmación para Eliminar */}
       <ConfirmationModal
         isOpen={isConfirmDeleteModalOpen}
         onClose={closeConfirmDeleteModal}
