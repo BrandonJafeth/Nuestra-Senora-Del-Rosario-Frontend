@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const IMGBB_API_KEY = "b4921199d13d30a9b4e12ce3dfc180c0"; // 🔥 Reemplaza con tu API Key
+const IMGBB_API_KEY = "6531d1c29f2dd3e0d89a8e30e3a43383"; // 🔥 Reemplaza con tu API Key
 const IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload";
 
 /**
