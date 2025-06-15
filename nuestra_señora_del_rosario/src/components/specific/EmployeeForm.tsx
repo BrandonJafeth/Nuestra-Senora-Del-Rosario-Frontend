@@ -98,8 +98,8 @@ useEffect(() => {
       showToast('El nombre no puede tener más de 25 caracteres', 'error');
       return;
     }
-    if (!/^[a-zA-Z\s]+$/.test(firstName)) {
-      showToast('El nombre solo puede contener letras y espacios', 'error');
+    if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/.test(firstName)) {
+      showToast('El nombre solo puede contener letras (con o sin tildes) y espacios', 'error');
       return;
     }
     if (!lastName1.trim()) {
@@ -114,8 +114,8 @@ useEffect(() => {
       showToast('El primer apellido no puede tener más de 25 caracteres', 'error');
       return;
     }
-    if (!/^[a-zA-Z\s]+$/.test(lastName1)) {
-      showToast('El primer apellido solo puede contener letras y espacios', 'error');
+    if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/.test(lastName1)) {
+      showToast('El primer apellido solo puede contener letras (con o sin tildes) y espacios', 'error');
       return;
     }
     if (!lastName2.trim()) {
@@ -129,8 +129,8 @@ useEffect(() => {
       showToast('El segundo apellido no puede tener más de 25 caracteres', 'error');
       return;
     }
-    if (!/^[a-zA-Z\s]+$/.test(lastName2)) {
-      showToast('El segundo apellido solo puede contener letras y espacios', 'error');
+    if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/.test(lastName2)) {
+      showToast('El segundo apellido solo puede contener letras (con o sin tildes) y espacios', 'error');
       return;
     }
     if ((!dni.trim() || (dni.length < 9 || dni.length > 12) || !/^\d+$/.test(dni))) {
@@ -158,8 +158,8 @@ useEffect(() => {
       showToast('La dirección no puede tener más de 50 caracteres', 'error');
       return;
     }
-    if (!/^[a-zA-Z0-9\s,.-]+$/.test(address)) {
-      showToast('La dirección solo puede contener letras, números y espacios', 'error');
+    if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s,.-]+$/.test(address)) {
+      showToast('La dirección solo puede contener letras (con o sin tildes), números y espacios', 'error');
       return;
     }
     if (id_Profession === 0) {
