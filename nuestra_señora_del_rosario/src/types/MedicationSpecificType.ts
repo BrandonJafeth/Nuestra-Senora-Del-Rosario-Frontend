@@ -6,7 +6,7 @@ export interface MedicationSpecific {
     unitOfMeasureName : string
     routeName : string
     createdAt : string
-    unitofMeasureId : number
+    unitOfMeasureID : number
     id_AdministrationRoute : number
     updatedAt : string
 }
