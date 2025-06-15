@@ -102,12 +102,20 @@ const PaymentReceiptForm: React.FC = () => {
     'vacationDays',
     'workedDays',
   ]);
-
   // Manejar cambios en el formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
-    // Si es uno de los campos numéricos, forzamos que sea >= 0
+    // Para campo ajustes, permitimos valores negativos
+    if (name === 'adjustments') {
+      const intVal = parseInt(value || '0', 10);
+      return setFormData((prevData) => ({
+        ...prevData,
+        [name]: isNaN(intVal) ? 0 : intVal, // Permite valores negativos
+      }));
+    }
+    
+    // Si es uno de los otros campos numéricos, forzamos que sea >= 0
     if (numericFields.has(name)) {
       const intVal = parseInt(value || '0', 10);
       return setFormData((prevData) => ({
