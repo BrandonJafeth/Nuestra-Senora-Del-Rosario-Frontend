@@ -23,6 +23,7 @@ interface AdminTableProps {
   totalPages?: number;
   onNextPage: () => void;
   onPreviousPage: () => void;
+  itemsPerPage: number;
 }
 
 const AdminTable: React.FC<AdminTableProps> = ({
@@ -34,11 +35,18 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onDelete,
   isLoading,
   skeletonRows = 5,
+  itemsPerPage = 0,
+  pageNumber = 1,
+  onNextPage,
+  onPreviousPage,
+  totalPages = 0,
 }) => {
   const { isDarkMode } = useThemeDark(); // Usamos el hook para determinar el modo
   const navigate = useNavigate();
 
   const handleGoBack = () => navigate(-1);
+const startIndex = (pageNumber - 1) * itemsPerPage;
+const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className={`p-6 ${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} shadow-md rounded-lg`}>
@@ -86,8 +94,8 @@ const AdminTable: React.FC<AdminTableProps> = ({
                   </td>
                 </tr>
               ))
-            ) : data.length > 0 ? (
-              data.map((item, index) => (
+            ) : paginatedData.length > 0 ? (
+              paginatedData.map((item, index) => (
                 <tr key={index} className={`${isDarkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
                   {columns.map((col) => (
                     <td key={col.key} className="p-4 border border-gray-300">
@@ -119,6 +127,28 @@ const AdminTable: React.FC<AdminTableProps> = ({
             )}
           </tbody>
         </table>
+          {data.length > itemsPerPage && (
+            
+            <div className="flex justify-center items-center mt-4 space-x-4">
+              <button
+                onClick={onPreviousPage}
+                disabled={pageNumber === 1}
+                className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaArrowLeft />
+              </button>
+              <span className={`${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                Página {pageNumber} de {totalPages}
+              </span>
+              <button
+                onClick={onNextPage}
+                disabled={pageNumber === totalPages}
+                className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaArrowLeft className="rotate-180" />
+              </button>
+            </div>
+          )}
       </div>
 
       

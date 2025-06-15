@@ -8,11 +8,14 @@ import { useAdministrationRoute } from "../../hooks/useAdministrationRoute";
 import { useManagmentAdministrationRoute } from "../../hooks/useManagmentAdministrationRoute";
 
 const TableAdministrationRoute: React.FC = () => {
-  const { data: adminRoutes, isLoading } = useAdministrationRoute();
+  const { data: adminRoutes = [], isLoading } = useAdministrationRoute();
   const { createEntity, updateEntity, deleteEntity, toast } =
     useManagmentAdministrationRoute();
   const [pageNumber, setPageNumber] = useState(1);
-  const totalPages = 3; // Ajusta según tu lógica de paginación
+  const [pageSize, setPageSize] = useState(5);
+
+    const totalPages = Math.ceil(adminRoutes.length / pageSize);
+
 
   // Estado para el modal de agregar
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -117,9 +120,22 @@ const TableAdministrationRoute: React.FC = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Gestión de vías de administración
-      </h2>
+<div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 text-center flex-1">Gestión vias de administración</h2>
+        <div className="w-28" />
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setPageNumber(1);
+          }}
+          className="p-2 border rounded-lg bg-gray-100"
+        >
+          {[5, 10, 15, 20].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
+        </select>
+      </div>
 
       {toast && <Toast message={toast.message} type={toast.type} />}
 
@@ -135,12 +151,9 @@ const TableAdministrationRoute: React.FC = () => {
         onDelete={(item) => openConfirmDeleteModal(item)}
         pageNumber={pageNumber}
         totalPages={totalPages}
-        onNextPage={() =>
-          setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev))
-        }
-        onPreviousPage={() =>
-          setPageNumber((prev) => (prev > 1 ? prev - 1 : prev))
-        }
+        onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+        onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+        itemsPerPage={pageSize}
       />
 
       {/* Modal para Agregar Vía de Administración */}
