@@ -164,10 +164,22 @@ const PaymentReceiptForm: React.FC = () => {
     const updatedDeductions = formData.deductionsList.filter((_, i) => i !== index);
     setFormData({ ...formData, deductionsList: updatedDeductions });
   };
-
   // Enviar el formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación para el campo de salario (obligatorio)
+    if (!formData.salary || formData.salary <= 0) {
+      showToast('El campo de salario es obligatorio y debe ser mayor a 0', 'error');
+      return;
+    }
+    
+    // Validación para los días trabajados (obligatorio)
+    if (!formData.workedDays || formData.workedDays <= 0) {
+      showToast('El campo de días trabajados es obligatorio y debe ser mayor a 0', 'error');
+      return;
+    }
+    
     createPaymentReceipt(formData, {
       onSuccess: (data) => {
         setGeneratedReceiptId(data.data.id);
