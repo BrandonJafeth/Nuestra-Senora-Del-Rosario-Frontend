@@ -47,13 +47,12 @@ const CreateUserForm: React.FC = () => {
     if (formData.fullName.length < 3) {
       showToast('El nombre completo debe tener al menos 3 caracteres', 'error');
       return;
-    }
-    if (formData.fullName.length > 50) {
+    }    if (formData.fullName.length > 50) {
       showToast('El nombre completo no puede exceder los 50 caracteres', 'error');
       return;
     }
-    if (!/^[a-zA-Z\s]+$/.test(formData.fullName)) {
-      showToast('El nombre completo solo puede contener letras y espacios', 'error');
+    if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/.test(formData.fullName)) {
+      showToast('El nombre completo solo puede contener letras (con o sin tildes) y espacios', 'error');
       return;
     }
 
