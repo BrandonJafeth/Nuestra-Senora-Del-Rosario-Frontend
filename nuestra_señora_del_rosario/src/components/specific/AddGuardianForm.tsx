@@ -97,31 +97,64 @@ useEffect(() => {
   }
 }, [cedulaCheck, guardianData, setValue])
 
-
-  // Cargar guardianes
+  // Función para cargar guardianes - no se llama automáticamente
+  const loadGuardians = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      if (!token) throw new Error('No auth token');
+      const res = await fetch('https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Guardian', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data: Guardian[] = await res.json();
+      setGuardians(data);
+      return data;
+    } catch {
+      showToast('Error al cargar los guardianes.', 'error');
+      return [];
+    }
+  };
+  // Estado para el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  // Estado para controlar si los guardianes ya se cargaron
+  const [guardiansLoaded, setGuardiansLoaded] = useState(false);
+  
+  // Efecto para debounce en la búsqueda por nombre
   useEffect(() => {
-    (async () => {
-      try {
-        const token = Cookies.get('authToken');
-        if (!token) throw new Error('No auth token');
-        const res = await fetch('https://bw48008o8ooo848csscss8o0.hogarnuestrasenoradelrosariosantacruz.org/api/Guardian', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data: Guardian[] = await res.json();
-        setGuardians(data);
-      } catch {
-        showToast('Error al cargar los guardianes.', 'error');
+    const handler = setTimeout(async () => {
+      if (searchTerm.length >= 3) {
+        // Solo cargar guardianes si no se han cargado ya
+        if (!guardiansLoaded) {
+          const loadedGuardians = await loadGuardians();
+          setGuardiansLoaded(true);
+          
+          // Filtrar los guardianes cargados
+          setFilteredGuardians(
+            loadedGuardians.filter(g =>
+              `${g.name_GD} ${g.lastname1_GD} ${g.lastname2_GD}`
+                .toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          );
+        } else {
+          // Si ya están cargados, solo filtrar
+          setFilteredGuardians(
+            guardians.filter(g =>
+              `${g.name_GD} ${g.lastname1_GD} ${g.lastname2_GD}`
+                .toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          );
+        }
+      } else {
+        // Limpiar los resultados filtrados si la búsqueda es muy corta
+        setFilteredGuardians([]);
       }
-    })();
-  }, [showToast]);
-
+    }, 500); // 500ms de debounce
+    
+    return () => clearTimeout(handler);
+  }, [searchTerm, guardiansLoaded, guardians]);
+  
+  // Esta función ahora solo actualiza el término de búsqueda
   const handleSearchByName = (name: string) => {
-    setFilteredGuardians(
-      guardians.filter(g =>
-        `${g.name_GD} ${g.lastname1_GD} ${g.lastname2_GD}`
-          .toLowerCase().includes(name.toLowerCase())
-      )
-    );
+    setSearchTerm(name);
   };
 
   const handleSelectGuardian = (guardian: Guardian) => {
