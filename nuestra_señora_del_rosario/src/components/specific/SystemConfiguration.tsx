@@ -7,12 +7,6 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 // 1. Define un arreglo con los datos de tus cards
 const cardsData = [
   {
-    title: "Estados de citas médicas",
-    description: "Gestiona los estados de las citas médicas.",
-    route: "/dashboard/Configuracion/sistema/estado-citas",
-    roles: ["SuperAdmin","Enfermeria"],
-  },
-  {
     title: "Unidades de medida",
     description: "Gestiona las unidades de medida.",
     route: "/dashboard/Configuracion/sistema/unidad-medida",
