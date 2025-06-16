@@ -97,8 +97,7 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
         ] as const).map(({ name, label }) => (
           <div key={name} className="flex flex-col">
             <label className="mb-1 font-medium">{label}</label>
-            {isEditing ? (
-              <input
+            {isEditing ? (              <input
                 type="text"
                 {...register(name, {
                   required: `${label} es obligatorio`,
@@ -115,10 +114,9 @@ const GuardianEditModal: React.FC<Props> = ({ isOpen, onClose, guardian }) => {
                     pattern: { value: /^\d+$/, message: 'Solo números' }
                   })
                 })}
-                className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              />
-            ) : (
-              <p className="p-3 w-full rounded-md border border-gray-300 bg-gray-50">
+                className={`w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${isDarkMode ? 'text-black' : ''}`}
+              />            ) : (
+              <p className={`p-3 w-full rounded-md border border-gray-300 bg-gray-50 ${isDarkMode ? 'text-black' : ''}`}>
                 {(guardian as any)[name]}
               </p>
             )}

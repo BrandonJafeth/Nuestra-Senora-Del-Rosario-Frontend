@@ -141,7 +141,7 @@ useEffect(() => {
                   maxLength: { value: 9, message: 'Debe tener 9 dígitos' },
                   pattern: { value: /^\d+$/, message: 'Solo números' }
                 })}
-                className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="w-full p-3 dark:text-black rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               />
               {verifyingCedula && (
                 <span className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -159,7 +159,7 @@ useEffect(() => {
             <input
               type="text"
               {...register('name_GD', { required: 'El nombre es obligatorio' })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-3 rounded-md dark:text-black border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.name_GD && <p className="text-red-500">{errors.name_GD.message}</p>}
           </div>
@@ -169,7 +169,7 @@ useEffect(() => {
             <input
               type="text"
               {...register('lastname1_GD', { required: 'El apellido es obligatorio' })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-3 rounded-md dark:text-black border dark:text-balck border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.lastname1_GD && (
               <p className="text-red-500">{errors.lastname1_GD.message}</p>
@@ -181,7 +181,7 @@ useEffect(() => {
             <input
               type="text"
               {...register('lastname2_GD', { required: 'El apellido es obligatorio' })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-3 rounded-md border dark:text-black border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.lastname2_GD && (
               <p className="text-red-500">{errors.lastname2_GD.message}</p>
@@ -199,7 +199,7 @@ useEffect(() => {
                   message: 'Correo no válido'
                 }
               })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-3 rounded-md dark:text-black border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.email_GD && (
               <p className="text-red-500">{errors.email_GD.message}</p>
@@ -216,7 +216,7 @@ useEffect(() => {
                 maxLength: { value: 8, message: '8 dígitos' },
                 pattern: { value: /^\d+$/, message: 'Solo números' }
               })}
-              className="w-full p-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-3 rounded-md border dark:text-black border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.phone_GD && (
               <p className="text-red-500">{errors.phone_GD.message}</p>
