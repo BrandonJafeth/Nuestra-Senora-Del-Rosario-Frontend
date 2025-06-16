@@ -60,10 +60,10 @@ const AddHealthcareCenterModal: React.FC<AddHealthcareCenterModalProps> = ({
     return;
   }
 
-  if (!/^[a-zA-Z\s]+$/.test(name_HC)) {
-    showToast('El nombre solo puede contener letras y espacios.', 'error');
-    return;
-  }
+if (!/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/.test(name_HC)) {
+  showToast('El nombre del centro solo puede contener letras (con o sin tildes) y espacios', 'error');
+  return;
+}
 
   if (!location_HC.trim()) {
     showToast('La ubicación es obligatoria.', 'error');

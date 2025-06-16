@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import InventoryReportPDF from '../specific/InventoryReport';
-import ReportSelectionModal from './ReportSelectionModal';
 import CategoryReportModal from './CategoryReportModal';
 import inventoryService from '../../services/InventoryService';
 import { InventoryReport } from '../../types/InventoryType';
-import { useAuth } from '../../hooks/useAuth';
 
 interface InventoryReportViewerProps {
   month: number;
@@ -17,7 +15,6 @@ interface InventoryReportViewerProps {
 const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, year }) => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { selectedRole } = useAuth();
 
   const openReportModal = () => setIsReportModalOpen(true);
   const closeReportModal = () => setIsReportModalOpen(false);
@@ -59,27 +56,16 @@ const InventoryReportViewer: React.FC<InventoryReportViewerProps> = ({ month, ye
         disabled={loading}
       >
         {loading ? 'Generando Reporte...' : 'Descargar Reporte'}
-      </button>
-
-      {isReportModalOpen && (
+      </button>      {isReportModalOpen && (
         <>
-          {selectedRole && selectedRole.toLowerCase() === 'inventario' ? (
-            // Modal completo para usuarios de inventario
-            <ReportSelectionModal
-              isOpen={isReportModalOpen}
-              onRequestClose={closeReportModal}
-              onConfirm={handleConfirmReport}
-            />
-          ) : (
-            // Modal simple para otros usuarios, donde solo se selecciona la categoría.
-            <CategoryReportModal
-              isOpen={isReportModalOpen}
-              onRequestClose={closeReportModal}
-              onConfirm={(categoryId: number) =>
-                handleConfirmReport({ categoryId, productId: undefined, measure: '' })
-              }
-            />
-          )}
+          {/* Ahora todos los usuarios ven el CategoryReportModal */}
+          <CategoryReportModal
+            isOpen={isReportModalOpen}
+            onRequestClose={closeReportModal}
+            onConfirm={(categoryId: number) =>
+              handleConfirmReport({ categoryId, productId: undefined, measure: '' })
+            }
+          />
         </>
       )}
     </div>

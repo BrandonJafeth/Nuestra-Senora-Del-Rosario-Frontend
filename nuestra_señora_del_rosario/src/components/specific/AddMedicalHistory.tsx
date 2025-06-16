@@ -23,7 +23,7 @@ const AddMedicalHistoryForm: React.FC = () => {  const { residentId } = useParam
     },
   });
 
-  const mutation = useMedicalHistory();  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const mutation = useMedicalHistory(resident_Id);  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
     // Utilizamos MedicalHistoryInput para el formulario
   const onSubmit = (data: MedicalHistoryInput) => {
@@ -125,7 +125,7 @@ const AddMedicalHistoryForm: React.FC = () => {  const { residentId } = useParam
             type="submit"
             className={`bg-blue-500 text-white px-4 py-2 rounded-md transition flex items-center gap-2 ${
               (!isValid && isDirty) || mutation.isLoading 
-                ? "bg-blue-300 cursor-not-allowed" 
+                ? "bg-blue-300 cursor-pointer" 
                 : "hover:bg-blue-600"
             }`}
             disabled={(!isValid && isDirty) || mutation.isLoading}

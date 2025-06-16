@@ -139,7 +139,7 @@ const UpdateMedicalHistory: React.FC = () => {  const { residentId, id_MedicalHi
             type="submit"
             className={`bg-blue-500 text-white px-4 py-2 rounded-md transition ${
               (!isValid && isDirty) || (!formLoaded && !isDirty) || mutation.isLoading 
-                ? "bg-blue-300 cursor-not-allowed" 
+                ? "bg-blue-300 cursor-pointer" 
                 : "hover:bg-blue-600"
             }`}
             disabled={(!isValid && isDirty) || (!formLoaded && !isDirty) || mutation.isLoading}

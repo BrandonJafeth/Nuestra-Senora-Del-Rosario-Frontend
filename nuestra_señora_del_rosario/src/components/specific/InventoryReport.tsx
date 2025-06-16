@@ -1,6 +1,6 @@
 // FILE: components/InventoryReportPDF.tsx
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { InventoryReport } from '../../types/InventoryType';
 
 const styles = StyleSheet.create({
@@ -13,6 +13,16 @@ const styles = StyleSheet.create({
     borderBottomStyle: 'solid',
     paddingBottom: 8,
     marginBottom: 10,
+  },
+  logo: {
+    width: 120,
+    height: 80,
+    objectFit: 'contain',
+  },
+  headerInfo: {
+    marginTop: 10,
+    marginBottom: 10,
+    alignItems: 'center',
   },
   tableRow: {
     flexDirection: 'row',
@@ -43,8 +53,20 @@ interface InventoryReportPDFProps {
 const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
   <Document>
     <Page style={styles.page}>
-      <Text style={styles.header}>Reporte mensual de inventario</Text>
-      
+      {/* Encabezado con logo a la izquierda y fecha centrada */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+        <View style={{ flex: 1 }}>
+          <Image 
+            src="https://i.ibb.co/TwbrSPf/Icon-whitout-fondo.png"
+            style={styles.logo}
+          />
+        </View>
+        <View style={{ flex: 2, alignItems: 'center' }}>
+          <Text>Fecha: {new Date().toLocaleDateString()}</Text>
+        </View>
+        <View style={{ flex: 1 }} /> {/* Espacio vacío a la derecha para mantener centrado */}
+      </View>
+
       {/* Encabezado de la tabla */}
       <View style={styles.tableHeader}>
         <Text style={styles.tableCellHeader}>Producto</Text>
@@ -69,5 +91,6 @@ const InventoryReportPDF: React.FC<InventoryReportPDFProps> = ({ report }) => (
     </Page>
   </Document>
 );
+
 
 export default InventoryReportPDF;
